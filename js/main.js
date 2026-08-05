@@ -14,12 +14,9 @@
      Пока поля пустые — форма работает в демо-режиме (показывает
      «Заявка отправлена», но никуда не шлёт).
      ============================================================ */
-  /* ВАЖНО: не вставляйте токен сюда — код сайта виден всем, токен украдут.
-     Безопасный способ подключения описан в README (раздел «Форма заявки»). */
-  const TELEGRAM = {
-    TOKEN:   "",
-    CHAT_ID: "2107331702"
-  };
+  /* Заявки уходят на защищённый сервер (Supabase Edge Function), который
+     сохраняет их в базу и пересылает в Telegram. Никаких токенов в коде сайта. */
+  const LEAD_ENDPOINT = "https://haxmubqjipkwgmeagezm.supabase.co/functions/v1/lead";
 
   /* ---------- Language ---------- */
   const html = document.documentElement;
@@ -170,39 +167,30 @@
       };
 
       const typeSel = $("#type");
+      const hp = $("#company");
       const data = {
-        name:  name.value.trim(),
-        phone: phone.value.trim(),
-        type:  typeSel ? typeSel.options[typeSel.selectedIndex].text : "",
-        msg:   ($("#msg").value || "").trim()
+        name:    name.value.trim(),
+        phone:   phone.value.trim(),
+        type:    typeSel ? typeSel.options[typeSel.selectedIndex].text : "",
+        msg:     ($("#msg").value || "").trim(),
+        lang:    lang,
+        company: hp ? hp.value : ""   // honeypot — заполняют только боты
       };
-
-      const success = () => {
-        $("#form-body").style.display = "none";
-        $("#form-ok").classList.add("show");
-      };
-
-      // Демо-режим: бот ещё не настроен
-      if (!TELEGRAM.TOKEN || !TELEGRAM.CHAT_ID) { success(); return; }
-
-      const text =
-        "🆕 Новая заявка — Rich Kitchen\n\n" +
-        "👤 Имя: " + data.name + "\n" +
-        "📞 Телефон: " + data.phone + "\n" +
-        "🛋 Что нужно: " + data.type + "\n" +
-        (data.msg ? "💬 Комментарий: " + data.msg + "\n" : "") +
-        "🌐 Язык сайта: " + lang.toUpperCase();
 
       if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = t.sending; }
       try {
-        const res = await fetch("https://api.telegram.org/bot" + TELEGRAM.TOKEN + "/sendMessage", {
+        const res = await fetch(LEAD_ENDPOINT, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chat_id: TELEGRAM.CHAT_ID, text, disable_web_page_preview: true })
+          body: JSON.stringify(data)
         });
         const json = await res.json();
-        if (json && json.ok) { success(); }
-        else { alert(t.error); }
+        if (res.ok && json && json.ok) {
+          $("#form-body").style.display = "none";
+          $("#form-ok").classList.add("show");
+        } else {
+          alert(t.error);
+        }
       } catch (err) {
         alert(t.error);
       } finally {
