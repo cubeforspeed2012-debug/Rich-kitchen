@@ -6,6 +6,19 @@
   const $  = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
 
+  /* ============================================================
+     TELEGRAM — куда приходят заявки с формы.
+     Как получить эти два значения — см. README.md (раздел «Форма»).
+     1) TOKEN   — выдаёт @BotFather при создании бота
+     2) CHAT_ID — ваш числовой ID (узнать у @userinfobot)
+     Пока поля пустые — форма работает в демо-режиме (показывает
+     «Заявка отправлена», но никуда не шлёт).
+     ============================================================ */
+  const TELEGRAM = {
+    TOKEN:   "",   // напр. "7712345678:AAE1a2b3c4d5..."
+    CHAT_ID: ""    // напр. "123456789"
+  };
+
   /* ---------- Language ---------- */
   const html = document.documentElement;
   const STORE = "rk-lang";
@@ -130,10 +143,13 @@
     function reset() { clearInterval(timer); timer = setInterval(() => go(i + 1), 6000); }
   }
 
-  /* ---------- Lead form ---------- */
+  /* ---------- Lead form → Telegram ---------- */
   const form = $("#lead-form");
   if (form) {
-    form.addEventListener("submit", (e) => {
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const btnHTML = submitBtn ? submitBtn.innerHTML : "";
+
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const name = $("#name"), phone = $("#phone");
       let ok = true;
@@ -142,9 +158,54 @@
         else f.style.borderColor = "";
       });
       if (!ok) return;
-      // NOTE: подключите отправку на бэкенд / Telegram-бот / e-mail здесь.
-      $("#form-body").style.display = "none";
-      $("#form-ok").classList.add("show");
+
+      const lang = html.getAttribute("data-lang") === "uz" ? "uz" : "ru";
+      const t = {
+        sending: lang === "uz" ? "Yuborilmoqda…" : "Отправка…",
+        error:   lang === "uz"
+          ? "Yuborib boʻlmadi. Iltimos, telefon orqali bogʻlaning."
+          : "Не удалось отправить. Пожалуйста, позвоните нам."
+      };
+
+      const typeSel = $("#type");
+      const data = {
+        name:  name.value.trim(),
+        phone: phone.value.trim(),
+        type:  typeSel ? typeSel.options[typeSel.selectedIndex].text : "",
+        msg:   ($("#msg").value || "").trim()
+      };
+
+      const success = () => {
+        $("#form-body").style.display = "none";
+        $("#form-ok").classList.add("show");
+      };
+
+      // Демо-режим: бот ещё не настроен
+      if (!TELEGRAM.TOKEN || !TELEGRAM.CHAT_ID) { success(); return; }
+
+      const text =
+        "🆕 Новая заявка — Rich Kitchen\n\n" +
+        "👤 Имя: " + data.name + "\n" +
+        "📞 Телефон: " + data.phone + "\n" +
+        "🛋 Что нужно: " + data.type + "\n" +
+        (data.msg ? "💬 Комментарий: " + data.msg + "\n" : "") +
+        "🌐 Язык сайта: " + lang.toUpperCase();
+
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = t.sending; }
+      try {
+        const res = await fetch("https://api.telegram.org/bot" + TELEGRAM.TOKEN + "/sendMessage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: TELEGRAM.CHAT_ID, text, disable_web_page_preview: true })
+        });
+        const json = await res.json();
+        if (json && json.ok) { success(); }
+        else { alert(t.error); }
+      } catch (err) {
+        alert(t.error);
+      } finally {
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = btnHTML; }
+      }
     });
   }
 
