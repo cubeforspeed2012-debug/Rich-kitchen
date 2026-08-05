@@ -16,7 +16,7 @@
      ============================================================ */
   const TELEGRAM = {
     TOKEN:   "8994902630:AAGzUV70cIkgDHUMQTRgO-BEs0RW69JJZcE",
-    CHAT_ID: ""    // ← впишите ваш ID (см. README / @userinfobot)
+    CHAT_ID: "2107331702"
   };
 
   /* ---------- Language ---------- */
