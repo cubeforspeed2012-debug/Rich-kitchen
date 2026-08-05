@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru" data-lang="ru">
 <head>
+<script>document.documentElement.className += " js";</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rich Kitchen — Кухни и мебель на заказ в Ташкенте</title>
@@ -10,6 +11,12 @@
 <meta property="og:description" content="Премиальная мебель на заказ в Ташкенте. Собственное производство, натуральные материалы, гарантия 5 лет.">
 <meta property="og:type" content="website">
 <link rel="icon" type="image/png" href="assets/logo/richkitchen-ink.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/logo/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Rich Kitchen">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -458,5 +465,19 @@
 <button class="toTop" id="toTop" aria-label="Наверх"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
 
 <script src="js/main.js"></script>
+<script>
+/* Failsafe: контент виден даже если основной скрипт не загрузился */
+(function(){
+  function show(){
+    var vh = window.innerHeight || 800;
+    document.querySelectorAll('.reveal:not(.in)').forEach(function(el){
+      if (el.getBoundingClientRect().top < vh * 1.08) el.classList.add('in');
+    });
+  }
+  window.addEventListener('scroll', show, {passive:true});
+  window.addEventListener('load', function(){ setTimeout(show, 300); });
+  setTimeout(show, 1800);
+})();
+</script>
 </body>
 </html>
