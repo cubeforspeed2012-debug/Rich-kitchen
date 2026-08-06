@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /story.html
+
+Sitemap: https://rich-kitchen.uz/sitemap.xml
