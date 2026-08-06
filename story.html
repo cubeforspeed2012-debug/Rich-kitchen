@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ru" data-lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rich Kitchen — cinematic</title>
+<meta name="description" content="Кинематографичная скролл-история Rich Kitchen — мебель на заказ в Ташкенте.">
+<meta name="theme-color" content="#2B2320">
+<link rel="icon" href="assets/logo/richkitchen-ink.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --mx:0; --my:0;
+  --bg-scale:1.06; --bg-x:0px; --bg-y:0px;
+  --bgB:0; --bgC:0; --veil:0.34;
+  --title-y:0px; --title-scale:1; --title-op:1;
+  --intro-y:0px; --intro-op:1;
+  --p1-op:0; --p1-y:58px;
+  --p2-op:0; --p2-y:58px;
+  --slider-op:0; --slider-x:420vw; --slider-vis:hidden;
+  --controls-op:0;
+
+  --cream:#F4EFE7; --ivory:#FBF8F2; --sand:#E7DCCB; --oak:#C9A987;
+  --walnut:#6E4E38; --espresso:#2B2320; --brass:#B08D57; --olive:#3F473A;
+  --serif:"Cormorant Garamond",Georgia,serif;
+  --sans:"Inter",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html{min-height:100%;scroll-behavior:smooth;background:#0d0b0a}
+body{min-height:100%;margin:0;overflow-x:clip;background:#0d0b0a;color:var(--ivory);
+  font-family:var(--sans);-webkit-font-smoothing:antialiased}
+button{border:0;font:inherit;cursor:pointer;color:inherit;background:none}
+a{color:inherit;text-decoration:none}
+img{display:block;user-select:none;-webkit-user-drag:none}
+.shell{min-height:100vh}
+
+/* ---------- scroll rig ---------- */
+.cine{position:relative;height:calc(100vh + 3400px)}
+.stage{position:sticky;top:0;height:100vh;min-height:600px;overflow:hidden;isolation:isolate;background:#17110d}
+
+/* ---------- background layers ---------- */
+.bg{position:absolute;inset:0;will-change:transform;transform:translate3d(var(--bg-x),var(--bg-y),0) scale(var(--bg-scale));transform-origin:50% 50%}
+.bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.bg .bgA{opacity:1}
+.bg .bgB{opacity:var(--bgB)}
+.bg .bgC{opacity:var(--bgC)}
+.veil{position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(13,11,10,0) 40%, rgba(13,11,10,.55) 100%),
+    linear-gradient(180deg, rgba(13,11,10,.28) 0%, rgba(13,11,10,0) 30%, rgba(13,11,10,.15) 60%, rgba(13,11,10,.72) 100%);
+  opacity:calc(.6 + var(--veil))}
+.grain{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:.05;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* ---------- header ---------- */
+.top{position:absolute;z-index:20;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;
+  gap:24px;padding:28px clamp(20px,4vw,52px);color:rgba(251,248,242,.9)}
+.top .logo{display:flex;align-items:center;gap:10px}
+.top .logo img{height:38px;width:auto}
+.top nav{display:flex;gap:clamp(18px,2vw,38px);font-size:14px;font-weight:500}
+.top nav a{opacity:.82;transition:opacity .3s}
+.top nav a:hover{opacity:1}
+.top .cta{padding:11px 22px;border-radius:100px;background:var(--ivory);color:var(--espresso);
+  font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+@media(max-width:820px){.top nav{display:none}}
+
+/* ---------- title ---------- */
+.title{position:absolute;z-index:5;left:50%;top:clamp(120px,20vh,220px);width:min(96vw,1500px);margin:0;
+  transform:translate3d(-50%,var(--title-y),0) scale(var(--title-scale));opacity:var(--title-op);
+  font-family:var(--serif);font-weight:500;font-size:clamp(3.4rem,15vw,14rem);line-height:.82;
+  text-align:center;letter-spacing:-.01em;color:var(--ivory);
+  text-shadow:0 20px 60px rgba(0,0,0,.5);will-change:transform,opacity}
+.title em{font-style:italic;color:var(--oak)}
+
+/* ---------- intro copy ---------- */
+.intro{position:absolute;z-index:9;left:50%;bottom:clamp(60px,14vh,150px);width:min(600px,calc(100vw - 40px));
+  text-align:center;transform:translate3d(-50%,var(--intro-y),0);opacity:var(--intro-op);will-change:transform,opacity}
+.intro p{margin:0 auto;max-width:540px;font-size:clamp(1.02rem,1.5vw,1.2rem);font-weight:500;line-height:1.25;
+  color:var(--ivory);text-shadow:0 2px 20px rgba(0,0,0,.5)}
+.tags{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:24px}
+.tags span{min-height:42px;display:inline-flex;align-items:center;padding:0 22px;border-radius:999px;
+  background:var(--ivory);color:var(--espresso);font-size:.95rem;font-weight:500;box-shadow:0 12px 30px rgba(0,0,0,.22)}
+
+/* ---------- story panels ---------- */
+.panel{position:absolute;z-index:10;left:50%;top:50%;width:min(820px,calc(100vw - 42px));
+  text-align:center;pointer-events:none;transform:translate3d(-50%,-50%,0);will-change:transform,opacity}
+.panel .eyebrow{display:inline-flex;align-items:center;gap:12px;font-size:12px;font-weight:600;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--oak);margin-bottom:22px}
+.panel .eyebrow::before,.panel .eyebrow::after{content:"";width:26px;height:1px;background:var(--brass)}
+.panel h2{margin:0;font-family:var(--serif);font-weight:500;font-size:clamp(2.2rem,5.2vw,4.6rem);line-height:.98;
+  color:var(--ivory);text-shadow:0 16px 40px rgba(0,0,0,.5)}
+.panel p{width:min(540px,100%);margin:24px auto 0;font-size:clamp(1rem,1.4vw,1.16rem);font-weight:500;
+  line-height:1.25;color:rgba(251,248,242,.9);text-shadow:0 2px 18px rgba(0,0,0,.5)}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,5vw,70px);width:min(720px,100%);margin:56px auto 0}
+.facts .n{font-family:var(--serif);font-weight:500;font-size:clamp(2.6rem,6vw,5rem);line-height:.9;color:var(--ivory);
+  text-shadow:0 14px 34px rgba(0,0,0,.5)}
+.facts .n em{color:var(--brass);font-style:normal}
+.facts .l{margin-top:14px;font-size:.95rem;font-weight:500;color:rgba(251,248,242,.82)}
+.p1{opacity:var(--p1-op);transform:translate3d(-50%,calc(-50% + var(--p1-y)),0)}
+.p2{opacity:var(--p2-op);transform:translate3d(-50%,calc(-50% + var(--p2-y)),0)}
+@media(max-width:640px){.facts{grid-template-columns:1fr;gap:22px}}
+
+/* ---------- sights slider ---------- */
+.slider{position:absolute;z-index:6;left:0;right:0;top:clamp(120px,22vh,240px);
+  visibility:var(--slider-vis);opacity:var(--slider-op);
+  transform:translate3d(var(--slider-x),0,0);transform-origin:0 0;will-change:transform,opacity}
+.slider .head{padding:0 clamp(20px,4vw,52px);margin-bottom:22px}
+.slider .head .eyebrow{display:inline-flex;align-items:center;gap:12px;font-size:12px;font-weight:600;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--oak)}
+.slider .head .eyebrow::before{content:"";width:26px;height:1px;background:var(--brass)}
+.slider .head h2{margin:12px 0 0;font-family:var(--serif);font-weight:500;font-size:clamp(2rem,4.4vw,3.4rem);
+  color:var(--ivory);line-height:1;text-shadow:0 10px 30px rgba(0,0,0,.5)}
+.track{display:flex;gap:clamp(16px,1.2vw,24px);align-items:stretch;padding:0 clamp(20px,4vw,52px);
+  transform:translate3d(var(--track-shift,0px),0,0);
+  transition:transform 640ms cubic-bezier(.22,1,.36,1);will-change:transform}
+.track.is-jumping{transition:none}
+.card{position:relative;flex:0 0 clamp(300px,24vw,400px);height:440px;border-radius:24px;overflow:hidden;
+  border:1px solid rgba(251,248,242,.18);box-shadow:0 30px 70px rgba(0,0,0,.4);cursor:pointer;isolation:isolate}
+.card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 1s cubic-bezier(.22,1,.36,1)}
+.card::after{content:"";position:absolute;inset:0;z-index:1;
+  background:linear-gradient(to top,rgba(20,15,12,.86),rgba(20,15,12,.05) 55%)}
+.card:hover img,.card.is-active img{transform:scale(1.06)}
+.card .body{position:absolute;z-index:2;left:0;right:0;bottom:0;padding:26px;color:var(--ivory)}
+.card .kicker{font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--oak)}
+.card h3{margin:8px 0 6px;font-family:var(--serif);font-weight:500;font-size:1.9rem;line-height:1}
+.card p{margin:0;font-size:14px;line-height:1.3;color:rgba(251,248,242,.78)}
+.card .pin{position:absolute;z-index:2;top:20px;right:20px;width:46px;height:46px;border-radius:50%;
+  background:rgba(251,248,242,.94);display:grid;place-items:center;color:var(--espresso);font-size:18px}
+
+.controls{position:absolute;z-index:8;left:clamp(20px,4vw,52px);top:calc(clamp(120px,22vh,240px) + 560px);
+  display:flex;gap:14px;opacity:var(--controls-op);pointer-events:none;will-change:opacity}
+.controls.is-ready{pointer-events:auto}
+.nav-btn{width:54px;height:54px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;
+  background:rgba(251,248,242,.94);color:var(--espresso);box-shadow:0 18px 36px rgba(0,0,0,.3);font-size:20px;
+  transition:transform .3s}
+.nav-btn:hover{transform:translateY(-2px)}
+@media(max-width:640px){
+  .card{flex-basis:min(80vw,320px);height:400px}
+  .controls{top:calc(clamp(120px,22vh,240px) + 510px)}
+}
+
+/* scroll hint */
+.hint{position:absolute;z-index:9;left:50%;bottom:26px;transform:translateX(-50%);
+  font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:rgba(251,248,242,.6);
+  display:flex;flex-direction:column;align-items:center;gap:8px;opacity:var(--intro-op)}
+.hint .line{width:1px;height:34px;background:linear-gradient(rgba(251,248,242,.7),transparent);animation:drop 1.8s infinite}
+@keyframes drop{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}
+  50.1%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .bg,.title,.intro,.panel,.track,.slider,.card img{transition:none}
+}
+</style>
+</head>
+<body>
+<main class="shell">
+  <section class="cine" id="cine" aria-label="Rich Kitchen cinematic scroll story">
+    <div class="stage">
+
+      <div class="bg">
+        <img class="bgA" src="assets/img/hero.jpg" alt="">
+        <img class="bgB" src="assets/img/about.jpg" alt="">
+        <img class="bgC" src="assets/img/project-2.jpg" alt="">
+      </div>
+      <div class="veil"></div>
+      <div class="grain"></div>
+
+      <header class="top">
+        <a class="logo" href="index.html" aria-label="Rich Kitchen"><img src="assets/logo/richkitchen-cream.png" alt="Rich Kitchen"></a>
+        <nav aria-label="Меню">
+          <a href="#cine">Вступление</a>
+          <a href="index.html#catalog">Каталог</a>
+          <a href="index.html#mattresses">Матрасы</a>
+          <a href="index.html#contact">Контакты</a>
+        </nav>
+        <a class="cta" href="index.html#contact">Заказать</a>
+      </header>
+
+      <h1 class="title">RICH <em>KITCHEN</em></h1>
+
+      <div class="intro">
+        <p>Кухни, гардеробные и матрасы на заказ. Двадцать лет ручной работы, натуральные материалы и внимание к каждому миллиметру.</p>
+        <div class="tags"><span>Кухни</span><span>Гардеробные</span><span>Матрасы</span></div>
+      </div>
+
+      <section class="panel p1" aria-label="О компании">
+        <span class="eyebrow">Rich Kitchen · Ташкент</span>
+        <h2>Мы делаем пространство, в котором хочется жить.</h2>
+        <div class="facts">
+          <div><div class="n"><em>20</em></div><div class="l">лет на рынке</div></div>
+          <div><div class="n"><em>1000</em>+</div><div class="l">проектов сдано</div></div>
+          <div><div class="n"><em>100</em>%</div><div class="l">ручная сборка</div></div>
+        </div>
+      </section>
+
+      <section class="panel p2" aria-label="Производство">
+        <span class="eyebrow">Собственное производство</span>
+        <h2>От эскиза до монтажа — под одной крышей.</h2>
+        <p>Проектируем в 3D, производим на своём оборудовании и собираем вручную. Массив дуба, орех, натуральный камень и латунь — только проверенные материалы. Гарантия 5 лет.</p>
+      </section>
+
+      <section class="slider" aria-label="Категории Rich Kitchen">
+        <div class="head">
+          <span class="eyebrow">Что мы делаем</span>
+          <h2>Выберите направление</h2>
+        </div>
+        <div class="track" id="track"></div>
+      </section>
+      <div class="controls" id="controls" aria-label="Навигация слайдера">
+        <button class="nav-btn" id="prev" aria-label="Назад">←</button>
+        <button class="nav-btn" id="next" aria-label="Вперёд">→</button>
+      </div>
+
+      <div class="hint"><span>Листайте вниз</span><span class="line"></span></div>
+
+    </div>
+  </section>
+</main>
+
+<script>
+(function(){
+  "use strict";
+  const $=(s,c=document)=>c.querySelector(s);
+  const root=document.documentElement;
+  const section=$("#cine");
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)");
+  const track=$("#track"), controls=$("#controls");
+
+  /* ----- slider data ----- */
+  const cards=[
+    {img:"assets/img/cat-kitchen.jpg",  kicker:"Сердце дома",  h:"Кухни",       p:"Массив, камень, фурнитура Blum — на десятилетия.", pin:"◆"},
+    {img:"assets/img/cat-wardrobe.jpg", kicker:"Порядок",      h:"Гардеробные", p:"Системы хранения под ваш гардероб и ритуалы.", pin:"❖"},
+    {img:"assets/img/cat-living.jpg",   kicker:"Гостиные",     h:"Гостиные",    p:"ТВ-зоны, стеллажи и корпусная мебель.", pin:"✦"},
+    {img:"assets/img/cat-bath.jpg",     kicker:"Прихожие",     h:"Прихожие",    p:"Встроенные стеллажи-витрины с подсветкой.", pin:"◈"},
+    {img:"assets/img/mattress-anatomic.jpg", kicker:"Спальные системы", h:"Матрасы", p:"Ортопедические, анатомические, без пружины.", pin:"❂"},
+  ];
+  const N=cards.length;
+  let active=N;
+
+  function cardHTML(c,idx){
+    return `<article class="card" role="button" tabindex="0" data-i="${idx}" aria-label="${c.h}">
+      <img src="${c.img}" alt="">
+      <div class="pin">${c.pin}</div>
+      <div class="body"><div class="kicker">${c.kicker}</div><h3>${c.h}</h3><p>${c.p}</p></div>
+    </article>`;
+  }
+  function build(){
+    let html="";
+    for(let set=0;set<3;set++) cards.forEach((c,i)=>html+=cardHTML(c,set*N+i));
+    track.innerHTML=html;
+    track.querySelectorAll(".card").forEach(el=>{
+      el.addEventListener("click",()=>select(el));
+      el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();select(el);}});
+    });
+    track.addEventListener("transitionend",normalize);
+    layout();
+  }
+  function layout(){
+    const first=track.querySelector(".card"); if(!first)return;
+    const w=first.offsetWidth;
+    const gap=parseFloat(getComputedStyle(track).gap||"0")||0;
+    root.style.setProperty("--track-shift", `${-(w+gap)*(active-N)}px`);
+    track.querySelectorAll(".card").forEach(el=>el.classList.toggle("is-active",+el.dataset.i===active));
+  }
+  function move(d){active+=d;layout();}
+  function select(el){const i=+el.dataset.i;if(Number.isFinite(i)){active=i;layout();}}
+  function jump(i){track.classList.add("is-jumping");active=i;layout();
+    requestAnimationFrame(()=>requestAnimationFrame(()=>track.classList.remove("is-jumping")));}
+  function normalize(){if(active>=N*2)jump(active-N);else if(active<N)jump(active+N);}
+  $("#prev").addEventListener("click",()=>move(-1));
+  $("#next").addEventListener("click",()=>move(1));
+
+  /* ----- engine ----- */
+  const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+  const smooth=(e0,e1,v)=>{const x=clamp((v-e0)/(e1-e0));return x*x*(3-2*x);};
+  const lerp=(a,b,t)=>a+(b-a)*t;
+  const seg=(s,a,b,c,d)=>{const enter=smooth(a,b,s),exit=smooth(c,d,s);return{enter,exit,active:enter*(1-exit)};};
+  const dist=()=>clamp(-section.getBoundingClientRect().top,0,section.offsetHeight-innerHeight);
+
+  let tScroll=0,sScroll=0,tmx=0,tmy=0,mx=0,my=0,init=false,pending=false;
+  const TOTAL=3400;
+
+  function update(){
+    pending=false;
+    tScroll=dist();
+    if(!init||reduce.matches){sScroll=tScroll;init=true;} else sScroll=lerp(sScroll,tScroll,0.14);
+    if(Math.abs(sScroll-tScroll)<0.08)sScroll=tScroll;
+    mx=lerp(mx,tmx,0.12); my=lerp(my,tmy,0.12);
+    const s=sScroll, S=root.style;
+    const progress=clamp(s/TOTAL);
+    const introExit=smooth(80,620,s);
+    const seg1=seg(s,520,900,1200,1520);
+    const seg2=seg(s,1560,1950,2260,2560);
+    const sightsEnterRaw=smooth(2650,3300,s);
+    const sightsEnter=Math.pow(sightsEnterRaw,1.4);
+    const controlsEnter=smooth(3150,3400,s);
+    const bgB=seg1.active*0.9 + seg2.enter*0.1;
+    const bgC=seg2.active;
+
+    S.setProperty("--mx", reduce.matches?0:mx.toFixed(4));
+    S.setProperty("--my", reduce.matches?0:my.toFixed(4));
+
+    S.setProperty("--bg-scale", (1.06 + progress*0.22).toFixed(4));
+    S.setProperty("--bg-x", `${mx*-16}px`);
+    S.setProperty("--bg-y", `${my*-10}px`);
+    S.setProperty("--bgB", clamp(bgB).toFixed(4));
+    S.setProperty("--bgC", clamp(bgC).toFixed(4));
+    S.setProperty("--veil", (0.34 + (seg1.active+seg2.active)*0.16).toFixed(4));
+
+    S.setProperty("--title-y", `${introExit*-210 + my*8}px`);
+    S.setProperty("--title-scale", (1 - introExit*0.08).toFixed(4));
+    S.setProperty("--title-op", (1-introExit).toFixed(4));
+
+    S.setProperty("--intro-y", `${introExit*90}px`);
+    S.setProperty("--intro-op", (1-introExit).toFixed(4));
+
+    S.setProperty("--p1-op", (seg1.active*(1-seg1.exit)).toFixed(4));
+    S.setProperty("--p1-y", `${-seg1.exit*86 + (1-seg1.enter)*58 + my*6}px`);
+    S.setProperty("--p2-op", (seg2.active*(1-seg2.exit)).toFixed(4));
+    S.setProperty("--p2-y", `${-seg2.exit*86 + (1-seg2.enter)*58 + my*6}px`);
+
+    S.setProperty("--slider-op", sightsEnter.toFixed(4));
+    S.setProperty("--slider-vis", sightsEnter>0.01?"visible":"hidden");
+    S.setProperty("--slider-x", `${(1-sightsEnter)*420}vw`);
+    S.setProperty("--controls-op", controlsEnter.toFixed(4));
+    controls.classList.toggle("is-ready", controlsEnter>0.98);
+
+    if(Math.abs(sScroll-tScroll)>0.08||Math.abs(mx-tmx)>0.001||Math.abs(my-tmy)>0.001) requestTick();
+  }
+  function requestTick(){if(!pending){pending=true;requestAnimationFrame(update);}}
+
+  addEventListener("scroll",requestTick,{passive:true});
+  addEventListener("resize",()=>{layout();requestTick();});
+  addEventListener("pointermove",e=>{tmx=e.clientX/innerWidth-0.5;tmy=e.clientY/innerHeight-0.5;requestTick();},{passive:true});
+
+  build(); requestTick();
+})();
+</script>
+</body>
+</html>
