@@ -253,6 +253,9 @@ p{margin:0}
 .mcard__feat span{font-size:12px;color:var(--walnut);background:var(--sand);padding:6px 13px;border-radius:100px}
 @media(max-width:960px){.mattress__grid{grid-template-columns:1fr 1fr}}
 @media(max-width:620px){.mattress__grid{grid-template-columns:1fr}}
+.mattress__note{margin-top:26px;text-align:center;font-size:15.5px;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.mattress__note::before{content:"◆";color:var(--brass);font-size:.7rem}
+.mattress__note b{color:var(--espresso);font-weight:600}
 
 /* ---------- Projects ---------- */
 .filters{display:flex;gap:10px;flex-wrap:wrap}
