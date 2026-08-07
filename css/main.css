@@ -531,3 +531,6 @@ p{margin:0}
 .hardware__note span{font-size:12.5px;letter-spacing:.06em;color:var(--sand);
   border:1px solid var(--white-line);border-radius:100px;padding:9px 18px}
 @media(max-width:860px){.brands{grid-template-columns:1fr}.brand-card{padding:24px 22px}}
+.hardware__choice{margin-top:clamp(26px,3vw,38px);max-width:60ch;font-size:clamp(1.02rem,1.35vw,1.2rem);
+  color:var(--ivory);border-left:2px solid var(--brass);padding-left:20px;line-height:1.55}
+@media(max-width:640px){.hardware__choice{padding-left:16px}}
