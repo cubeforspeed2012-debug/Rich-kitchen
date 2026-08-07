@@ -181,17 +181,17 @@
 
       if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = t.sending; }
       try {
-        const res = await fetch(LEAD_ENDPOINT, {
+        /* Отправляем «простым» запросом (Content-Type: text/plain) и передаём
+           ключ в адресе (?apikey=...). Так браузеру не нужен предварительный
+           OPTIONS-запрос — POST уходит напрямую и доходит до функции/бота. */
+        const res = await fetch(LEAD_ENDPOINT + "?apikey=" + encodeURIComponent(SUPABASE_KEY), {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "apikey": SUPABASE_KEY,
-            "Authorization": "Bearer " + SUPABASE_KEY
-          },
+          headers: { "Content-Type": "text/plain;charset=UTF-8" },
           body: JSON.stringify(data)
         });
-        const json = await res.json();
-        if (res.ok && json && json.ok) {
+        const json = await res.json().catch(() => null);
+        // Успех, если сервер принял запрос (200) и не вернул явную ошибку.
+        if (res.ok && (!json || json.ok !== false)) {
           $("#form-body").style.display = "none";
           $("#form-ok").classList.add("show");
         } else {
