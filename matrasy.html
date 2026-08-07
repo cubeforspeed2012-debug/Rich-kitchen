@@ -24,6 +24,19 @@
 <style>
 /* ---------- Mattress page ---------- */
 .mhero{padding-top:clamp(36px,6vw,72px);padding-bottom:clamp(40px,6vw,80px)}
+.mhero__head{position:relative;overflow:hidden;padding-bottom:clamp(8px,2vw,24px)}
+.mhero__head .wrap{position:relative;z-index:2}
+.mhero__head::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,var(--cream) 0,rgba(244,239,231,0) 20%,rgba(244,239,231,0) 68%,var(--cream) 100%)}
+/* три вида матрасов веером — задний фон за текстом */
+.mhero__bg{position:absolute;top:0;right:0;bottom:0;width:54%;z-index:0;pointer-events:none;opacity:.36;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.4) 46%,#000 100%);
+  mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.4) 46%,#000 100%)}
+.mhero__bg .mbg{position:absolute;border-radius:20px;background-size:cover;background-position:center;box-shadow:var(--shadow-lg)}
+.mhero__bg .mbg--1{left:8%;top:16%;width:56%;height:52%;background-image:url("assets/img/mattress-ortho.jpg");transform:rotate(-3deg)}
+.mhero__bg .mbg--2{left:42%;top:6%;width:52%;height:46%;background-image:url("assets/img/mattress-anatomic.jpg");transform:rotate(2.5deg)}
+.mhero__bg .mbg--3{left:30%;top:56%;width:58%;height:42%;background-image:url("assets/img/mattress-foam.jpg");transform:rotate(-1.5deg)}
+@media(max-width:920px){.mhero__bg{display:none}}
 .mhero__grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,4vw,64px);align-items:center}
 .mhero h1{font-size:clamp(2.8rem,6.2vw,5.4rem);letter-spacing:-.02em;font-weight:500;margin-top:24px}
 .mhero h1 em{font-style:italic;color:var(--walnut)}
@@ -34,16 +47,15 @@
 .mhero__meta .l{font-size:12.5px;color:var(--muted);margin-top:6px}
 .mhero__media{position:relative}
 .mhero__media img{width:100%;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);aspect-ratio:3/2;object-fit:cover;background:var(--sand)}
-.mhero__mosaic{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.mhero__mosaic{margin-top:clamp(28px,4vw,52px);display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .mtile{position:relative;margin:0;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lg);background:var(--sand)}
-.mtile--lg{grid-column:1 / -1}
-.mtile img{width:100%;height:100%;display:block;aspect-ratio:16/10;object-fit:cover;background:var(--sand)}
-.mtile--lg img{aspect-ratio:16/9}
+.mtile img{width:100%;height:100%;display:block;aspect-ratio:4/3;object-fit:cover;background:var(--sand)}
 .mtile figcaption{position:absolute;left:12px;bottom:12px;background:var(--ivory);color:var(--espresso);border-radius:999px;padding:7px 15px;font-size:12.5px;font-weight:600;letter-spacing:.02em;box-shadow:var(--shadow)}
 .mhero__badge{position:absolute;left:-22px;bottom:28px;background:var(--ivory);border-radius:16px;padding:16px 20px;box-shadow:var(--shadow);max-width:230px}
 .mhero__badge b{font-family:var(--sans);font-weight:700;font-size:14px;display:block}
 .mhero__badge span{font-size:12.5px;color:var(--muted)}
 @media(max-width:920px){.mhero__grid{grid-template-columns:1fr;gap:36px}.mhero__media{order:-1}.mhero__badge{left:12px}}
+@media(max-width:820px){.mhero__mosaic{grid-template-columns:repeat(2,1fr);gap:12px}}
 
 /* catalog rows */
 .mcat{display:flex;flex-direction:column;gap:26px}
@@ -147,8 +159,13 @@
 
 <!-- HERO -->
 <section class="mhero">
-  <div class="wrap mhero__grid">
-    <div>
+  <div class="mhero__head">
+    <div class="mhero__bg" aria-hidden="true">
+      <span class="mbg mbg--1"></span>
+      <span class="mbg mbg--2"></span>
+      <span class="mbg mbg--3"></span>
+    </div>
+    <div class="wrap">
       <span class="eyebrow reveal" data-ru="Спальные системы Rich Kitchen" data-uz="Rich Kitchen uyqu tizimlari">Спальные системы Rich Kitchen</span>
       <h1 class="reveal" data-d="1" data-ru="Матрасы, <em>сделанные</em> под вас." data-uz="Sizga <em>moslab</em> tayyorlangan matraslar.">Матрасы, <em>сделанные</em> под вас.</h1>
       <p class="mhero__sub reveal" data-d="2" data-ru="Ортопедические, анатомические и беспружинные матрасы любого размера — на собственном производстве. Изготовление около 3 дней, бесплатный замер и консультация." data-uz="Ortopedik, anatomik va prujinasiz matraslar — har qanday oʻlchamda, oʻz ishlab chiqarishimizda. Tayyorlash taxminan 3 kun, oʻlchov va konsultatsiya bepul.">Ортопедические, анатомические и беспружинные матрасы любого размера — на собственном производстве. Изготовление около 3 дней, бесплатный замер и консультация.</p>
@@ -163,21 +180,23 @@
         <div><div class="n" data-ru="Любой" data-uz="Har qanday">Любой</div><div class="l" data-ru="размер на заказ" data-uz="oʻlcham buyurtma">размер на заказ</div></div>
       </div>
     </div>
-    <div class="mhero__media reveal" data-d="2">
-      <div class="mhero__mosaic">
-        <figure class="mtile mtile--lg">
-          <img src="assets/img/mattress-ortho.jpg" alt="Ортопедический матрас на заказ — кокос и пружинный блок">
-          <figcaption data-ru="Ортопедический" data-uz="Ortopedik">Ортопедический</figcaption>
-        </figure>
-        <figure class="mtile">
-          <img src="assets/img/mattress-anatomic.jpg" alt="Анатомический матрас на независимых пружинах">
-          <figcaption data-ru="Анатомический" data-uz="Anatomik">Анатомический</figcaption>
-        </figure>
-        <figure class="mtile">
-          <img src="assets/img/mattress-foam.jpg" alt="Беспружинный матрас из пены">
-          <figcaption data-ru="Без пружины" data-uz="Prujinasiz">Без пружины</figcaption>
-        </figure>
-      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="mhero__mosaic reveal" data-d="3">
+      <figure class="mtile">
+        <img src="assets/img/mattress-ortho.jpg" alt="Ортопедический матрас на заказ — кокос и пружинный блок">
+        <figcaption data-ru="Ортопедический" data-uz="Ortopedik">Ортопедический</figcaption>
+      </figure>
+      <figure class="mtile">
+        <img src="assets/img/mattress-anatomic.jpg" alt="Анатомический матрас на независимых пружинах">
+        <figcaption data-ru="Анатомический" data-uz="Anatomik">Анатомический</figcaption>
+      </figure>
+      <figure class="mtile">
+        <img src="assets/img/mattress-foam.jpg" alt="Беспружинный матрас из пены">
+        <figcaption data-ru="Без пружины" data-uz="Prujinasiz">Без пружины</figcaption>
+      </figure>
     </div>
   </div>
 </section>
