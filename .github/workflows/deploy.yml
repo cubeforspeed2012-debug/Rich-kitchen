@@ -27,6 +27,15 @@ jobs:
         uses: actions/configure-pages@v5
         with:
           enablement: true
+      # Каждая сборка получает свой номер. Страница сравнивает его с version.json
+      # и сама перезагружается, если у посетителя осталась старая версия в кэше.
+      - name: Stamp build version
+        run: |
+          BUILD="${GITHUB_SHA::7}"
+          printf '{"v":"%s"}\n' "$BUILD" > version.json
+          sed -i "s|<meta name=\"build\" content=\"[^\"]*\">|<meta name=\"build\" content=\"$BUILD\">|g" *.html
+          sed -i "s|main\.css?v=[A-Za-z0-9._-]*|main.css?v=$BUILD|g; s|main\.js?v=[A-Za-z0-9._-]*|main.js?v=$BUILD|g" *.html
+          echo "build: $BUILD"
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:

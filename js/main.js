@@ -219,4 +219,27 @@
   toTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 
   onScroll();
+
+  /* ---------- Авто-обновление версии ----------
+     Браузер (особенно Safari) может держать старую копию страницы, и клиент
+     видит устаревший сайт. Сравниваем номер сборки в странице с актуальным
+     version.json и один раз перезагружаемся, если версия отличается. */
+  (function checkBuild() {
+    const metaEl = document.querySelector('meta[name="build"]');
+    const current = metaEl ? metaEl.content : "";
+    if (!current || current === "dev") return;
+    fetch("/version.json?ts=" + Date.now(), { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!data || !data.v || data.v === current) return;
+        let done = null;
+        try { done = sessionStorage.getItem("rk-reloaded"); } catch (e) {}
+        if (done === data.v) return;              // уже обновлялись — не зацикливаемся
+        try { sessionStorage.setItem("rk-reloaded", data.v); } catch (e) {}
+        const url = new URL(location.href);
+        url.searchParams.set("v", data.v);
+        location.replace(url.toString());
+      })
+      .catch(() => {});
+  })();
 })();
