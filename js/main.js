@@ -170,11 +170,22 @@
 
       const typeSel = $("#type");
       const hp = $("#company");
+      const msgEl = $("#msg");
+
+      // С какой страницы пришла заявка — видно сразу в сообщении боту.
+      const path = (location.pathname || "").toLowerCase();
+      const page = path.indexOf("matrasy") > -1 ? "Матрасы"
+                 : path.indexOf("reshetki") > -1 ? "Решётки"
+                 : "Главная";
+      const productType = typeSel ? typeSel.options[typeSel.selectedIndex].text : "";
+      const userMsg = msgEl ? (msgEl.value || "").trim() : "";
+
       const data = {
         name:    name.value.trim(),
         phone:   phone.value.trim(),
-        type:    typeSel ? typeSel.options[typeSel.selectedIndex].text : "",
-        msg:     ($("#msg").value || "").trim(),
+        type:    productType,
+        msg:     ("Страница: " + page + (productType ? " · " + productType : "") +
+                  (userMsg ? "\n" + userMsg : "")),
         lang:    lang,
         company: hp ? hp.value : ""   // honeypot — заполняют только боты
       };

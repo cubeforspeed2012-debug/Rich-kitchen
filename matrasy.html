@@ -34,6 +34,12 @@
 .mhero__meta .l{font-size:12.5px;color:var(--muted);margin-top:6px}
 .mhero__media{position:relative}
 .mhero__media img{width:100%;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);aspect-ratio:3/2;object-fit:cover;background:var(--sand)}
+.mhero__mosaic{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.mtile{position:relative;margin:0;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lg);background:var(--sand)}
+.mtile--lg{grid-column:1 / -1}
+.mtile img{width:100%;height:100%;display:block;aspect-ratio:16/10;object-fit:cover;background:var(--sand)}
+.mtile--lg img{aspect-ratio:16/9}
+.mtile figcaption{position:absolute;left:12px;bottom:12px;background:var(--ivory);color:var(--espresso);border-radius:999px;padding:7px 15px;font-size:12.5px;font-weight:600;letter-spacing:.02em;box-shadow:var(--shadow)}
 .mhero__badge{position:absolute;left:-22px;bottom:28px;background:var(--ivory);border-radius:16px;padding:16px 20px;box-shadow:var(--shadow);max-width:230px}
 .mhero__badge b{font-family:var(--sans);font-weight:700;font-size:14px;display:block}
 .mhero__badge span{font-size:12.5px;color:var(--muted)}
@@ -151,10 +157,19 @@
       </div>
     </div>
     <div class="mhero__media reveal" data-d="2">
-      <img src="assets/img/mattress-ortho.jpg" alt="Матрас на заказ Rich Kitchen">
-      <div class="mhero__badge">
-        <b data-ru="Замер бесплатно" data-uz="Oʻlchov bepul">Замер бесплатно</b>
-        <span data-ru="и консультация по типу матраса" data-uz="va matras turi boʻyicha konsultatsiya">и консультация по типу матраса</span>
+      <div class="mhero__mosaic">
+        <figure class="mtile mtile--lg">
+          <img src="assets/img/mattress-ortho.jpg" alt="Ортопедический матрас на заказ — кокос и пружинный блок">
+          <figcaption data-ru="Ортопедический" data-uz="Ortopedik">Ортопедический</figcaption>
+        </figure>
+        <figure class="mtile">
+          <img src="assets/img/mattress-anatomic.jpg" alt="Анатомический матрас на независимых пружинах">
+          <figcaption data-ru="Анатомический" data-uz="Anatomik">Анатомический</figcaption>
+        </figure>
+        <figure class="mtile">
+          <img src="assets/img/mattress-foam.jpg" alt="Беспружинный матрас из пены">
+          <figcaption data-ru="Без пружины" data-uz="Prujinasiz">Без пружины</figcaption>
+        </figure>
       </div>
     </div>
   </div>
@@ -367,7 +382,7 @@
 
 <button class="toTop" id="toTop" aria-label="Наверх"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
 
-<script src="js/main.js?v=8"></script>
+<script src="js/main.js?v=9"></script>
 <script>
 setTimeout(function(){document.querySelectorAll('.reveal:not(.in)').forEach(function(el){
   if(el.getBoundingClientRect().top < (window.innerHeight||800)*1.08) el.classList.add('in');});},1500);

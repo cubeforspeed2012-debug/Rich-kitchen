@@ -22,6 +22,11 @@
 .rhero h1 em{font-style:italic;color:var(--walnut)}
 .rhero__sub{margin-top:22px;max-width:52ch;font-size:clamp(1.02rem,1.4vw,1.18rem);color:var(--muted)}
 .rhero__cta{margin-top:32px;display:flex;gap:14px;flex-wrap:wrap}
+.rhero__mosaic{margin-top:clamp(32px,4vw,56px);display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.rtile{position:relative;margin:0;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lg);background:var(--sand)}
+.rtile img{width:100%;display:block;aspect-ratio:4/3;object-fit:cover;background:var(--sand)}
+.rtile figcaption{position:absolute;left:12px;bottom:12px;background:var(--ivory);color:var(--espresso);border-radius:999px;padding:7px 15px;font-size:12.5px;font-weight:600;letter-spacing:.02em;box-shadow:var(--shadow)}
+@media(max-width:820px){.rhero__mosaic{grid-template-columns:repeat(2,1fr);gap:12px}}
 
 .grille-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 .gcard{background:var(--ivory);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
@@ -118,6 +123,33 @@
     <div class="rhero__cta reveal" data-d="3">
       <a href="#zakaz" class="btn"><span data-ru="Заказать" data-uz="Buyurtma">Заказать</span> <span class="arw">→</span></a>
       <a href="tel:+998903198638" class="btn btn--ghost" data-ru="Позвонить" data-uz="Qoʻngʻiroq qilish">Позвонить</a>
+    </div>
+
+    <div class="rhero__mosaic reveal" data-d="4">
+      <figure class="rtile">
+        <img src="assets/img/grille-single.jpg" alt="Однорядная вентиляционная решётка">
+        <figcaption data-ru="Однорядные" data-uz="Bir qatorli">Однорядные</figcaption>
+      </figure>
+      <figure class="rtile">
+        <img src="assets/img/grille-double.jpg" alt="Двухрядная вентиляционная решётка">
+        <figcaption data-ru="Двухрядные" data-uz="Ikki qatorli">Двухрядные</figcaption>
+      </figure>
+      <figure class="rtile">
+        <img src="assets/img/grille-outer.jpg" alt="Наружная вентиляционная решётка">
+        <figcaption data-ru="Наружные" data-uz="Tashqi">Наружные</figcaption>
+      </figure>
+      <figure class="rtile">
+        <img src="assets/img/grille-slot.jpg" alt="Щелевая вентиляционная решётка">
+        <figcaption data-ru="Щелевые" data-uz="Tirqishli">Щелевые</figcaption>
+      </figure>
+      <figure class="rtile">
+        <img src="assets/img/grille-ceiling-hatch.jpg" alt="Потолочный люк">
+        <figcaption data-ru="Потолочные люки" data-uz="Shift lyuklari">Потолочные люки</figcaption>
+      </figure>
+      <figure class="rtile">
+        <img src="assets/img/grille-hatch.jpg" alt="Ревизионный люк">
+        <figcaption data-ru="Люки" data-uz="Lyuklar">Люки</figcaption>
+      </figure>
     </div>
   </div>
 </section>
@@ -302,7 +334,7 @@
 
 <button class="toTop" id="toTop" aria-label="Наверх"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
 
-<script src="js/main.js?v=8"></script>
+<script src="js/main.js?v=9"></script>
 <script>
 setTimeout(function(){document.querySelectorAll('.reveal:not(.in)').forEach(function(el){
   if(el.getBoundingClientRect().top < (window.innerHeight||800)*1.08) el.classList.add('in');});},1500);
