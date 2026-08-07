@@ -1,0 +1,19 @@
+name: Keep Supabase project awake
+
+# Бесплатный проект Supabase засыпает после ~7 дней без обращений — тогда
+# форма и бот на сайте перестают работать. Этот робот раз в 3 дня сам
+# "стучится" на проект, чтобы он считался активным и не уходил в паузу.
+on:
+  schedule:
+    - cron: "0 6 */3 * *"
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase REST endpoint
+        run: |
+          curl -sS -o /dev/null -w "HTTP %{http_code}\n" \
+            "https://haxmubqjipkwgmeagezm.supabase.co/rest/v1/" \
+            -H "apikey: sb_publishable_N9aZTyHKQY3D32SsDNibeg_7gB8ESB7"
