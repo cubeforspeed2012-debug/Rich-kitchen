@@ -15,8 +15,10 @@
      «Заявка отправлена», но никуда не шлёт).
      ============================================================ */
   /* Заявки уходят на защищённый сервер (Supabase Edge Function), который
-     сохраняет их в базу и пересылает в Telegram. Никаких токенов в коде сайта. */
+     сохраняет их в базу и пересылает в Telegram. Никаких секретных токенов в
+     коде сайта — только публичный ключ (publishable), он безопасен. */
   const LEAD_ENDPOINT = "https://haxmubqjipkwgmeagezm.supabase.co/functions/v1/lead";
+  const SUPABASE_KEY  = "sb_publishable_N9aZTyHKQY3D32SsDNibeg_7gB8ESB7";
 
   /* ---------- Language ---------- */
   const html = document.documentElement;
@@ -181,7 +183,11 @@
       try {
         const res = await fetch(LEAD_ENDPOINT, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": SUPABASE_KEY,
+            "Authorization": "Bearer " + SUPABASE_KEY
+          },
           body: JSON.stringify(data)
         });
         const json = await res.json();
