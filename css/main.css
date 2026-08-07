@@ -461,3 +461,30 @@ p{margin:0}
 .nav__links a{white-space:nowrap}
 @media(max-width:1280px){.nav__links{gap:22px}}
 @media(max-width:1140px){.nav__links{gap:16px}.nav__links a{font-size:13.5px}}
+
+/* ---------- Hero image: arch composition (not a plain photo) ---------- */
+/* арка вместо прямоугольника — сразу читается как «сделано дизайнером» */
+.hero__media .frame{border-radius:999px 999px var(--radius-lg) var(--radius-lg)}
+.hero__media::after{border-radius:999px 999px var(--radius-lg) var(--radius-lg)}
+/* вторая фотография внахлёст — глубина и «журнальная» вёрстка */
+.hero__mini{position:absolute;left:-46px;bottom:132px;width:43%;z-index:2;
+  border-radius:18px;overflow:hidden;box-shadow:var(--shadow-lg);
+  border:7px solid var(--cream);transform:rotate(-3deg);
+  transition:transform .7s var(--ease)}
+.hero__mini img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+.hero__media:hover .hero__mini{transform:rotate(-1deg) translateY(-6px)}
+/* латунная печать «20 лет» */
+.hero__stamp{position:absolute;right:-14px;top:34px;z-index:3;width:92px;height:92px;border-radius:50%;
+  background:var(--espresso);color:var(--sand);display:grid;place-content:center;text-align:center;
+  box-shadow:var(--shadow);border:1px solid var(--brass)}
+.hero__stamp b{font-family:var(--serif);font-size:1.9rem;line-height:1;display:block;color:var(--ivory)}
+.hero__stamp i{font-style:normal;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--brass)}
+@media(max-width:1080px){.hero__mini{width:44%;left:-16px;bottom:110px}}
+@media(max-width:860px){
+  .hero__mini{width:38%;left:8px;bottom:auto;top:-26px;transform:rotate(-4deg)}
+  .hero__stamp{width:74px;height:74px;right:6px;top:auto;bottom:-18px}
+  .hero__stamp b{font-size:1.5rem}
+}
+
+/* badge must sit above the framed photo (frame is z-index:1) */
+.hero__badge{z-index:4}
