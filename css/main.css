@@ -381,6 +381,9 @@ p{margin:0}
 .form__ok.show{display:block}
 .form__ok .check{width:64px;height:64px;border-radius:50%;background:var(--olive);display:grid;place-items:center;margin:0 auto 18px}
 .form__ok .check svg{width:30px;height:30px;stroke:var(--sand)}
+.form__ok .check{font-size:30px;line-height:1}
+.fallback-actions{display:flex;flex-direction:column;gap:12px;margin-top:22px;max-width:340px;margin-left:auto;margin-right:auto}
+.fallback-actions .btn{width:100%}
 @media(max-width:860px){.contact__grid{grid-template-columns:1fr}}
 
 /* ---------- Footer ---------- */

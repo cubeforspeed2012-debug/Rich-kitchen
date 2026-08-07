@@ -160,10 +160,7 @@
 
       const lang = html.getAttribute("data-lang") === "uz" ? "uz" : "ru";
       const t = {
-        sending: lang === "uz" ? "Yuborilmoqda…" : "Отправка…",
-        error:   lang === "uz"
-          ? "Yuborib boʻlmadi. Iltimos, telefon orqali bogʻlaning."
-          : "Не удалось отправить. Пожалуйста, позвоните нам."
+        sending: lang === "uz" ? "Yuborilmoqda…" : "Отправка…"
       };
 
       const typeSel = $("#type");
@@ -189,14 +186,51 @@
           $("#form-body").style.display = "none";
           $("#form-ok").classList.add("show");
         } else {
-          alert(t.error);
+          leadFallback(data, lang);   // сервер ответил ошибкой — не теряем заявку
         }
       } catch (err) {
-        alert(t.error);
+        leadFallback(data, lang);     // сервер недоступен — не теряем заявку
       } finally {
         if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = btnHTML; }
       }
     });
+  }
+
+  /* ---------- Fallback: заявка не теряется, если сервер недоступен ----------
+     Собираем текст заявки и предлагаем отправить его владельцу в WhatsApp
+     (номер +998 90 319 86 38) или позвонить. Работает без сервера и токенов. */
+  const OWNER_WA = "998903198638";          // WhatsApp владельца (без + и пробелов)
+  const OWNER_TEL = "+998903198638";        // для кнопки «Позвонить»
+  function leadFallback(data, lang) {
+    const labels = lang === "uz"
+      ? { title: "Ariza", name: "Ism", phone: "Telefon", type: "Nima kerak", msg: "Izoh" }
+      : { title: "Заявка", name: "Имя", phone: "Телефон", type: "Что нужно", msg: "Комментарий" };
+    const lines = [
+      "Rich Kitchen — " + labels.title,
+      labels.name + ": " + data.name,
+      labels.phone + ": " + data.phone
+    ];
+    if (data.type) lines.push(labels.type + ": " + data.type);
+    if (data.msg)  lines.push(labels.msg + ": " + data.msg);
+    const waUrl = "https://wa.me/" + OWNER_WA + "?text=" + encodeURIComponent(lines.join("\n"));
+
+    const body = $("#form-body"), ok = $("#form-ok");
+    if (!body || !ok) { window.location.href = waUrl; return; }
+    body.style.display = "none";
+    ok.innerHTML =
+      '<div class="check">✉️</div>' +
+      '<h3>' + (lang === "uz" ? "Arizangizni yuboring" : "Отправьте заявку") + '</h3>' +
+      '<p class="form__sub">' + (lang === "uz"
+        ? "Bir soniyada bogʻlanish uchun WhatsApp orqali yuboring yoki qoʻngʻiroq qiling — ariza yoʻqolmaydi."
+        : "Нажмите — заявка уйдёт нам в WhatsApp. Или позвоните напрямую, мы уже ждём.") + '</p>' +
+      '<div class="fallback-actions">' +
+        '<a class="btn btn--block" href="' + waUrl + '" target="_blank" rel="noopener">' +
+          (lang === "uz" ? "WhatsApp orqali yuborish" : "Отправить в WhatsApp") + ' <span class="arw">→</span></a>' +
+        '<a class="btn btn--ghost btn--block" href="tel:' + OWNER_TEL + '">' +
+          (lang === "uz" ? "Qoʻngʻiroq qilish" : "Позвонить") + '</a>' +
+      '</div>';
+    ok.classList.add("show");
+    ok.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
   /* ---------- To top ---------- */
