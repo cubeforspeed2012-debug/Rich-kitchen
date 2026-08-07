@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/main.css?v=5">
+<link rel="stylesheet" href="css/main.css?v=6">
 <style>
 /* ---------- Grilles page (draft) ---------- */
 .draft-ribbon{position:fixed;z-index:90;top:14px;left:-38px;transform:rotate(-45deg);background:var(--clay);
@@ -22,6 +22,15 @@
 .rhero h1 em{font-style:italic;color:var(--walnut)}
 .rhero__sub{margin-top:22px;max-width:52ch;font-size:clamp(1.02rem,1.4vw,1.18rem);color:var(--muted)}
 .rhero__cta{margin-top:32px;display:flex;gap:14px;flex-wrap:wrap}
+.rhero__head{position:relative;overflow:hidden;padding-bottom:clamp(8px,2vw,24px)}
+.rhero__head .wrap{position:relative;z-index:2}
+.rhero__bg{position:absolute;top:0;right:0;bottom:0;width:54%;pointer-events:none;z-index:0;
+  background:url("assets/img/grille-double.jpg") center/cover no-repeat;opacity:.4;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.4) 52%,#000 100%);
+  mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.4) 52%,#000 100%)}
+.rhero__head::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,var(--cream) 0,rgba(244,239,231,0) 22%,rgba(244,239,231,0) 70%,var(--cream) 100%)}
+@media(max-width:920px){.rhero__bg{display:none}}
 .rhero__mosaic{margin-top:clamp(32px,4vw,56px);display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .rtile{position:relative;margin:0;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lg);background:var(--sand)}
 .rtile img{width:100%;display:block;aspect-ratio:4/3;object-fit:cover;background:var(--sand)}
@@ -112,11 +121,20 @@
   </div>
 </div>
 
+<!-- MOBILE SECTION SWITCH -->
+<nav class="mswitch" aria-label="Разделы">
+  <a href="index.html" data-ru="Мебель" data-uz="Mebel">Мебель</a>
+  <a href="matrasy.html" data-ru="Матрасы" data-uz="Matraslar">Матрасы</a>
+  <a href="reshetki.html" class="is-active" data-ru="Решётки и люки" data-uz="Panjara va lyuklar">Решётки и люки</a>
+</nav>
+
 <main id="top">
 
 <!-- HERO -->
 <section class="rhero">
-  <div class="wrap">
+  <div class="rhero__head">
+    <div class="rhero__bg" aria-hidden="true"></div>
+    <div class="wrap">
     <span class="eyebrow reveal" data-ru="Вентиляция · Алюминий" data-uz="Ventilyatsiya · Alyuminiy">Вентиляция · Алюминий</span>
     <h1 class="reveal" data-d="1" data-ru="Алюминиевые решётки <em>и люки</em>" data-uz="Alyuminiy panjaralar <em>va lyuklar</em>">Алюминиевые решётки <em>и люки</em></h1>
     <p class="rhero__sub reveal" data-d="2" data-ru="В Rich Kitchen вы найдёте все виды вентиляционных решёток — однорядные, двухрядные, наружные и щелевые, а также потолочные люки и люки. Изготавливаем в любом цвете под ваш интерьер и с высоким качеством. Цена зависит от размера — позвоните, и мы рассчитаем." data-uz="Rich Kitchen’da barcha turdagi ventilyatsiya panjaralarini topasiz — bir qatorli, ikki qatorli, tashqi, shift va tirqishli, hamda reviziya lyuklari. Obyektingizga moslab tayyorlaymiz.">В Rich Kitchen вы найдёте все виды вентиляционных решёток — однорядные, двухрядные, наружные и щелевые, а также потолочные люки и люки. Изготавливаем в любом цвете под ваш интерьер и с высоким качеством. Цена зависит от размера — позвоните, и мы рассчитаем.</p>
@@ -124,7 +142,10 @@
       <a href="#zakaz" class="btn"><span data-ru="Заказать" data-uz="Buyurtma">Заказать</span> <span class="arw">→</span></a>
       <a href="tel:+998903198638" class="btn btn--ghost" data-ru="Позвонить" data-uz="Qoʻngʻiroq qilish">Позвонить</a>
     </div>
+    </div>
+  </div>
 
+  <div class="wrap">
     <div class="rhero__mosaic reveal" data-d="4">
       <figure class="rtile">
         <img src="assets/img/grille-single.jpg" alt="Однорядная вентиляционная решётка">

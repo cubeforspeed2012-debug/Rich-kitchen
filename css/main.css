@@ -417,3 +417,20 @@ p{margin:0}
 /* lang visibility handled via [data-lang] on <html> */
 [data-lang="ru"] .t-uz{display:none}
 [data-lang="uz"] .t-ru{display:none}
+
+/* ---------- Mobile section switch (phones only) ---------- */
+.mswitch{display:none}
+@media(max-width:720px){
+  .mswitch{display:flex;gap:8px;align-items:center;overflow-x:auto;-webkit-overflow-scrolling:touch;
+    padding:10px var(--gutter) 12px;background:var(--paper);border-bottom:1px solid var(--line);scrollbar-width:none}
+  .mswitch::-webkit-scrollbar{display:none}
+  .mswitch a{flex:0 0 auto;white-space:nowrap;font-size:12px;font-weight:600;letter-spacing:.02em;
+    padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--ivory);color:var(--espresso)}
+  .mswitch a.is-active{background:var(--espresso);border-color:var(--espresso);color:var(--ivory)}
+}
+
+/* Phones: keep the top bar on one line (long label wrapped into 3 rows) */
+@media(max-width:560px){
+  .topbar .wrap{justify-content:flex-end}
+  .topbar__left{display:none}
+}
