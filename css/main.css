@@ -434,3 +434,30 @@ p{margin:0}
   .topbar .wrap{justify-content:flex-end}
   .topbar__left{display:none}
 }
+
+/* ---------- Hero image: premium treatment ---------- */
+.hero__media .frame{position:relative;z-index:1;isolation:isolate}
+/* медленный «ken burns» — кадр живёт, а не стоит */
+.hero__media .frame img{transform-origin:52% 45%;animation:kenburns 24s var(--ease) infinite alternate}
+@keyframes kenburns{from{transform:scale(1)}to{transform:scale(1.09)}}
+/* мягкая виньетка — глубина */
+.hero__media .frame::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:radial-gradient(115% 85% at 32% 22%,transparent 42%,rgba(43,35,32,.30) 100%)}
+/* блик, проходящий по стеклу */
+.hero__media .frame::after{content:"";position:absolute;top:-20%;bottom:-20%;left:0;width:55%;z-index:3;pointer-events:none;
+  background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.34) 50%,transparent 70%);
+  transform:translateX(-160%) rotate(2deg);animation:sheen 9s var(--ease) 1.6s infinite}
+@keyframes sheen{0%{transform:translateX(-160%) rotate(2deg)}26%,100%{transform:translateX(320%) rotate(2deg)}}
+/* латунный контур со смещением — «дорогая» деталь */
+.hero__media::after{content:"";position:absolute;right:-18px;bottom:-18px;width:100%;height:100%;z-index:0;
+  border:1px solid var(--brass);border-radius:var(--radius-lg);opacity:.45;pointer-events:none}
+@media(max-width:640px){.hero__media::after{right:-10px;bottom:-10px}}
+@media(prefers-reduced-motion:reduce){
+  .hero__media .frame img{animation:none}
+  .hero__media .frame::after{display:none}
+}
+
+/* Nav got a new link — keep items on one line on narrower desktops */
+.nav__links a{white-space:nowrap}
+@media(max-width:1280px){.nav__links{gap:22px}}
+@media(max-width:1140px){.nav__links{gap:16px}.nav__links a{font-size:13.5px}}

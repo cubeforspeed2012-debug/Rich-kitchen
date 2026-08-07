@@ -7,12 +7,15 @@
 <title>Вентиляционные решётки и люки на заказ — Rich Kitchen, Ташкент</title>
 <link rel="canonical" href="https://rich-kitchen.uz/reshetki.html">
 <meta name="description" content="Алюминиевые вентиляционные решётки и люки от Rich Kitchen: однорядные, двухрядные, наружные, потолочные, щелевые.">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" type="image/png" href="/assets/logo/favicon-96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/assets/logo/icon-192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="/assets/logo/apple-touch-icon.png">
 <meta name="theme-color" content="#2B2320">
-<link rel="icon" type="image/png" href="assets/logo/richkitchen-ink.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/main.css?v=6">
+<link rel="stylesheet" href="css/main.css?v=7">
 <style>
 /* ---------- Grilles page (draft) ---------- */
 .draft-ribbon{position:fixed;z-index:90;top:14px;left:-38px;transform:rotate(-45deg);background:var(--clay);
@@ -30,7 +33,11 @@
   mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.4) 52%,#000 100%)}
 .rhero__head::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
   background:linear-gradient(180deg,var(--cream) 0,rgba(244,239,231,0) 22%,rgba(244,239,231,0) 70%,var(--cream) 100%)}
-@media(max-width:920px){.rhero__bg{display:none}}
+@media(max-width:920px){
+  .rhero__bg{width:100%;opacity:.17;
+    -webkit-mask-image:linear-gradient(180deg,transparent 0,rgba(0,0,0,.95) 24%,rgba(0,0,0,.95) 74%,transparent 100%);
+    mask-image:linear-gradient(180deg,transparent 0,rgba(0,0,0,.95) 24%,rgba(0,0,0,.95) 74%,transparent 100%)}
+}
 .rhero__mosaic{margin-top:clamp(32px,4vw,56px);display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .rtile{position:relative;margin:0;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lg);background:var(--sand)}
 .rtile img{width:100%;display:block;aspect-ratio:4/3;object-fit:cover;background:var(--sand)}
