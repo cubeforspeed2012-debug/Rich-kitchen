@@ -510,3 +510,24 @@ p{margin:0}
   .callfab svg{width:22px;height:22px}
 }
 @media(prefers-reduced-motion:reduce){.callfab__ring{animation:none;opacity:.4}}
+
+/* ---------- Hardware band: the premium claim people must not miss ---------- */
+.hardware{background:var(--espresso);color:var(--sand)}
+.eyebrow--light{color:var(--brass)}
+.eyebrow--light::before{background:var(--brass)}
+.hardware__title{font-size:clamp(2.1rem,4.6vw,3.7rem);color:var(--ivory);margin:22px 0 0;max-width:20ch}
+.hardware__title em{font-style:italic;color:var(--brass)}
+.hardware__sub{margin-top:22px;max-width:56ch;color:rgba(231,220,203,.78);font-size:clamp(1rem,1.3vw,1.14rem)}
+.brands{margin-top:clamp(38px,5vw,62px);display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(18px,2.4vw,32px)}
+.brand-card{padding:30px 28px;border:1px solid var(--white-line);border-radius:var(--radius);
+  background:rgba(251,248,242,.035);transition:background .45s var(--ease),transform .45s var(--ease)}
+.brand-card:hover{background:rgba(251,248,242,.07);transform:translateY(-4px)}
+.brand-card__name{display:block;font-family:var(--sans);font-weight:700;color:var(--ivory);
+  font-size:clamp(1.5rem,2.6vw,2.1rem);letter-spacing:.16em;line-height:1}
+.brand-card__country{display:inline-block;margin-top:12px;font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--brass);border-bottom:1px solid rgba(176,141,87,.5);padding-bottom:4px}
+.brand-card p{margin-top:18px;font-size:14.5px;line-height:1.55;color:rgba(231,220,203,.72)}
+.hardware__note{margin-top:clamp(30px,4vw,48px);display:flex;flex-wrap:wrap;gap:12px}
+.hardware__note span{font-size:12.5px;letter-spacing:.06em;color:var(--sand);
+  border:1px solid var(--white-line);border-radius:100px;padding:9px 18px}
+@media(max-width:860px){.brands{grid-template-columns:1fr}.brand-card{padding:24px 22px}}
