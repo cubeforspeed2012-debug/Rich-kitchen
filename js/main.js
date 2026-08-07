@@ -181,22 +181,20 @@
 
       if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = t.sending; }
       try {
-        /* Отправляем «простым» запросом (Content-Type: text/plain) и передаём
-           ключ в адресе (?apikey=...). Так браузеру не нужен предварительный
-           OPTIONS-запрос — POST уходит напрямую и доходит до функции/бота. */
-        const res = await fetch(LEAD_ENDPOINT + "?apikey=" + encodeURIComponent(SUPABASE_KEY), {
+        /* Отправляем «простым» запросом (Content-Type: text/plain), ключ — в
+           адресе (?apikey=...), режим no-cors. Так браузеру не нужен ни
+           предварительный OPTIONS-запрос, ни чтение ответа: POST уходит
+           напрямую и доходит до функции/бота. Ответ непрозрачный — если
+           запрос ушёл без сетевой ошибки, считаем заявку доставленной. */
+        await fetch(LEAD_ENDPOINT + "?apikey=" + encodeURIComponent(SUPABASE_KEY), {
           method: "POST",
+          mode: "no-cors",
           headers: { "Content-Type": "text/plain;charset=UTF-8" },
-          body: JSON.stringify(data)
+          body: JSON.stringify(data),
+          keepalive: true
         });
-        const json = await res.json().catch(() => null);
-        // Успех, если сервер принял запрос (200) и не вернул явную ошибку.
-        if (res.ok && (!json || json.ok !== false)) {
-          $("#form-body").style.display = "none";
-          $("#form-ok").classList.add("show");
-        } else {
-          alert(t.error);
-        }
+        $("#form-body").style.display = "none";
+        $("#form-ok").classList.add("show");
       } catch (err) {
         alert(t.error);
       } finally {
