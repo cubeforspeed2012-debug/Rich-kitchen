@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/main.css?v=13">
+<link rel="stylesheet" href="css/main.css?v=14">
 <style>
 /* ---------- Mattress page ---------- */
 .mhero{padding-top:clamp(36px,6vw,72px);padding-bottom:clamp(40px,6vw,80px)}
@@ -94,7 +94,81 @@
 .mprod__cta{display:flex;gap:10px;flex-wrap:wrap}
 @media(max-width:760px){.mprod,.mprod:nth-child(even){grid-template-columns:1fr}.mprod:nth-child(even) .mprod__media{order:0}}
 
-/* layers explainer */
+
+/* ---------- SCENE: разрез матраса ---------- */
+.scene{position:relative}
+.mxs{height:360vh;background:var(--paper)}
+.scene__stage{position:sticky;top:0;height:100vh;display:flex;align-items:center;overflow:hidden}
+.mxs__grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(24px,4vw,72px);align-items:center;width:100%}
+
+/* 3D-стопка слоёв */
+.mxs__viz{position:relative;display:grid;place-items:center;height:min(58vh,520px)}
+.mxs__stack{position:relative;width:min(100%,460px);aspect-ratio:1/1;
+  transform-style:preserve-3d;
+  transform:perspective(1500px) rotateX(calc(62deg - 8deg * var(--p,0))) rotateZ(calc(-16deg + 4deg * var(--p,0))) scale(calc(.92 + .08 * var(--p,0)))}
+.mxl{position:absolute;left:8%;right:8%;top:30%;height:19%;transform-style:preserve-3d;
+  border-radius:14px;
+  transform:translateZ(calc(var(--i) * (96px - 64px * var(--p,0))));
+  opacity:clamp(.55, (var(--p,0) - var(--i) * .04) * 14 + .55, 1)}
+.mxl__face{position:absolute;inset:0;border-radius:14px;box-shadow:0 18px 40px -22px rgba(46,38,34,.55)}
+.mxl__edge{position:absolute;left:0;right:0;bottom:-9px;height:9px;border-radius:0 0 14px 14px;
+  background:linear-gradient(180deg,rgba(43,35,32,.30),rgba(43,35,32,.16))}
+/* 01 стёганый чехол */
+.mxl--1 .mxl__face{background:
+  repeating-linear-gradient(45deg,rgba(43,35,32,.075) 0 2px,transparent 2px 22px),
+  repeating-linear-gradient(-45deg,rgba(43,35,32,.075) 0 2px,transparent 2px 22px),
+  linear-gradient(160deg,#FBF8F2,#EFE7DA)}
+/* 02 комфортный слой (пена) */
+.mxl--2 .mxl__face{background:linear-gradient(160deg,#F0E4CF,#DFCDB0)}
+/* 03 кокосовая койра */
+.mxl--3 .mxl__face{background:
+  radial-gradient(circle at 22% 40%,rgba(78,50,28,.30) 0 2px,transparent 3px),
+  radial-gradient(circle at 62% 70%,rgba(78,50,28,.24) 0 2px,transparent 3px),
+  repeating-linear-gradient(72deg,rgba(96,62,34,.22) 0 1px,transparent 1px 7px),
+  linear-gradient(160deg,#C08E5C,#9C6B3C)}
+/* 04 основа — пружинный блок */
+.mxl--4 .mxl__face{background:
+  repeating-linear-gradient(90deg,rgba(251,248,242,.30) 0 2px,transparent 2px 26px),
+  repeating-linear-gradient(0deg,rgba(251,248,242,.22) 0 2px,transparent 2px 26px),
+  linear-gradient(160deg,#4A3F38,#2B2320)}
+.mxs__shadow{position:absolute;left:50%;bottom:2%;width:58%;height:26px;transform:translateX(-50%);
+  background:radial-gradient(ellipse at center,rgba(46,38,34,.34),transparent 70%);
+  filter:blur(9px);opacity:calc(.35 + .5 * var(--p,0))}
+
+/* правая колонка */
+.mxs__title{margin-top:16px;font-size:clamp(1.9rem,3.3vw,3rem)}
+.mxs__title em{font-style:italic;color:var(--walnut)}
+.mxs__rail{position:relative;height:2px;background:var(--line);margin:26px 0 22px;border-radius:2px;overflow:hidden}
+.mxs__rail span{position:absolute;inset:0;background:var(--brass);transform-origin:left;
+  transform:scaleX(var(--p,0))}
+.mxs__list{display:flex;flex-direction:column;gap:14px;counter-reset:none}
+.mxi{display:flex;gap:16px;align-items:flex-start;
+  --lp:clamp(0, (var(--p,0) - var(--from)) * 9, 1);
+  opacity:calc(.26 + .74 * var(--lp));
+  transform:translateX(calc(22px - 22px * var(--lp)))}
+.mxi__no{flex:none;font-family:var(--serif);font-size:1.5rem;line-height:1;
+  color:var(--brass);opacity:calc(.4 + .6 * var(--lp));padding-top:2px}
+.mxi h4{font-size:1.15rem;margin-bottom:3px}
+.mxi p{font-size:13.5px;color:var(--muted);line-height:1.45;max-width:38ch}
+.mxs__done{margin-top:26px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+  opacity:clamp(0, (var(--p,0) - .86) * 10, 1)}
+.mxs__done span{font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--brass-d)}
+
+@media(max-width:960px){
+  .mxs{height:330vh}
+  .mxs__grid{grid-template-columns:1fr;gap:18px;align-content:center}
+  .mxs__viz{height:min(34vh,280px)}
+  .mxs__stack{width:min(100%,320px);transform:perspective(1200px) rotateX(calc(60deg - 8deg * var(--p,0))) rotateZ(calc(-14deg + 4deg * var(--p,0))) scale(calc(.9 + .1 * var(--p,0)))}
+  .mxl{transform:translateZ(calc(var(--i) * (74px - 54px * var(--p,0))))}
+  .mxs__title{font-size:clamp(1.5rem,5.4vw,2rem)}
+  .mxs__rail{margin:16px 0 14px}
+  .mxs__list{gap:9px}
+  .mxi p{display:none}
+  .mxi h4{font-size:1rem}
+  .mxs__done{margin-top:16px}
+}
+
+/* layers explainer (не используется) */
 .layers{background:var(--paper)}
 .layers__grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-top:44px}
 .layer{padding:26px;border-radius:var(--radius);background:var(--ivory);border:1px solid var(--line)}
@@ -309,17 +383,56 @@
 </section>
 
 <!-- LAYERS -->
-<section class="section section--tight layers">
-  <div class="wrap">
-    <div class="sec-head sec-head--center">
-      <span class="eyebrow eyebrow--center reveal" data-ru="Из чего сделан матрас" data-uz="Matras nimadan iborat">Из чего сделан матрас</span>
-      <h2 class="h2 reveal" data-d="1" style="margin-top:18px" data-ru="Честные слои — честный сон" data-uz="Halol qatlamlar — halol uyqu">Честные слои — честный сон</h2>
-    </div>
-    <div class="layers__grid">
-      <div class="layer reveal"><div class="no">01</div><h4 data-ru="Стёганый чехол" data-uz="Choklangan gʻilof">Стёганый чехол</h4><p data-ru="Дышащая ткань со стёжкой, снимается и стирается." data-uz="Nafas oluvchi choklangan mato, yechiladi va yuviladi.">Дышащая ткань со стёжкой, снимается и стирается.</p></div>
-      <div class="layer reveal" data-d="1"><div class="no">02</div><h4 data-ru="Кокосовая койра" data-uz="Kokos koyri">Кокосовая койра</h4><p data-ru="Натуральный жёсткий слой для ровной поддержки." data-uz="Tekis tayanch uchun tabiiy qattiq qatlam.">Натуральный жёсткий слой для ровной поддержки.</p></div>
-      <div class="layer reveal" data-d="2"><div class="no">03</div><h4 data-ru="Комфортный слой" data-uz="Qulaylik qatlami">Комфортный слой</h4><p data-ru="Пена или войлок — мягкость и распределение давления." data-uz="Koʻpik yoki namat — yumshoqlik va bosim taqsimlanishi.">Пена или войлок — мягкость и распределение давления.</p></div>
-      <div class="layer reveal" data-d="3"><div class="no">04</div><h4 data-ru="Основа" data-uz="Asos">Основа</h4><p data-ru="Пружинный блок или монолитная пена — «сердце» матраса." data-uz="Prujina bloki yoki yaxlit koʻpik — matrasning «yuragi».">Пружинный блок или монолитная пена — «сердце» матраса.</p></div>
+<!-- SCENE: как устроен матрас -->
+<section class="scene mxs" data-scene>
+  <div class="scene__stage" data-stage>
+    <div class="wrap mxs__grid">
+
+      <div class="mxs__viz">
+        <div class="mxs__stack">
+          <div class="mxl mxl--1" style="--i:3"><span class="mxl__face"></span><span class="mxl__edge"></span></div>
+          <div class="mxl mxl--2" style="--i:2"><span class="mxl__face"></span><span class="mxl__edge"></span></div>
+          <div class="mxl mxl--3" style="--i:1"><span class="mxl__face"></span><span class="mxl__edge"></span></div>
+          <div class="mxl mxl--4" style="--i:0"><span class="mxl__face"></span><span class="mxl__edge"></span></div>
+        </div>
+        <div class="mxs__shadow" aria-hidden="true"></div>
+      </div>
+
+      <div class="mxs__copy">
+        <span class="eyebrow" data-ru="Из чего сделан матрас" data-uz="Matras nimadan iborat">Из чего сделан матрас</span>
+        <h2 class="h2 mxs__title" data-ru="Честные слои — <em>честный сон</em>" data-uz="Halol qatlamlar — <em>halol uyqu</em>">Честные слои — <em>честный сон</em></h2>
+
+        <div class="mxs__rail" aria-hidden="true"><span></span></div>
+
+        <ol class="mxs__list">
+          <li class="mxi" style="--from:0.06">
+            <b class="mxi__no">01</b>
+            <div><h4 data-ru="Стёганый чехол" data-uz="Choklangan gʻilof">Стёганый чехол</h4>
+            <p data-ru="Дышащая ткань со стёжкой, снимается и стирается." data-uz="Nafas oluvchi choklangan mato, yechiladi va yuviladi.">Дышащая ткань со стёжкой, снимается и стирается.</p></div>
+          </li>
+          <li class="mxi" style="--from:0.26">
+            <b class="mxi__no">02</b>
+            <div><h4 data-ru="Комфортный слой" data-uz="Qulaylik qatlami">Комфортный слой</h4>
+            <p data-ru="Пена или войлок — мягкость и распределение давления." data-uz="Koʻpik yoki namat — yumshoqlik va bosim taqsimlanishi.">Пена или войлок — мягкость и распределение давления.</p></div>
+          </li>
+          <li class="mxi" style="--from:0.46">
+            <b class="mxi__no">03</b>
+            <div><h4 data-ru="Кокосовая койра" data-uz="Kokos koyri">Кокосовая койра</h4>
+            <p data-ru="Натуральный жёсткий слой для ровной поддержки." data-uz="Tekis tayanch uchun tabiiy qattiq qatlam.">Натуральный жёсткий слой для ровной поддержки.</p></div>
+          </li>
+          <li class="mxi" style="--from:0.66">
+            <b class="mxi__no">04</b>
+            <div><h4 data-ru="Основа" data-uz="Asos">Основа</h4>
+            <p data-ru="Пружинный блок или монолитная пена — «сердце» матраса." data-uz="Prujina bloki yoki yaxlit koʻpik — matrasning «yuragi».">Пружинный блок или монолитная пена — «сердце» матраса.</p></div>
+          </li>
+        </ol>
+
+        <div class="mxs__done">
+          <span data-ru="Собрано под ваш размер" data-uz="Oʻlchamingizga moslab yigʻildi">Собрано под ваш размер</span>
+          <a href="#zakaz" class="link-arrow" data-ru="Рассчитать" data-uz="Hisoblash">Рассчитать</a>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -427,7 +540,7 @@
 </a>
 <button class="toTop" id="toTop" aria-label="Наверх"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
 
-<script src="js/main.js?v=9"></script>
+<script src="js/main.js?v=14"></script>
 <script>
 setTimeout(function(){document.querySelectorAll('.reveal:not(.in)').forEach(function(el){
   if(el.getBoundingClientRect().top < (window.innerHeight||800)*1.08) el.classList.add('in');});},1500);

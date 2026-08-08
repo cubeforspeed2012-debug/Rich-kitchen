@@ -218,6 +218,40 @@
   const toTop = $("#toTop");
   toTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 
+  /* ---------- Scroll-driven scenes ----------
+     Секция [data-scene] выше экрана, внутри — прилипающая сцена [data-stage].
+     Прогресс прокрутки (0…1) отдаём в CSS-переменную --p, всю анимацию
+     рисует CSS: одна запись в кадр, без дёрганья. */
+  const scenes = $$("[data-scene]");
+  if (scenes.length) {
+    const noMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (noMotion) {
+      scenes.forEach((sc) => sc.style.setProperty("--p", "1"));
+    } else {
+      const live = new Set();
+      let raf = 0;
+      const draw = () => {
+        raf = 0;
+        live.forEach((sc) => {
+          const stage = sc.querySelector("[data-stage]") || sc;
+          const span = sc.offsetHeight - stage.offsetHeight;
+          const top = sc.getBoundingClientRect().top + window.scrollY;
+          const p = span > 0 ? (window.scrollY - top) / span : 0;
+          sc.style.setProperty("--p", Math.min(Math.max(p, 0), 1).toFixed(4));
+        });
+      };
+      const tick = () => { if (!raf) raf = requestAnimationFrame(draw); };
+      const sceneIO = new IntersectionObserver((entries) => {
+        entries.forEach((en) => en.isIntersecting ? live.add(en.target) : live.delete(en.target));
+        tick();
+      }, { rootMargin: "15% 0px" });
+      scenes.forEach((sc) => sceneIO.observe(sc));
+      window.addEventListener("scroll", tick, { passive: true });
+      window.addEventListener("resize", tick);
+      tick();
+    }
+  }
+
   onScroll();
 
   /* ---------- Авто-обновление версии ----------
