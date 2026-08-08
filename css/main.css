@@ -571,3 +571,16 @@ p{margin:0}
   .igfab svg{width:23px;height:23px}
   .igfab__tip{display:none}
 }
+
+/* ---------- Material brands (EGGER / Ultra Decor) ---------- */
+.matbrands{margin-top:clamp(46px,6vw,78px);display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2.4vw,28px);
+  border-top:1px solid var(--line);padding-top:clamp(30px,4vw,46px)}
+.matbrand{padding:26px 26px 28px;border:1px solid var(--line);border-radius:var(--radius);background:var(--ivory);
+  transition:transform .45s var(--ease),box-shadow .45s var(--ease)}
+.matbrand:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.matbrand__name{display:block;font-family:var(--sans);font-weight:700;color:var(--espresso);
+  font-size:clamp(1.35rem,2.2vw,1.85rem);letter-spacing:.16em;line-height:1}
+.matbrand__country{display:inline-block;margin-top:11px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--brass-d);border-bottom:1px solid rgba(176,141,87,.45);padding-bottom:4px}
+.matbrand p{margin-top:16px;font-size:14.5px;line-height:1.55;color:var(--muted);max-width:44ch}
+@media(max-width:760px){.matbrands{grid-template-columns:1fr}.matbrand{padding:22px}}
