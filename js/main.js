@@ -149,15 +149,39 @@
   if (form) {
     const submitBtn = form.querySelector('button[type="submit"]');
     const btnHTML = submitBtn ? submitBtn.innerHTML : "";
+    const FORM_LOADED = Date.now();     // засекаем момент загрузки — для ловушки скорости
+
+    // Показать «заявка отправлена», ничего не отправляя (для отсеянных ботов).
+    const showSent = () => {
+      $("#form-body").style.display = "none";
+      $("#form-ok").classList.add("show");
+    };
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const name = $("#name"), phone = $("#phone");
+      const hp = $("#company");
+
+      /* ---- Анти-спам (тихо отсеиваем ботов) ----
+         Бот видит «успех» и не пытается снова, но заявка никуда не уходит. */
+      // 1) honeypot заполнен — так делают только автоматы
+      if (hp && hp.value) { showSent(); return; }
+      // 2) отправлено слишком быстро после загрузки (человек так не успеет)
+      if (Date.now() - FORM_LOADED < 2500) { showSent(); return; }
+      // 3) не чаще одной заявки в 30 секунд с этого браузера
+      try {
+        const last = +localStorage.getItem("rk-lead-ts") || 0;
+        if (Date.now() - last < 30000) { showSent(); return; }
+      } catch (e) {}
+
       let ok = true;
       [name, phone].forEach((f) => {
         if (!f.value.trim()) { f.style.borderColor = "#B0735A"; ok = false; }
         else f.style.borderColor = "";
       });
+      // 4) в телефоне должно быть хотя бы 7 цифр — отсекает «ааа» и мусор
+      const digits = (phone.value.match(/\d/g) || []).length;
+      if (digits < 7) { phone.style.borderColor = "#B0735A"; ok = false; }
       if (!ok) return;
 
       const lang = html.getAttribute("data-lang") === "uz" ? "uz" : "ru";
@@ -169,7 +193,6 @@
       };
 
       const typeSel = $("#type");
-      const hp = $("#company");
       const msgEl = $("#msg");
 
       // С какой страницы пришла заявка — видно сразу в сообщении боту.
@@ -204,8 +227,8 @@
           body: JSON.stringify(data),
           keepalive: true
         });
-        $("#form-body").style.display = "none";
-        $("#form-ok").classList.add("show");
+        try { localStorage.setItem("rk-lead-ts", Date.now()); } catch (e) {}
+        showSent();
       } catch (err) {
         alert(t.error);
       } finally {
