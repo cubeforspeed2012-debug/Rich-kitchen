@@ -176,12 +176,12 @@
 
       let ok = true;
       [name, phone].forEach((f) => {
-        if (!f.value.trim()) { f.style.borderColor = "#B0735A"; ok = false; }
+        if (!f.value.trim()) { f.style.borderColor = "#C0554F"; ok = false; }
         else f.style.borderColor = "";
       });
       // 4) в телефоне должно быть хотя бы 7 цифр — отсекает «ааа» и мусор
       const digits = (phone.value.match(/\d/g) || []).length;
-      if (digits < 7) { phone.style.borderColor = "#B0735A"; ok = false; }
+      if (digits < 7) { phone.style.borderColor = "#C0554F"; ok = false; }
       if (!ok) return;
 
       const lang = html.getAttribute("data-lang") === "uz" ? "uz" : "ru";
