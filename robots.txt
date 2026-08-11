@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /story.html
+Disallow: /portfolio.html
 
 Sitemap: https://rich-kitchen.uz/sitemap.xml
