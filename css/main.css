@@ -377,6 +377,9 @@ p{margin:0}
 .field textarea{resize:vertical;min-height:96px}
 .field--row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .form__note{font-size:12.5px;color:var(--muted);margin-top:16px;text-align:center}
+.consent{display:flex;align-items:flex-start;gap:9px;font-size:13px;line-height:1.45;color:var(--muted);margin:14px 0 16px;cursor:pointer;transition:color .2s}
+.consent input{margin-top:1px;width:16px;height:16px;flex:none;accent-color:var(--brass,#B7935A);cursor:pointer}
+.consent a{color:var(--brass,#B7935A);text-decoration:underline;white-space:nowrap}
 .form__ok{display:none;text-align:center;padding:20px}
 .form__ok.show{display:block}
 .form__ok .check{width:64px;height:64px;border-radius:50%;background:var(--olive);display:grid;place-items:center;margin:0 auto 18px}

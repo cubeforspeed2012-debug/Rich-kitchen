@@ -182,6 +182,14 @@
       // 4) в телефоне должно быть хотя бы 7 цифр — отсекает «ааа» и мусор
       const digits = (phone.value.match(/\d/g) || []).length;
       if (digits < 7) { phone.style.borderColor = "#C0554F"; ok = false; }
+      // 5) согласие на обработку персональных данных должно быть отмечено
+      const consent = $("#consent"), consentLbl = $("#consent-label");
+      if (consent && !consent.checked) {
+        if (consentLbl) consentLbl.style.color = "#C0554F";
+        ok = false;
+      } else if (consentLbl) {
+        consentLbl.style.color = "";
+      }
       if (!ok) return;
 
       const lang = html.getAttribute("data-lang") === "uz" ? "uz" : "ru";

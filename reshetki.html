@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/main.css?v=21">
+<link rel="stylesheet" href="css/main.css?v=22">
 <style>
 /* ---------- Grilles page (draft) ---------- */
 .draft-ribbon{position:fixed;z-index:90;top:14px;left:-38px;transform:rotate(-45deg);background:var(--clay);
@@ -620,8 +620,12 @@
           <label for="msg" data-ru="Размер / комментарий" data-uz="Oʻlcham / izoh">Размер / комментарий</label>
           <textarea id="msg" name="msg" placeholder="Напр.: 600×300, белая"></textarea>
         </div>
+        <label class="consent" id="consent-label">
+          <input type="checkbox" id="consent" name="consent">
+          <span data-ru="Согласен(-на) на обработку персональных данных" data-uz="Shaxsiy maʼlumotlarni qayta ishlashga roziman">Согласен(-на) на обработку персональных данных</span>
+          <a href="privacy.html" target="_blank" rel="noopener" data-ru="— политика" data-uz="— siyosat">— политика</a>
+        </label>
         <button type="submit" class="btn btn--block"><span data-ru="Отправить заявку" data-uz="Arizani yuborish">Отправить заявку</span> <span class="arw">→</span></button>
-        <p class="form__note" data-ru="Нажимая кнопку, вы соглашаетесь с обработкой персональных данных." data-uz="Tugmani bosish orqali siz shaxsiy maʼlumotlarni qayta ishlashga rozilik bildirasiz.">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных.</p>
       </div>
       <div class="form__ok" id="form-ok">
         <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
@@ -662,7 +666,7 @@
       </div>
     </div>
     <div class="footer__bottom">
-      <span>© <span id="year">2026</span> Rich Kitchen. <span data-ru="Все права защищены." data-uz="Barcha huquqlar himoyalangan.">Все права защищены.</span></span>
+      <span>© <span id="year">2026</span> Rich Kitchen. <span data-ru="Все права защищены." data-uz="Barcha huquqlar himoyalangan.">Все права защищены.</span> · <a href="privacy.html" data-ru="Политика конфиденциальности" data-uz="Maxfiylik siyosati">Политика конфиденциальности</a></span>
       <span data-ru="Решётки и люки · Ташкент" data-uz="Panjaralar va lyuklar · Toshkent">Решётки и люки · Ташкент</span>
     </div>
   </div>
@@ -685,7 +689,7 @@
 </a>
 <button class="toTop" id="toTop" aria-label="Наверх"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
 
-<script src="js/main.js?v=20"></script>
+<script src="js/main.js?v=22"></script>
 <script>
 setTimeout(function(){document.querySelectorAll('.reveal:not(.in)').forEach(function(el){
   if(el.getBoundingClientRect().top < (window.innerHeight||800)*1.08) el.classList.add('in');});},1500);
