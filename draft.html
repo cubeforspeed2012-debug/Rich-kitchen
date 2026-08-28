@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rich Kitchen — черновик нового дизайна</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Petrona:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --stone:#ECE6D9;
+  --panel:#E1D9C6;
+  --ink:#1B2A3D;
+  --walnut:#33241A;
+  --walnut-2:#241A13;
+  --brass:#A97D3F;
+  --brass-d:#8A6431;
+  --verd:#5C6E5E;
+  --line: rgba(27,42,61,.18);
+  --line-2: rgba(27,42,61,.32);
+  --serif:"Petrona",Georgia,serif;
+  --sans:"Archivo",sans-serif;
+  --mono:"IBM Plex Mono",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--stone);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+@media(max-width:720px){.wrap{padding:0 20px}}
+
+/* ---------- utility type ---------- */
+.mono{font-family:var(--mono)}
+.field{
+  font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--brass-d);display:flex;align-items:center;gap:10px;font-weight:500;
+}
+.field b{color:var(--ink);font-weight:600;letter-spacing:.16em}
+.field::before{content:"";width:16px;height:1px;background:var(--brass-d)}
+
+/* ---------- title block — signature element ---------- */
+.tblock{
+  font-family:var(--mono);font-size:10px;letter-spacing:.08em;
+  border:1px solid var(--line-2);background:rgba(236,230,217,.88);backdrop-filter:blur(2px);
+  min-width:190px;
+}
+.tblock__row{display:flex;justify-content:space-between;gap:14px;padding:7px 11px}
+.tblock__row + .tblock__row{border-top:1px solid var(--line)}
+.tblock .k{color:var(--ink);opacity:.5;text-transform:uppercase}
+.tblock .v{color:var(--ink);font-weight:600;text-transform:uppercase}
+.tblock--dark{background:rgba(51,36,26,.9);border-color:rgba(236,230,217,.22)}
+.tblock--dark .k,.tblock--dark .v{color:var(--stone)}
+.tblock--dark .k{opacity:.55}
+
+/* ---------- corner ticks — framed media ---------- */
+.frame{position:relative;padding:14px}
+.frame::before,.frame::after,.frame .tk-br,.frame .tk-bl{content:"";position:absolute;width:16px;height:16px}
+.frame::before{top:0;left:0;border-top:1px solid var(--ink);border-left:1px solid var(--ink)}
+.frame::after{top:0;right:0;border-top:1px solid var(--ink);border-right:1px solid var(--ink)}
+.frame .tk-br{bottom:0;right:0;border-bottom:1px solid var(--ink);border-right:1px solid var(--ink)}
+.frame .tk-bl{bottom:0;left:0;border-bottom:1px solid var(--ink);border-left:1px solid var(--ink)}
+.frame__img{overflow:hidden}
+.frame__img img{width:100%;height:100%;object-fit:cover}
+.frame__cap{
+  position:absolute;left:14px;bottom:14px;transform:translateY(50%);
+  font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  background:var(--ink);color:var(--stone);padding:6px 11px;
+}
+
+/* ---------- buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;gap:10px;padding:14px 24px;
+  font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;
+  background:var(--ink);color:var(--stone);border:1px solid var(--ink);border-radius:2px;
+  transition:background .2s,color .2s,border-color .2s;
+}
+.btn:hover{background:var(--brass);border-color:var(--brass)}
+.btn .arw{font-family:var(--sans);font-size:15px}
+.btn--ghost{background:transparent;color:var(--ink);border-color:var(--line-2)}
+.btn--ghost:hover{background:var(--ink);color:var(--stone);border-color:var(--ink)}
+.btn--brass{background:var(--brass);border-color:var(--brass);color:var(--walnut-2)}
+.btn--brass:hover{background:var(--stone);color:var(--ink);border-color:var(--ink)}
+.btn--light{background:transparent;border-color:rgba(236,230,217,.5);color:var(--stone)}
+.btn--light:hover{background:var(--stone);color:var(--ink)}
+.btn--block{width:100%;justify-content:center}
+
+/* ============ NAV ============ */
+.nav{position:sticky;top:0;z-index:40;background:rgba(236,230,217,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:76px}
+.nav__brand{font-family:var(--serif);font-weight:600;font-size:21px;letter-spacing:.01em}
+.nav__brand em{font-style:italic;color:var(--brass-d)}
+.nav__links{display:flex;gap:32px;font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+.nav__links a{opacity:.7;transition:opacity .15s}
+.nav__links a:hover{opacity:1}
+.nav__cta{display:flex;align-items:center;gap:18px}
+@media(max-width:900px){.nav__links{display:none}}
+
+/* ============ HERO ============ */
+.hero{padding:64px 0 0}
+.hero__grid{display:grid;grid-template-columns:1.05fr .95fr;gap:64px;align-items:center}
+.hero__field{margin-bottom:26px}
+.hero h1{font-family:var(--serif);font-weight:500;font-size:clamp(38px,5.2vw,68px);line-height:1.04;letter-spacing:-.01em}
+.hero h1 em{font-style:italic;font-weight:500;color:var(--brass-d)}
+.hero__sub{margin-top:24px;font-size:16.5px;line-height:1.65;color:var(--ink);opacity:.72;max-width:50ch}
+.hero__cta{display:flex;gap:14px;margin-top:36px;flex-wrap:wrap}
+.hero__dims{display:flex;gap:36px;margin-top:56px;padding-top:26px;border-top:1px solid var(--line)}
+.hero__dims div b{display:block;font-family:var(--serif);font-size:30px;font-weight:600;color:var(--ink)}
+.hero__dims div span{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);opacity:.55}
+.hero__media{position:relative}
+.hero__media .frame{aspect-ratio:4/5}
+.hero__tblock{position:absolute;top:-1px;left:-1px}
+@media(max-width:900px){
+  .hero__grid{grid-template-columns:1fr;gap:40px}
+  .hero{padding-top:40px}
+  .hero__dims{gap:24px;flex-wrap:wrap}
+}
+
+/* ============ STRIP (marquee replacement) ============ */
+.strip{background:var(--walnut);color:var(--stone);padding:16px 0;margin-top:72px;overflow:hidden}
+.strip__row{display:flex;gap:0;font-family:var(--mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;
+  white-space:nowrap;justify-content:center;flex-wrap:wrap}
+.strip__row span{padding:0 22px;position:relative;opacity:.85}
+.strip__row span+span::before{content:"◆";position:absolute;left:0;top:1px;font-size:6px;color:var(--brass);opacity:.9}
+
+/* ============ SECTION shell ============ */
+.sec{padding:96px 0}
+.sec--tight{padding:72px 0}
+.sec-head{margin-bottom:52px;max-width:70ch}
+.sec-head p{margin-top:18px;color:var(--ink);opacity:.7;font-size:15.5px;line-height:1.6;max-width:56ch}
+.h2{font-family:var(--serif);font-weight:500;font-size:clamp(28px,3.6vw,42px);line-height:1.12;letter-spacing:-.008em;margin-top:16px}
+.h2 em{font-style:italic;color:var(--brass-d)}
+
+/* ============ ABOUT ============ */
+.about__grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:64px;align-items:start}
+.about__media .frame{aspect-ratio:3/4}
+.about__quote{margin-top:26px;padding-left:18px;border-left:2px solid var(--brass)}
+.about__quote p{font-family:var(--serif);font-style:italic;font-size:18px;line-height:1.45;color:var(--ink)}
+.about__quote cite{display:block;margin-top:10px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-style:normal;color:var(--ink);opacity:.5}
+.about__lead{font-family:var(--serif);font-size:19px;line-height:1.5;margin-top:8px;color:var(--ink)}
+.about__body p{margin-top:18px;color:var(--ink);opacity:.75;font-size:15.5px;line-height:1.7;max-width:58ch}
+.about__list{list-style:none;margin-top:32px;border-top:1px solid var(--line)}
+.about__list li{display:flex;align-items:center;gap:18px;padding:15px 0;border-bottom:1px solid var(--line);font-size:15px}
+.about__list .num{font-family:var(--mono);font-size:11px;color:var(--brass-d);letter-spacing:.06em;flex:none;width:22px}
+@media(max-width:900px){.about__grid{grid-template-columns:1fr;gap:40px}}
+
+/* ============ DIMENSIONS (stats) ============ */
+.dims{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.dims__list{display:flex;flex-direction:column}
+.dim-row{display:flex;align-items:baseline;gap:18px;padding:26px 0;border-bottom:1px solid var(--line)}
+.dim-row:last-child{border-bottom:none}
+.dim-row .num{font-family:var(--serif);font-weight:600;font-size:clamp(30px,4vw,46px);color:var(--ink);flex:none;min-width:130px}
+.dim-row .num em{font-style:italic;color:var(--brass-d)}
+.dim-row .leader{flex:1;border-bottom:1px dashed var(--line-2);height:0;margin-bottom:12px;min-width:24px}
+.dim-row .lbl{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);opacity:.68;flex:none}
+
+/* ============ PROCESS ============ */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+.step{background:var(--stone);padding:32px 26px;display:flex;flex-direction:column;gap:14px}
+.step .no{font-family:var(--serif);font-style:italic;font-size:34px;color:var(--brass-d);font-weight:500}
+.step h3{font-family:var(--sans);font-weight:600;font-size:16.5px}
+.step p{font-size:13.5px;line-height:1.55;color:var(--ink);opacity:.7}
+@media(max-width:900px){.steps{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.steps{grid-template-columns:1fr}}
+
+/* ============ CTA ============ */
+.cta{position:relative;padding:110px 0;overflow:hidden}
+.cta__bg{position:absolute;inset:0}
+.cta__bg img{width:100%;height:100%;object-fit:cover}
+.cta__bg::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(36,26,19,.94) 40%,rgba(36,26,19,.55))}
+.cta .wrap{position:relative;color:var(--stone);max-width:760px}
+.cta h2{font-family:var(--serif);font-weight:500;font-size:clamp(28px,4.2vw,44px);line-height:1.16;letter-spacing:-.008em}
+.cta p{margin-top:18px;font-size:16px;opacity:.78;max-width:52ch}
+.cta__actions{display:flex;gap:14px;margin-top:36px;flex-wrap:wrap}
+
+/* ============ CONTACT ============ */
+.contact__grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:72px;align-items:start}
+.info-list{list-style:none;margin-top:32px;display:flex;flex-direction:column;gap:20px}
+.info-list li{display:flex;flex-direction:column;gap:3px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.info-list .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);opacity:.5}
+.info-list .v{font-size:16px;font-family:var(--serif)}
+
+.order{background:var(--panel);border:1px solid var(--line);padding:40px}
+.order h3{font-family:var(--serif);font-size:24px;font-weight:600}
+.order__sub{margin-top:10px;font-size:14px;color:var(--ink);opacity:.65;max-width:46ch}
+.ofield{margin-top:22px}
+.ofield label{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);opacity:.55;margin-bottom:8px}
+.ofield input,.ofield select,.ofield textarea{
+  width:100%;background:transparent;border:none;border-bottom:1px solid var(--line-2);
+  padding:9px 2px;font-family:var(--sans);font-size:15.5px;color:var(--ink);border-radius:0;
+}
+.ofield input:focus,.ofield select:focus,.ofield textarea:focus{outline:none;border-color:var(--brass-d)}
+.ofield--row{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.ofield textarea{resize:vertical;min-height:64px}
+.oconsent{display:flex;gap:10px;align-items:flex-start;margin-top:24px;font-size:12.5px;color:var(--ink);opacity:.7;line-height:1.5}
+.oconsent input{margin-top:2px;accent-color:var(--brass-d)}
+.oconsent a{color:var(--brass-d);text-decoration:underline}
+.order .btn{margin-top:26px}
+@media(max-width:900px){.contact__grid{grid-template-columns:1fr;gap:40px}.order{padding:28px}}
+@media(max-width:560px){.ofield--row{grid-template-columns:1fr}}
+
+/* ============ FOOTER ============ */
+.footer{background:var(--walnut-2);color:var(--stone);padding:72px 0 0;margin-top:0}
+.footer__top{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;padding-bottom:56px;border-bottom:1px solid rgba(236,230,217,.14)}
+.footer__brand{font-family:var(--serif);font-size:22px;font-weight:600}
+.footer__brand em{font-style:italic;color:var(--brass)}
+.footer__desc{margin-top:16px;font-size:13.5px;line-height:1.6;opacity:.6;max-width:34ch}
+.footer h4{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.5;margin-bottom:16px}
+.footer nav{display:flex;flex-direction:column;gap:11px;font-size:14px}
+.footer nav a{opacity:.78}
+.footer nav a:hover{opacity:1}
+.footer__bottom{display:flex;justify-content:space-between;padding:22px 0;font-family:var(--mono);font-size:11px;letter-spacing:.06em;opacity:.5;flex-wrap:wrap;gap:8px}
+@media(max-width:800px){.footer__top{grid-template-columns:1fr 1fr;gap:32px}}
+
+/* ---------- draft banner ---------- */
+.draftbar{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:50;
+  background:var(--ink);color:var(--stone);font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  padding:10px 18px;border-radius:2px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.draftbar b{color:var(--brass)}
+</style>
+</head>
+<body>
+
+<div class="draftbar">Черновик дизайна — <b>не финальная версия</b>, только для просмотра</div>
+
+<!-- ============ NAV ============ -->
+<header class="nav">
+  <div class="wrap">
+    <a class="nav__brand" href="#top">Rich<em>·</em>Kitchen</a>
+    <nav class="nav__links">
+      <a href="#about">О нас</a>
+      <a href="#dims">Цифры</a>
+      <a href="#process">Процесс</a>
+      <a href="#contact">Контакты</a>
+    </nav>
+    <div class="nav__cta"><a href="#contact" class="btn">Заказать проект</a></div>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap hero__grid">
+    <div>
+      <div class="field hero__field"><b>ПОЗ.01</b> Мебель на заказ · Ташкент</div>
+      <h1>Мебель, <em>достойная</em> вашего дома.</h1>
+      <p class="hero__sub">Rich Kitchen проектирует и производит кухни, гардеробные и корпусную мебель на заказ, а также матрасы любого размера и алюминиевые вентиляционные решётки и люки. Ручная сборка и внимание к каждому миллиметру.</p>
+      <div class="hero__cta">
+        <a href="#contact" class="btn">Заказать проект <span class="arw">→</span></a>
+        <a href="#process" class="btn btn--ghost">Смотреть работы</a>
+      </div>
+      <div class="hero__dims">
+        <div><b>20</b><span>лет на рынке</span></div>
+        <div><b>1000+</b><span>проектов сдано</span></div>
+        <div><b>100%</b><span>ручная сборка</span></div>
+      </div>
+    </div>
+    <div class="hero__media">
+      <div class="frame">
+        <span class="tk-br"></span><span class="tk-bl"></span>
+        <div class="frame__img"><img src="assets/img/hero.jpg" alt="Кухня Rich Kitchen"></div>
+        <div class="frame__cap">Ил.01 — кухня, орех и латунь</div>
+      </div>
+      <div class="hero__tblock tblock">
+        <div class="tblock__row"><span class="k">Гарантия</span><span class="v">5 лет</span></div>
+        <div class="tblock__row"><span class="k">Масштаб</span><span class="v">М 1:20</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STRIP ============ -->
+<div class="strip">
+  <div class="wrap">
+    <div class="strip__row">
+      <span>Кухни</span><span>Гардеробные</span><span>Гостиные</span><span>Ванные комнаты</span><span>Прихожие</span><span>Шкафы-купе</span><span>Матрасы</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ABOUT ============ -->
+<section class="sec" id="about">
+  <div class="wrap about__grid">
+    <div class="about__media">
+      <div class="frame">
+        <span class="tk-br"></span><span class="tk-bl"></span>
+        <div class="frame__img"><img src="assets/img/about.jpg" alt="Производство Rich Kitchen"></div>
+      </div>
+      <div class="about__quote">
+        <p>«Роскошь — это когда каждая деталь на своём месте.»</p>
+        <cite>Rich Kitchen Studio</cite>
+      </div>
+    </div>
+    <div>
+      <div class="field">О компании</div>
+      <h2 class="h2">Мы создаём не мебель, а среду, в которой хочется жить.</h2>
+      <p class="about__lead">20 лет Rich Kitchen делает мебель на заказ для тех, кто ценит качество, а не компромиссы.</p>
+      <div class="about__body">
+        <p>Каждый проект начинается с вашего пространства и образа жизни. Мы проектируем в 3D, производим на собственном оборудовании и собираем вручную — так мы контролируем результат от первого эскиза до последнего шва.</p>
+      </div>
+      <ul class="about__list">
+        <li><span class="num">01</span><span>Собственное производство полного цикла</span></li>
+        <li><span class="num">02</span><span>Дизайн-проект и 3D-визуализация</span></li>
+        <li><span class="num">03</span><span>Европейская фурнитура Blum и Hettich</span></li>
+        <li><span class="num">04</span><span>Монтаж и сервис под ключ</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DIMENSIONS / STATS ============ -->
+<section class="dims" id="dims">
+  <div class="wrap sec--tight">
+    <div class="field" style="margin-bottom:30px">Цифры</div>
+    <div class="dims__list">
+      <div class="dim-row"><div class="num">20</div><div class="leader"></div><div class="lbl">лет на рынке</div></div>
+      <div class="dim-row"><div class="num"><em>1000+</em></div><div class="leader"></div><div class="lbl">проектов сдано</div></div>
+      <div class="dim-row"><div class="num">18 000 м²</div><div class="leader"></div><div class="lbl">произведено</div></div>
+      <div class="dim-row"><div class="num">98%</div><div class="leader"></div><div class="lbl">клиентов рекомендуют</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROCESS ============ -->
+<section class="sec" id="process">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="field">Как мы работаем</div>
+      <h2 class="h2">Путь от идеи до готовой мебели</h2>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="no">01</div><h3>Замер и бриф</h3><p>Выезжаем на объект, снимаем размеры и обсуждаем задачи и бюджет.</p></div>
+      <div class="step"><div class="no">02</div><h3>Дизайн-проект</h3><p>Готовим 3D-визуализацию, подбираем материалы и фурнитуру.</p></div>
+      <div class="step"><div class="no">03</div><h3>Производство</h3><p>Изготавливаем мебель на собственном производстве по чертежам — в среднем за неделю.</p></div>
+      <div class="step"><div class="no">04</div><h3>Монтаж</h3><p>Доставляем и устанавливаем под ключ. Гарантия 5 лет.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="cta">
+  <div class="cta__bg"><img src="assets/img/cta.jpg" alt="Премиальная мебель на заказ Rich Kitchen"></div>
+  <div class="wrap">
+    <div class="field" style="color:var(--brass)">Бесплатная консультация</div>
+    <h2 style="margin-top:18px">Расскажите о вашем проекте — остальное сделаем мы.</h2>
+    <p>Замер, дизайн-проект и расчёт стоимости — бесплатно. Ни к чему не обязывает.</p>
+    <div class="cta__actions">
+      <a href="#contact" class="btn btn--brass">Оставить заявку <span class="arw">→</span></a>
+      <a href="tel:+998903198638" class="btn btn--light">Позвонить</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="sec" id="contact">
+  <div class="wrap contact__grid">
+    <div>
+      <div class="field">Контакты</div>
+      <h2 class="h2">Приезжайте в шоурум или напишите нам</h2>
+      <p style="margin-top:18px;color:var(--ink);opacity:.72;max-width:42ch;font-size:15.5px;line-height:1.6">Покажем образцы материалов, готовые проекты и обсудим вашу задачу за чашкой кофе.</p>
+      <ul class="info-list">
+        <li><span class="k">Телефон</span><a class="v" href="tel:+998903198638">+998 (90) 319-86-38</a></li>
+        <li><span class="k">Шоурум</span><span class="v">Ташкент, Юнусабадский р-н, МСГ Янгитарнов</span></li>
+        <li><span class="k">Часы работы</span><span class="v">Пн–Сб · 10:00–19:00</span></li>
+      </ul>
+    </div>
+    <div class="order">
+      <h3>Оставить заявку</h3>
+      <p class="order__sub">Перезвоним в течение 15 минут в рабочее время и озвучим точную цену — каждый проект индивидуален.</p>
+      <div class="ofield"><label>Ваше имя</label><input type="text" placeholder="Иван"></div>
+      <div class="ofield ofield--row">
+        <div class="ofield"><label>Телефон</label><input type="tel" placeholder="+998 90 000 00 00"></div>
+        <div class="ofield"><label>Что нужно</label>
+          <select><option>Кухня</option><option>Гардеробная</option><option>Гостиная</option><option>Ванная</option><option>Комплексная мебель</option></select>
+        </div>
+      </div>
+      <div class="ofield"><label>Комментарий (необязательно)</label><textarea placeholder="..."></textarea></div>
+      <label class="oconsent"><input type="checkbox"><span>Согласен(-на) на обработку персональных данных — <a href="privacy.html">политика</a></span></label>
+      <a href="#" class="btn btn--block">Отправить заявку <span class="arw">→</span></a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__top">
+      <div>
+        <div class="footer__brand">Rich<em>·</em>Kitchen</div>
+        <p class="footer__desc">Премиальная мебель на заказ в Ташкенте. Кухни, гардеробные и корпусная мебель полного цикла.</p>
+      </div>
+      <div>
+        <h4>Навигация</h4>
+        <nav><a href="#about">О нас</a><a href="#dims">Цифры</a><a href="#process">Процесс</a><a href="#contact">Контакты</a></nav>
+      </div>
+      <div>
+        <h4>Категории</h4>
+        <nav><a href="#">Кухни</a><a href="#">Гардеробные</a><a href="matrasy.html">Матрасы</a><a href="reshetki.html">Решётки</a><a href="portfolio.html">Портфолио</a></nav>
+      </div>
+      <div>
+        <h4>Контакты</h4>
+        <nav><a href="tel:+998903198638">+998 (90) 319-86-38</a><a href="https://t.me/+998903198638">Telegram</a><a href="https://instagram.com/bobur.abdumajidov2023">Instagram</a></nav>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2026 Rich Kitchen. Все права защищены.</span>
+      <span>Мебель на заказ · Ташкент, Узбекистан</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
