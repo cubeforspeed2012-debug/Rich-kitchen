@@ -124,12 +124,39 @@ a{color:inherit;text-decoration:none}
   .hero__dims{gap:24px;flex-wrap:wrap}
 }
 
-/* ============ STRIP (marquee replacement) ============ */
+/* ---------- SIGNATURE: чертёж → готовая мебель ---------- */
+.rev{position:relative;aspect-ratio:4/5;overflow:hidden;cursor:ew-resize;touch-action:none;background:var(--walnut-2);--pos:52%}
+.rev img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;user-select:none;-webkit-user-drag:none}
+.rev__blue{position:absolute;inset:0;clip-path:inset(0 calc(100% - var(--pos)) 0 0)}
+.rev__blue img{filter:grayscale(1) invert(1) contrast(1.45) brightness(.92)}
+.rev__blue::after{content:"";position:absolute;inset:0;background:#123C77;mix-blend-mode:color}
+.rev__grid{position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(to right, rgba(231,237,243,.16) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(231,237,243,.16) 1px, transparent 1px);
+  background-size:34px 34px}
+.rev__line{position:absolute;top:0;bottom:0;left:var(--pos);width:1px;background:var(--stone);pointer-events:none}
+.rev__knob{position:absolute;top:50%;left:var(--pos);transform:translate(-50%,-50%);
+  width:44px;height:44px;border-radius:50%;background:var(--stone);border:1px solid var(--ink);
+  display:grid;place-items:center;font-family:var(--mono);font-size:13px;color:var(--ink);pointer-events:none;
+  box-shadow:0 4px 16px rgba(11,27,51,.3)}
+.rev__lbl{position:absolute;bottom:14px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;padding:6px 10px;pointer-events:none;transition:opacity .2s}
+.rev__lbl--l{left:14px;background:rgba(11,27,51,.86);color:var(--stone)}
+.rev__lbl--r{right:14px;background:var(--stone);color:var(--ink)}
+.rev__hint{position:absolute;top:14px;right:14px;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;
+  text-transform:uppercase;background:rgba(231,237,243,.9);color:var(--ink);padding:5px 9px;pointer-events:none;
+  transition:opacity .3s}
+.rev.is-touched .rev__hint{opacity:0}
+
+/* ============ STRIP (running marquee) ============ */
 .strip{background:var(--walnut);color:var(--stone);padding:16px 0;margin-top:72px;overflow:hidden}
-.strip__row{display:flex;gap:0;font-family:var(--mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;
-  white-space:nowrap;justify-content:center;flex-wrap:wrap}
+.strip__mask{display:flex;width:max-content;animation:slide 34s linear infinite}
+.strip:hover .strip__mask{animation-play-state:paused}
+.strip__row{display:flex;font-family:var(--mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
 .strip__row span{padding:0 22px;position:relative;opacity:.85}
-.strip__row span+span::before{content:"◆";position:absolute;left:0;top:1px;font-size:6px;color:var(--brass);opacity:.9}
+.strip__row span::before{content:"◆";position:absolute;left:-3px;top:1px;font-size:6px;color:var(--brass);opacity:.9}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
 /* ============ SECTION shell ============ */
 .sec{padding:96px 0}
@@ -161,13 +188,25 @@ a{color:inherit;text-decoration:none}
 .dim-row:last-child{border-bottom:none}
 .dim-row .num{font-family:var(--serif);font-weight:600;font-size:clamp(30px,4vw,46px);color:var(--stone);flex:none;min-width:130px}
 .dim-row .num em{font-style:italic;color:var(--brass)}
-.dim-row .leader{flex:1;border-bottom:1px dashed rgba(231,237,243,.3);height:0;margin-bottom:12px;min-width:24px}
+.dim-row .leader{flex:1;border-bottom:1px dashed rgba(231,237,243,.3);height:0;margin-bottom:12px;min-width:24px;
+  transform:scaleX(0);transform-origin:left;transition:transform 1s cubic-bezier(.2,.7,.3,1)}
+.dims.is-in .dim-row .leader{transform:scaleX(1)}
+.dims.is-in .dim-row:nth-child(2) .leader{transition-delay:.12s}
+.dims.is-in .dim-row:nth-child(3) .leader{transition-delay:.24s}
+.dims.is-in .dim-row:nth-child(4) .leader{transition-delay:.36s}
 .dim-row .lbl{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--stone);opacity:.6;flex:none}
 
 /* ============ PROCESS ============ */
-.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
-.step{background:var(--stone);padding:32px 26px;display:flex;flex-direction:column;gap:14px}
-.step .no{font-family:var(--serif);font-style:italic;font-size:34px;color:var(--brass-d);font-weight:500}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);position:relative}
+.steps::before{content:"";position:absolute;top:64px;left:0;height:1px;background:var(--brass);width:100%;
+  transform:scaleX(0);transform-origin:left;transition:transform 1.4s cubic-bezier(.25,.8,.3,1);z-index:2}
+.steps.is-in::before{transform:scaleX(1)}
+.step{background:var(--stone);padding:32px 26px;display:flex;flex-direction:column;gap:14px;position:relative;
+  transition:background .25s}
+.step:hover{background:#fff}
+.step .no{font-family:var(--serif);font-style:italic;font-size:34px;color:var(--brass-d);font-weight:500;
+  position:relative;z-index:3;background:var(--stone);width:max-content;padding-right:10px;transition:background .25s}
+.step:hover .no{background:#fff}
 .step h3{font-family:var(--sans);font-weight:600;font-size:16.5px}
 .step p{font-size:13.5px;line-height:1.55;color:var(--ink);opacity:.7}
 @media(max-width:900px){.steps{grid-template-columns:1fr 1fr}}
@@ -222,6 +261,20 @@ a{color:inherit;text-decoration:none}
 .footer__bottom{display:flex;justify-content:space-between;padding:22px 0;font-family:var(--mono);font-size:11px;letter-spacing:.06em;opacity:.5;flex-wrap:wrap;gap:8px}
 @media(max-width:800px){.footer__top{grid-template-columns:1fr 1fr;gap:32px}}
 
+/* ---------- scroll reveal ---------- */
+.up{opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.3,1)}
+.up.is-in{opacity:1;transform:none}
+.up[data-d="1"]{transition-delay:.09s}
+.up[data-d="2"]{transition-delay:.18s}
+.up[data-d="3"]{transition-delay:.27s}
+
+@media(prefers-reduced-motion:reduce){
+  .up{opacity:1;transform:none;transition:none}
+  .strip__mask{animation:none}
+  .dim-row .leader,.steps::before{transform:none;transition:none}
+  html{scroll-behavior:auto}
+}
+
 /* ---------- draft banner ---------- */
 .draftbar{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:50;
   background:var(--ink);color:var(--stone);font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
@@ -253,23 +306,37 @@ a{color:inherit;text-decoration:none}
 <section class="hero">
   <div class="wrap hero__grid">
     <div>
-      <div class="field hero__field"><b>ПОЗ.01</b> Мебель на заказ · Ташкент</div>
-      <h1>Мебель, <em>достойная</em> вашего дома.</h1>
-      <p class="hero__sub">Rich Kitchen проектирует и производит кухни, гардеробные и корпусную мебель на заказ, а также матрасы любого размера и алюминиевые вентиляционные решётки и люки. Ручная сборка и внимание к каждому миллиметру.</p>
-      <div class="hero__cta">
+      <div class="field hero__field up"><b>ПОЗ.01</b> Мебель на заказ · Ташкент</div>
+      <h1 class="up" data-d="1">Мебель, <em>достойная</em> вашего дома.</h1>
+      <p class="hero__sub up" data-d="2">Rich Kitchen проектирует и производит кухни, гардеробные и корпусную мебель на заказ, а также матрасы любого размера и алюминиевые вентиляционные решётки и люки. Ручная сборка и внимание к каждому миллиметру.</p>
+      <div class="hero__cta up" data-d="3">
         <a href="#contact" class="btn">Заказать проект <span class="arw">→</span></a>
         <a href="#process" class="btn btn--ghost">Смотреть работы</a>
       </div>
-      <div class="hero__dims">
+      <div class="hero__dims up" data-d="3">
         <div><b>20</b><span>лет на рынке</span></div>
         <div><b>1000+</b><span>проектов сдано</span></div>
         <div><b>100%</b><span>ручная сборка</span></div>
       </div>
     </div>
-    <div class="hero__media">
+    <div class="hero__media up" data-d="2">
       <div class="frame">
         <span class="tk-br"></span><span class="tk-bl"></span>
-        <div class="frame__img"><img src="assets/img/hero.jpg" alt="Кухня Rich Kitchen"></div>
+        <div class="frame__img">
+          <div class="rev" id="rev" role="slider" tabindex="0" aria-label="Чертёж и готовая мебель"
+               aria-valuemin="0" aria-valuemax="100" aria-valuenow="52">
+            <img src="assets/img/hero.jpg" alt="Кухня Rich Kitchen — готовый проект">
+            <div class="rev__blue">
+              <img src="assets/img/hero.jpg" alt="">
+              <span class="rev__grid"></span>
+            </div>
+            <span class="rev__line"></span>
+            <span class="rev__knob">↔</span>
+            <span class="rev__lbl rev__lbl--l">Чертёж</span>
+            <span class="rev__lbl rev__lbl--r">Готово</span>
+            <span class="rev__hint">Потяните</span>
+          </div>
+        </div>
         <div class="frame__cap">Ил.01 — кухня, орех и латунь</div>
       </div>
       <div class="hero__tblock tblock">
@@ -282,9 +349,12 @@ a{color:inherit;text-decoration:none}
 
 <!-- ============ STRIP ============ -->
 <div class="strip">
-  <div class="wrap">
+  <div class="strip__mask" aria-hidden="true">
     <div class="strip__row">
-      <span>Кухни</span><span>Гардеробные</span><span>Гостиные</span><span>Ванные комнаты</span><span>Прихожие</span><span>Шкафы-купе</span><span>Матрасы</span>
+      <span>Кухни</span><span>Гардеробные</span><span>Гостиные</span><span>Ванные комнаты</span><span>Прихожие</span><span>Шкафы-купе</span><span>Матрасы</span><span>Решётки и люки</span>
+    </div>
+    <div class="strip__row">
+      <span>Кухни</span><span>Гардеробные</span><span>Гостиные</span><span>Ванные комнаты</span><span>Прихожие</span><span>Шкафы-купе</span><span>Матрасы</span><span>Решётки и люки</span>
     </div>
   </div>
 </div>
@@ -292,7 +362,7 @@ a{color:inherit;text-decoration:none}
 <!-- ============ ABOUT ============ -->
 <section class="sec" id="about">
   <div class="wrap about__grid">
-    <div class="about__media">
+    <div class="about__media up">
       <div class="frame">
         <span class="tk-br"></span><span class="tk-bl"></span>
         <div class="frame__img"><img src="assets/img/about.jpg" alt="Производство Rich Kitchen"></div>
@@ -303,13 +373,13 @@ a{color:inherit;text-decoration:none}
       </div>
     </div>
     <div>
-      <div class="field">О компании</div>
-      <h2 class="h2">Мы создаём не мебель, а среду, в которой хочется жить.</h2>
-      <p class="about__lead">20 лет Rich Kitchen делает мебель на заказ для тех, кто ценит качество, а не компромиссы.</p>
-      <div class="about__body">
+      <div class="field up">О компании</div>
+      <h2 class="h2 up" data-d="1">Мы создаём не мебель, а среду, в которой хочется жить.</h2>
+      <p class="about__lead up" data-d="1">20 лет Rich Kitchen делает мебель на заказ для тех, кто ценит качество, а не компромиссы.</p>
+      <div class="about__body up" data-d="2">
         <p>Каждый проект начинается с вашего пространства и образа жизни. Мы проектируем в 3D, производим на собственном оборудовании и собираем вручную — так мы контролируем результат от первого эскиза до последнего шва.</p>
       </div>
-      <ul class="about__list">
+      <ul class="about__list up" data-d="2">
         <li><span class="num">01</span><span>Собственное производство полного цикла</span></li>
         <li><span class="num">02</span><span>Дизайн-проект и 3D-визуализация</span></li>
         <li><span class="num">03</span><span>Европейская фурнитура Blum и Hettich</span></li>
@@ -324,10 +394,10 @@ a{color:inherit;text-decoration:none}
   <div class="wrap sec--tight">
     <div class="field" style="margin-bottom:30px">Цифры</div>
     <div class="dims__list">
-      <div class="dim-row"><div class="num">20</div><div class="leader"></div><div class="lbl">лет на рынке</div></div>
-      <div class="dim-row"><div class="num"><em>1000+</em></div><div class="leader"></div><div class="lbl">проектов сдано</div></div>
-      <div class="dim-row"><div class="num">18 000 м²</div><div class="leader"></div><div class="lbl">произведено</div></div>
-      <div class="dim-row"><div class="num">98%</div><div class="leader"></div><div class="lbl">клиентов рекомендуют</div></div>
+      <div class="dim-row"><div class="num" data-to="20">20</div><div class="leader"></div><div class="lbl">лет на рынке</div></div>
+      <div class="dim-row"><div class="num"><em data-to="1000" data-suffix="+">1000+</em></div><div class="leader"></div><div class="lbl">проектов сдано</div></div>
+      <div class="dim-row"><div class="num" data-to="18000" data-suffix=" м²">18 000 м²</div><div class="leader"></div><div class="lbl">произведено</div></div>
+      <div class="dim-row"><div class="num" data-to="98" data-suffix="%">98%</div><div class="leader"></div><div class="lbl">клиентов рекомендуют</div></div>
     </div>
   </div>
 </section>
@@ -335,7 +405,7 @@ a{color:inherit;text-decoration:none}
 <!-- ============ PROCESS ============ -->
 <section class="sec" id="process">
   <div class="wrap">
-    <div class="sec-head">
+    <div class="sec-head up">
       <div class="field">Как мы работаем</div>
       <h2 class="h2">Путь от идеи до готовой мебели</h2>
     </div>
@@ -352,10 +422,10 @@ a{color:inherit;text-decoration:none}
 <section class="cta">
   <div class="cta__bg"><img src="assets/img/cta.jpg" alt="Премиальная мебель на заказ Rich Kitchen"></div>
   <div class="wrap">
-    <div class="field" style="color:var(--brass)">Бесплатная консультация</div>
-    <h2 style="margin-top:18px">Расскажите о вашем проекте — остальное сделаем мы.</h2>
+    <div class="field up" style="color:var(--brass)">Бесплатная консультация</div>
+    <h2 class="up" data-d="1" style="margin-top:18px">Расскажите о вашем проекте — остальное сделаем мы.</h2>
     <p>Замер, дизайн-проект и расчёт стоимости — бесплатно. Ни к чему не обязывает.</p>
-    <div class="cta__actions">
+    <div class="cta__actions up" data-d="2">
       <a href="#contact" class="btn btn--brass">Оставить заявку <span class="arw">→</span></a>
       <a href="tel:+998903198638" class="btn btn--light">Позвонить</a>
     </div>
@@ -375,7 +445,7 @@ a{color:inherit;text-decoration:none}
         <li><span class="k">Часы работы</span><span class="v">Пн–Сб · 10:00–19:00</span></li>
       </ul>
     </div>
-    <div class="order">
+    <div class="order up" data-d="1">
       <h3>Оставить заявку</h3>
       <p class="order__sub">Перезвоним в течение 15 минут в рабочее время и озвучим точную цену — каждый проект индивидуален.</p>
       <div class="ofield"><label>Ваше имя</label><input type="text" placeholder="Иван"></div>
@@ -421,6 +491,83 @@ a{color:inherit;text-decoration:none}
     </div>
   </div>
 </footer>
+
+<script>
+(function(){
+  "use strict";
+  var reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---- Ползунок «чертёж → готово» ---- */
+  var rev = document.getElementById("rev");
+  if (rev) {
+    var dragging = false;
+    function setPos(clientX){
+      var r = rev.getBoundingClientRect();
+      var pct = ((clientX - r.left) / r.width) * 100;
+      pct = Math.max(2, Math.min(98, pct));
+      rev.style.setProperty("--pos", pct.toFixed(1) + "%");
+      rev.setAttribute("aria-valuenow", Math.round(pct));
+      rev.classList.add("is-touched");
+    }
+    rev.addEventListener("pointerdown", function(e){
+      dragging = true; rev.setPointerCapture(e.pointerId); setPos(e.clientX);
+    });
+    rev.addEventListener("pointermove", function(e){ if (dragging) setPos(e.clientX); });
+    ["pointerup","pointercancel"].forEach(function(ev){
+      rev.addEventListener(ev, function(){ dragging = false; });
+    });
+    // клавиатура — стрелками
+    rev.addEventListener("keydown", function(e){
+      var cur = parseFloat(rev.style.getPropertyValue("--pos")) || 52;
+      if (e.key === "ArrowLeft")  { cur -= 4; } else if (e.key === "ArrowRight") { cur += 4; } else { return; }
+      e.preventDefault();
+      cur = Math.max(2, Math.min(98, cur));
+      rev.style.setProperty("--pos", cur + "%");
+      rev.setAttribute("aria-valuenow", Math.round(cur));
+      rev.classList.add("is-touched");
+    });
+  }
+
+  /* ---- Появление блоков при скролле ---- */
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if (en.isIntersecting) { en.target.classList.add("is-in"); io.unobserve(en.target); }
+    });
+  }, { threshold: .18, rootMargin: "0px 0px -8% 0px" });
+
+  document.querySelectorAll(".up, .dims, .steps").forEach(function(el){ io.observe(el); });
+
+  /* ---- Счёт цифр ---- */
+  function countUp(el){
+    var to = parseInt(el.getAttribute("data-to"), 10);
+    var suffix = el.getAttribute("data-suffix") || "";
+    if (reduced || !to) return;
+    var dur = 1100, start = null;
+    function fmt(n){ return n.toLocaleString("ru-RU").replace(/,/g, " "); }
+    function tick(ts){
+      if (!start) start = ts;
+      var p = Math.min((ts - start) / dur, 1);
+      var eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = fmt(Math.round(to * eased)) + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    el.textContent = "0" + suffix;
+    requestAnimationFrame(tick);
+  }
+
+  var dims = document.querySelector(".dims");
+  if (dims) {
+    var dio = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if (!en.isIntersecting) return;
+        en.target.querySelectorAll("[data-to]").forEach(countUp);
+        dio.unobserve(en.target);
+      });
+    }, { threshold: .3 });
+    dio.observe(dims);
+  }
+})();
+</script>
 
 </body>
 </html>
