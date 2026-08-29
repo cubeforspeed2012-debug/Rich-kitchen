@@ -1,464 +1,615 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-lang="ru">
 <head>
+<script>document.documentElement.className += " js";</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rich Kitchen — черновик нового дизайна</title>
+<title>Черновик — Rich Kitchen — мебель на заказ в Ташкенте: кухни, гардеробные, матрасы, вентиляционные решётки и люки</title>
+<meta name="description" content="Rich Kitchen (Ричкитчен) — мебель на заказ в Ташкенте: кухни, гардеробные, гостиные, прихожие, матрасы любого размера и алюминиевые вентиляционные решётки и люки. 20 лет на рынке, 1000+ проектов, гарантия 5 лет.">
+<meta name="keywords" content="Rich Kitchen, Ричкитчен, рич китчен, мебель на заказ Ташкент, кухни на заказ Ташкент, гардеробные Ташкент, матрасы на заказ Ташкент, вентиляционные решётки Ташкент, алюминиевые решётки, ревизионные люки, кухни Юнусабад">
+<link rel="icon" href="/favicon.ico" sizes="48x48 96x96 256x256">
+<link rel="icon" type="image/png" href="/assets/logo/favicon-96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/assets/logo/icon-192.png" sizes="192x192">
+<link rel="icon" type="image/png" href="/assets/logo/icon-512.png" sizes="512x512">
+<link rel="apple-touch-icon" href="/assets/logo/apple-touch-icon.png">
+<meta name="build" content="dev">
 <meta name="robots" content="noindex, nofollow">
+<meta name="yandex-verification" content="ffed4576ad894af2" />
+<meta name="theme-color" content="#0E2447">
+<meta property="og:title" content="Rich Kitchen — мебель на заказ в Ташкенте">
+<meta property="og:description" content="Мебель на заказ в Ташкенте: кухни, гардеробные, матрасы, вентиляционные решётки и люки. Собственное производство, гарантия 5 лет.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://rich-kitchen.uz/">
+<meta property="og:image" content="https://rich-kitchen.uz/assets/img/hero.jpg">
+<meta property="og:site_name" content="Rich Kitchen">
+<meta property="og:locale" content="ru_RU">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FurnitureStore",
+  "name": "Rich Kitchen",
+  "alternateName": ["Ричкитчен", "Рич Китчен", "Rich Kitchen Tashkent"],
+  "description": "Мебель на заказ в Ташкенте: кухни, гардеробные, гостиные, прихожие, матрасы любого размера, алюминиевые вентиляционные решётки и люки.",
+  "logo": "https://rich-kitchen.uz/assets/logo/icon-512.png",
+  "image": "https://rich-kitchen.uz/assets/img/hero.jpg",
+  "url": "https://rich-kitchen.uz/",
+  "telephone": "+998903198638",
+  "priceRange": "$$$",
+  "foundingDate": "2006",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "МСГ Янгитарнов",
+    "addressLocality": "Ташкент",
+    "addressRegion": "Юнусабадский район",
+    "addressCountry": "UZ"
+  },
+  "areaServed": "Uzbekistan",
+  "openingHours": "Mo-Sa 10:00-19:00",
+  "sameAs": [
+    "https://instagram.com/bobur.abdumajidov2023",
+    "https://yandex.ru/maps/org/rich_kitchen/243747041936"
+  ]
+}
+</script>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Rich Kitchen">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Petrona:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-:root{
-  --stone:#E7EDF3;
-  --panel:#D8E2EC;
-  --ink:#0E2447;
-  --walnut:#122F52;
-  --walnut-2:#0B1B33;
-  --brass:#B8894A;
-  --brass-d:#8A6431;
-  --verd:#5C6E5E;
-  --line: rgba(14,36,71,.18);
-  --line-2: rgba(14,36,71,.34);
-  --serif:"Petrona",Georgia,serif;
-  --sans:"Archivo",sans-serif;
-  --mono:"IBM Plex Mono",monospace;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--stone);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
-img{max-width:100%;display:block}
-a{color:inherit;text-decoration:none}
-.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
-@media(max-width:720px){.wrap{padding:0 20px}}
+<link rel="stylesheet" href="css/draft.css?v=1">
 
-/* ---------- utility type ---------- */
-.mono{font-family:var(--mono)}
-.field{
-  font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--brass-d);display:flex;align-items:center;gap:10px;font-weight:500;
-}
-.field b{color:var(--ink);font-weight:600;letter-spacing:.16em}
-.field::before{content:"";width:16px;height:1px;background:var(--brass-d)}
+<!-- ============ Google Analytics 4 ============ -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3KYXX0PM4R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-3KYXX0PM4R');
+</script>
 
-/* ---------- title block — signature element ---------- */
-.tblock{
-  font-family:var(--mono);font-size:10px;letter-spacing:.08em;
-  border:1px solid var(--line-2);background:rgba(231,237,243,.9);backdrop-filter:blur(2px);
-  min-width:190px;
-}
-.tblock__row{display:flex;justify-content:space-between;gap:14px;padding:7px 11px}
-.tblock__row + .tblock__row{border-top:1px solid var(--line)}
-.tblock .k{color:var(--ink);opacity:.5;text-transform:uppercase}
-.tblock .v{color:var(--ink);font-weight:600;text-transform:uppercase}
-.tblock--dark{background:rgba(11,27,51,.9);border-color:rgba(231,237,243,.22)}
-.tblock--dark .k,.tblock--dark .v{color:var(--stone)}
-.tblock--dark .k{opacity:.55}
+<!-- ============ Yandex.Metrica (111894339) ============ -->
+<script type="text/javascript">
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
-/* ---------- corner ticks — framed media ---------- */
-.frame{position:relative;padding:14px}
-.frame::before,.frame::after,.frame .tk-br,.frame .tk-bl{content:"";position:absolute;width:16px;height:16px}
-.frame::before{top:0;left:0;border-top:1px solid var(--ink);border-left:1px solid var(--ink)}
-.frame::after{top:0;right:0;border-top:1px solid var(--ink);border-right:1px solid var(--ink)}
-.frame .tk-br{bottom:0;right:0;border-bottom:1px solid var(--ink);border-right:1px solid var(--ink)}
-.frame .tk-bl{bottom:0;left:0;border-bottom:1px solid var(--ink);border-left:1px solid var(--ink)}
-.frame__img{overflow:hidden}
-.frame__img img{width:100%;height:100%;object-fit:cover}
-.frame__cap{
-  position:absolute;left:14px;bottom:14px;transform:translateY(50%);
-  font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
-  background:var(--ink);color:var(--stone);padding:6px 11px;
-}
+   ym(111894339, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/111894339" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrica counter -->
 
-/* ---------- buttons ---------- */
-.btn{
-  display:inline-flex;align-items:center;gap:10px;padding:14px 24px;
-  font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;
-  background:var(--ink);color:var(--stone);border:1px solid var(--ink);border-radius:2px;
-  transition:background .2s,color .2s,border-color .2s;
-}
-.btn:hover{background:var(--brass);border-color:var(--brass)}
-.btn .arw{font-family:var(--sans);font-size:15px}
-.btn--ghost{background:transparent;color:var(--ink);border-color:var(--line-2)}
-.btn--ghost:hover{background:var(--ink);color:var(--stone);border-color:var(--ink)}
-.btn--brass{background:var(--brass);border-color:var(--brass);color:var(--walnut-2)}
-.btn--brass:hover{background:var(--stone);color:var(--ink);border-color:var(--ink)}
-.btn--light{background:transparent;border-color:rgba(231,237,243,.5);color:var(--stone)}
-.btn--light:hover{background:var(--stone);color:var(--ink)}
-.btn--block{width:100%;justify-content:center}
-
-/* ============ NAV ============ */
-.nav{position:sticky;top:0;z-index:40;background:rgba(231,237,243,.93);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:76px}
-.nav__brand{font-family:var(--serif);font-weight:600;font-size:21px;letter-spacing:.01em}
-.nav__brand em{font-style:italic;color:var(--brass-d)}
-.nav__links{display:flex;gap:32px;font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
-.nav__links a{opacity:.7;transition:opacity .15s}
-.nav__links a:hover{opacity:1}
-.nav__cta{display:flex;align-items:center;gap:18px}
-@media(max-width:900px){.nav__links{display:none}}
-
-/* ============ HERO ============ */
-.hero{
-  padding:64px 0 0;position:relative;
-  background-image:
-    linear-gradient(to right, rgba(14,36,71,.055) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(14,36,71,.055) 1px, transparent 1px);
-  background-size:56px 56px;
-}
-.hero__grid{display:grid;grid-template-columns:1.05fr .95fr;gap:64px;align-items:center}
-.hero__field{margin-bottom:26px}
-.hero h1{font-family:var(--serif);font-weight:500;font-size:clamp(38px,5.2vw,68px);line-height:1.04;letter-spacing:-.01em}
-.hero h1 em{font-style:italic;font-weight:500;color:var(--brass-d)}
-.hero__sub{margin-top:24px;font-size:16.5px;line-height:1.65;color:var(--ink);opacity:.72;max-width:50ch}
-.hero__cta{display:flex;gap:14px;margin-top:36px;flex-wrap:wrap}
-.hero__dims{display:flex;gap:36px;margin-top:56px;padding-top:26px;border-top:1px solid var(--line)}
-.hero__dims div b{display:block;font-family:var(--serif);font-size:30px;font-weight:600;color:var(--ink)}
-.hero__dims div span{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);opacity:.55}
-.hero__media{position:relative}
-.hero__media .frame{aspect-ratio:4/5}
-.hero__tblock{position:absolute;top:-1px;left:-1px}
-@media(max-width:900px){
-  .hero__grid{grid-template-columns:1fr;gap:40px}
-  .hero{padding-top:40px}
-  .hero__dims{gap:24px;flex-wrap:wrap}
-}
-
-/* ---------- SIGNATURE: чертёж → готовая мебель ---------- */
-.rev{position:relative;aspect-ratio:4/5;overflow:hidden;cursor:ew-resize;touch-action:none;background:var(--walnut-2);--pos:52%}
-.rev img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;user-select:none;-webkit-user-drag:none}
-.rev__blue{position:absolute;inset:0;clip-path:inset(0 calc(100% - var(--pos)) 0 0)}
-.rev__blue img{filter:grayscale(1) invert(1) contrast(1.45) brightness(.92)}
-.rev__blue::after{content:"";position:absolute;inset:0;background:#123C77;mix-blend-mode:color}
-.rev__grid{position:absolute;inset:0;pointer-events:none;
-  background-image:
-    linear-gradient(to right, rgba(231,237,243,.16) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(231,237,243,.16) 1px, transparent 1px);
-  background-size:34px 34px}
-.rev__line{position:absolute;top:0;bottom:0;left:var(--pos);width:1px;background:var(--stone);pointer-events:none}
-.rev__knob{position:absolute;top:50%;left:var(--pos);transform:translate(-50%,-50%);
-  width:44px;height:44px;border-radius:50%;background:var(--stone);border:1px solid var(--ink);
-  display:grid;place-items:center;font-family:var(--mono);font-size:13px;color:var(--ink);pointer-events:none;
-  box-shadow:0 4px 16px rgba(11,27,51,.3)}
-.rev__lbl{position:absolute;bottom:14px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;
-  text-transform:uppercase;padding:6px 10px;pointer-events:none;transition:opacity .2s}
-.rev__lbl--l{left:14px;background:rgba(11,27,51,.86);color:var(--stone)}
-.rev__lbl--r{right:14px;background:var(--stone);color:var(--ink)}
-.rev__hint{position:absolute;top:14px;right:14px;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;
-  text-transform:uppercase;background:rgba(231,237,243,.9);color:var(--ink);padding:5px 9px;pointer-events:none;
-  transition:opacity .3s}
-.rev.is-touched .rev__hint{opacity:0}
-
-/* ============ STRIP (running marquee) ============ */
-.strip{background:var(--walnut);color:var(--stone);padding:16px 0;margin-top:72px;overflow:hidden}
-.strip__mask{display:flex;width:max-content;animation:slide 34s linear infinite}
-.strip:hover .strip__mask{animation-play-state:paused}
-.strip__row{display:flex;font-family:var(--mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
-.strip__row span{padding:0 22px;position:relative;opacity:.85}
-.strip__row span::before{content:"◆";position:absolute;left:-3px;top:1px;font-size:6px;color:var(--brass);opacity:.9}
-@keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-
-/* ============ SECTION shell ============ */
-.sec{padding:96px 0}
-.sec--tight{padding:72px 0}
-.sec-head{margin-bottom:52px;max-width:70ch}
-.sec-head p{margin-top:18px;color:var(--ink);opacity:.7;font-size:15.5px;line-height:1.6;max-width:56ch}
-.h2{font-family:var(--serif);font-weight:500;font-size:clamp(28px,3.6vw,42px);line-height:1.12;letter-spacing:-.008em;margin-top:16px}
-.h2 em{font-style:italic;color:var(--brass-d)}
-
-/* ============ ABOUT ============ */
-.about__grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:64px;align-items:start}
-.about__media .frame{aspect-ratio:3/4}
-.about__quote{margin-top:26px;padding-left:18px;border-left:2px solid var(--brass)}
-.about__quote p{font-family:var(--serif);font-style:italic;font-size:18px;line-height:1.45;color:var(--ink)}
-.about__quote cite{display:block;margin-top:10px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-style:normal;color:var(--ink);opacity:.5}
-.about__lead{font-family:var(--serif);font-size:19px;line-height:1.5;margin-top:8px;color:var(--ink)}
-.about__body p{margin-top:18px;color:var(--ink);opacity:.75;font-size:15.5px;line-height:1.7;max-width:58ch}
-.about__list{list-style:none;margin-top:32px;border-top:1px solid var(--line)}
-.about__list li{display:flex;align-items:center;gap:18px;padding:15px 0;border-bottom:1px solid var(--line);font-size:15px}
-.about__list .num{font-family:var(--mono);font-size:11px;color:var(--brass-d);letter-spacing:.06em;flex:none;width:22px}
-@media(max-width:900px){.about__grid{grid-template-columns:1fr;gap:40px}}
-
-/* ============ DIMENSIONS (stats) ============ */
-.dims{background:var(--walnut);color:var(--stone)}
-.dims .field{color:var(--brass)}
-.dims .field::before{background:var(--brass)}
-.dims__list{display:flex;flex-direction:column}
-.dim-row{display:flex;align-items:baseline;gap:18px;padding:26px 0;border-bottom:1px solid rgba(231,237,243,.16)}
-.dim-row:last-child{border-bottom:none}
-.dim-row .num{font-family:var(--serif);font-weight:600;font-size:clamp(30px,4vw,46px);color:var(--stone);flex:none;min-width:130px}
-.dim-row .num em{font-style:italic;color:var(--brass)}
-.dim-row .leader{flex:1;border-bottom:1px dashed rgba(231,237,243,.3);height:0;margin-bottom:12px;min-width:24px;
-  transform:scaleX(0);transform-origin:left;transition:transform 1s cubic-bezier(.2,.7,.3,1)}
-.dims.is-in .dim-row .leader{transform:scaleX(1)}
-.dims.is-in .dim-row:nth-child(2) .leader{transition-delay:.12s}
-.dims.is-in .dim-row:nth-child(3) .leader{transition-delay:.24s}
-.dims.is-in .dim-row:nth-child(4) .leader{transition-delay:.36s}
-.dim-row .lbl{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--stone);opacity:.6;flex:none}
-
-/* ============ PROCESS ============ */
-.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);position:relative}
-.steps::before{content:"";position:absolute;top:64px;left:0;height:1px;background:var(--brass);width:100%;
-  transform:scaleX(0);transform-origin:left;transition:transform 1.4s cubic-bezier(.25,.8,.3,1);z-index:2}
-.steps.is-in::before{transform:scaleX(1)}
-.step{background:var(--stone);padding:32px 26px;display:flex;flex-direction:column;gap:14px;position:relative;
-  transition:background .25s}
-.step:hover{background:#fff}
-.step .no{font-family:var(--serif);font-style:italic;font-size:34px;color:var(--brass-d);font-weight:500;
-  position:relative;z-index:3;background:var(--stone);width:max-content;padding-right:10px;transition:background .25s}
-.step:hover .no{background:#fff}
-.step h3{font-family:var(--sans);font-weight:600;font-size:16.5px}
-.step p{font-size:13.5px;line-height:1.55;color:var(--ink);opacity:.7}
-@media(max-width:900px){.steps{grid-template-columns:1fr 1fr}}
-@media(max-width:560px){.steps{grid-template-columns:1fr}}
-
-/* ============ CTA ============ */
-.cta{position:relative;padding:110px 0;overflow:hidden}
-.cta__bg{position:absolute;inset:0}
-.cta__bg img{width:100%;height:100%;object-fit:cover}
-.cta__bg::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(11,27,51,.95) 40%,rgba(11,27,51,.55))}
-.cta .wrap{position:relative;color:var(--stone);max-width:760px}
-.cta h2{font-family:var(--serif);font-weight:500;font-size:clamp(28px,4.2vw,44px);line-height:1.16;letter-spacing:-.008em}
-.cta p{margin-top:18px;font-size:16px;opacity:.78;max-width:52ch}
-.cta__actions{display:flex;gap:14px;margin-top:36px;flex-wrap:wrap}
-
-/* ============ CONTACT ============ */
-.contact__grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:72px;align-items:start}
-.info-list{list-style:none;margin-top:32px;display:flex;flex-direction:column;gap:20px}
-.info-list li{display:flex;flex-direction:column;gap:3px;padding-bottom:18px;border-bottom:1px solid var(--line)}
-.info-list .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);opacity:.5}
-.info-list .v{font-size:16px;font-family:var(--serif)}
-
-.order{background:var(--panel);border:1px solid var(--line);padding:40px}
-.order h3{font-family:var(--serif);font-size:24px;font-weight:600}
-.order__sub{margin-top:10px;font-size:14px;color:var(--ink);opacity:.65;max-width:46ch}
-.ofield{margin-top:22px}
-.ofield label{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);opacity:.55;margin-bottom:8px}
-.ofield input,.ofield select,.ofield textarea{
-  width:100%;background:transparent;border:none;border-bottom:1px solid var(--line-2);
-  padding:9px 2px;font-family:var(--sans);font-size:15.5px;color:var(--ink);border-radius:0;
-}
-.ofield input:focus,.ofield select:focus,.ofield textarea:focus{outline:none;border-color:var(--brass-d)}
-.ofield--row{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.ofield textarea{resize:vertical;min-height:64px}
-.oconsent{display:flex;gap:10px;align-items:flex-start;margin-top:24px;font-size:12.5px;color:var(--ink);opacity:.7;line-height:1.5}
-.oconsent input{margin-top:2px;accent-color:var(--brass-d)}
-.oconsent a{color:var(--brass-d);text-decoration:underline}
-.order .btn{margin-top:26px}
-@media(max-width:900px){.contact__grid{grid-template-columns:1fr;gap:40px}.order{padding:28px}}
-@media(max-width:560px){.ofield--row{grid-template-columns:1fr}}
-
-/* ============ FOOTER ============ */
-.footer{background:var(--walnut-2);color:var(--stone);padding:72px 0 0;margin-top:0}
-.footer__top{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;padding-bottom:56px;border-bottom:1px solid rgba(231,237,243,.16)}
-.footer__brand{font-family:var(--serif);font-size:22px;font-weight:600}
-.footer__brand em{font-style:italic;color:var(--brass)}
-.footer__desc{margin-top:16px;font-size:13.5px;line-height:1.6;opacity:.6;max-width:34ch}
-.footer h4{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.5;margin-bottom:16px}
-.footer nav{display:flex;flex-direction:column;gap:11px;font-size:14px}
-.footer nav a{opacity:.78}
-.footer nav a:hover{opacity:1}
-.footer__bottom{display:flex;justify-content:space-between;padding:22px 0;font-family:var(--mono);font-size:11px;letter-spacing:.06em;opacity:.5;flex-wrap:wrap;gap:8px}
-@media(max-width:800px){.footer__top{grid-template-columns:1fr 1fr;gap:32px}}
-
-/* ---------- scroll reveal ---------- */
-.up{opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.3,1)}
-.up.is-in{opacity:1;transform:none}
-.up[data-d="1"]{transition-delay:.09s}
-.up[data-d="2"]{transition-delay:.18s}
-.up[data-d="3"]{transition-delay:.27s}
-
-@media(prefers-reduced-motion:reduce){
-  .up{opacity:1;transform:none;transition:none}
-  .strip__mask{animation:none}
-  .dim-row .leader,.steps::before{transform:none;transition:none}
-  html{scroll-behavior:auto}
-}
-
-/* ---------- draft banner ---------- */
-.draftbar{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:50;
-  background:var(--ink);color:var(--stone);font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
-  padding:10px 18px;border-radius:2px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
-.draftbar b{color:var(--brass)}
-</style>
 </head>
 <body>
 
-<div class="draftbar">Черновик дизайна — <b>не финальная версия</b>, только для просмотра</div>
+<!-- ============ TOP BAR ============ -->
+<div class="topbar">
+  <div class="wrap">
+    <div class="topbar__left">
+      <span><span class="dot"></span><span data-ru="Работаем по всему Узбекистану" data-uz="Butun Oʻzbekiston boʻylab ishlaymiz">Работаем по всему Узбекистану</span></span>
+      <span class="hide-sm" data-ru="Пн–Сб · 10:00–19:00" data-uz="Du–Sha · 10:00–19:00">Пн–Сб · 10:00–19:00</span>
+    </div>
+    <div class="topbar__right">
+      <a href="tel:+998903198638">+998 (90) 319-86-38</a>
+      <a class="hide-sm" href="https://instagram.com/bobur.abdumajidov2023" target="_blank" rel="noopener">Instagram</a>
+    </div>
+  </div>
+</div>
 
 <!-- ============ NAV ============ -->
-<header class="nav">
+<header class="nav" id="nav">
   <div class="wrap">
-    <a class="nav__brand" href="#top">Rich<em>·</em>Kitchen</a>
+    <a class="brand" href="#top" aria-label="Rich Kitchen">
+      <img src="assets/logo/richkitchen-blue.png" alt="Rich Kitchen">
+    </a>
     <nav class="nav__links">
-      <a href="#about">О нас</a>
-      <a href="#dims">Цифры</a>
-      <a href="#process">Процесс</a>
-      <a href="#contact">Контакты</a>
+      <a href="#about" data-ru="О нас" data-uz="Biz haqimizda">О нас</a>
+      <a href="#catalog" data-ru="Каталог" data-uz="Katalog">Каталог</a>
+      <a href="#materials" data-ru="Материалы" data-uz="Materiallar">Материалы</a>
+      <a href="draft-matrasy.html" data-ru="Матрасы" data-uz="Matraslar">Матрасы</a>
+      <a href="draft-reshetki.html" data-ru="Решётки" data-uz="Panjaralar">Решётки</a>
+      <a href="draft-portfolio.html" data-ru="Портфолио" data-uz="Portfolio">Портфолио</a>
+      <a href="#projects" data-ru="Проекты" data-uz="Loyihalar">Проекты</a>
+      <a href="#process" data-ru="Процесс" data-uz="Jarayon">Процесс</a>
+      <a href="#contact" data-ru="Контакты" data-uz="Aloqa">Контакты</a>
     </nav>
-    <div class="nav__cta"><a href="#contact" class="btn">Заказать проект</a></div>
+    <div class="nav__actions">
+      <div class="lang" id="lang">
+        <button data-set="ru" class="active">RU</button><span>/</span><button data-set="uz">UZ</button>
+      </div>
+      <a href="#contact" class="btn nav__cta" data-ru="Заказать проект" data-uz="Loyiha buyurtma qilish">Заказать проект</a>
+      <button class="burger" id="burger" aria-label="Menu"><i></i><i></i><i></i></button>
+    </div>
   </div>
 </header>
+
+<!-- mobile menu -->
+<div class="mobile" id="mobile">
+  <div class="mobile__top">
+    <img src="assets/logo/richkitchen-blue.png" alt="Rich Kitchen" style="height:42px">
+    <button class="mobile__close" id="mclose" aria-label="Close">×</button>
+  </div>
+  <nav>
+    <a href="#about" data-ru="О нас" data-uz="Biz haqimizda">О нас</a>
+    <a href="#catalog" data-ru="Каталог" data-uz="Katalog">Каталог</a>
+    <a href="#materials" data-ru="Материалы" data-uz="Materiallar">Материалы</a>
+    <a href="draft-matrasy.html" data-ru="Матрасы" data-uz="Matraslar">Матрасы</a>
+    <a href="draft-reshetki.html" data-ru="Решётки" data-uz="Panjaralar">Решётки</a>
+    <a href="#projects" data-ru="Проекты" data-uz="Loyihalar">Проекты</a>
+    <a href="#process" data-ru="Процесс" data-uz="Jarayon">Процесс</a>
+    <a href="#contact" data-ru="Контакты" data-uz="Aloqa">Контакты</a>
+  </nav>
+  <div class="mobile__foot">
+    <a href="tel:+998903198638" class="btn btn--block">+998 (90) 319-86-38</a>
+    <a href="#contact" class="btn btn--ghost btn--block" data-ru="Заказать проект" data-uz="Loyiha buyurtma qilish">Заказать проект</a>
+  </div>
+</div>
+
+<!-- MOBILE SECTION SWITCH -->
+<nav class="mswitch" aria-label="Разделы">
+  <a href="draft.html" class="is-active" data-ru="Мебель" data-uz="Mebel">Мебель</a>
+  <a href="draft-matrasy.html" data-ru="Матрасы" data-uz="Matraslar">Матрасы</a>
+  <a href="draft-reshetki.html" data-ru="Решётки и люки" data-uz="Panjara va lyuklar">Решётки и люки</a>
+  <a href="draft-portfolio.html" data-ru="Портфолио" data-uz="Portfolio">Портфолио</a>
+</nav>
 
 <main id="top">
 
 <!-- ============ HERO ============ -->
 <section class="hero">
   <div class="wrap hero__grid">
-    <div>
-      <div class="field hero__field up"><b>ПОЗ.01</b> Мебель на заказ · Ташкент</div>
-      <h1 class="up" data-d="1">Мебель, <em>достойная</em> вашего дома.</h1>
-      <p class="hero__sub up" data-d="2">Rich Kitchen проектирует и производит кухни, гардеробные и корпусную мебель на заказ, а также матрасы любого размера и алюминиевые вентиляционные решётки и люки. Ручная сборка и внимание к каждому миллиметру.</p>
-      <div class="hero__cta up" data-d="3">
-        <a href="#contact" class="btn">Заказать проект <span class="arw">→</span></a>
-        <a href="#process" class="btn btn--ghost">Смотреть работы</a>
+    <div class="hero__copy">
+      <span class="eyebrow hero__eyebrow reveal" data-ru="Мебель на заказ · Ташкент" data-uz="Buyurtma asosida mebel · Toshkent">Мебель на заказ · Ташкент</span>
+      <h1 class="reveal" data-d="1" data-ru='Мебель, <em>достойная</em> вашего дома.' data-uz='Uyingizga <em>munosib</em> mebel.'>Мебель, <em>достойная</em> вашего дома.</h1>
+      <p class="hero__sub reveal" data-d="2" data-ru="Rich Kitchen проектирует и производит кухни, гардеробные и корпусную мебель на заказ, а также матрасы любого размера и алюминиевые вентиляционные решётки и люки. Ручная сборка и внимание к каждому миллиметру." data-uz="Rich Kitchen buyurtma asosida oshxonalar, garderoblar va korpusli mebellar, shuningdek har qanday oʻlchamdagi matraslar va alyuminiy ventilyatsiya panjaralari va lyuklarni ishlab chiqaradi. Qoʻlda yigʻish va har bir millimetrga eʼtibor.">Rich Kitchen проектирует и производит кухни, гардеробные и корпусную мебель на заказ, а также матрасы любого размера и алюминиевые вентиляционные решётки и люки. Ручная сборка и внимание к каждому миллиметру.</p>
+      <div class="hero__cta reveal" data-d="3">
+        <a href="#contact" class="btn"><span data-ru="Заказать проект" data-uz="Loyiha buyurtma qilish">Заказать проект</span> <span class="arw">→</span></a>
+        <a href="#projects" class="btn btn--ghost" data-ru="Смотреть работы" data-uz="Ishlarni koʻrish">Смотреть работы</a>
       </div>
-      <div class="hero__dims up" data-d="3">
-        <div><b>20</b><span>лет на рынке</span></div>
-        <div><b>1000+</b><span>проектов сдано</span></div>
-        <div><b>100%</b><span>ручная сборка</span></div>
+      <div class="hero__meta reveal" data-d="4">
+        <div><div class="n" data-count="20">20</div><div class="l" data-ru="лет на рынке" data-uz="yillik tajriba">лет на рынке</div></div>
+        <div><div class="n" data-count="1000" data-suffix="+">1000+</div><div class="l" data-ru="проектов сдано" data-uz="loyiha topshirilgan">проектов сдано</div></div>
+        <div><div class="n" data-count="100" data-suffix="%">100%</div><div class="l" data-ru="ручная сборка" data-uz="qoʻlda yigʻish">ручная сборка</div></div>
       </div>
     </div>
-    <div class="hero__media up" data-d="2">
+    <div class="hero__media reveal" data-d="2">
+      <div class="hero__ring"></div>
       <div class="frame">
-        <span class="tk-br"></span><span class="tk-bl"></span>
-        <div class="frame__img">
-          <div class="rev" id="rev" role="slider" tabindex="0" aria-label="Чертёж и готовая мебель"
-               aria-valuemin="0" aria-valuemax="100" aria-valuenow="52">
-            <img src="assets/img/hero.jpg" alt="Кухня Rich Kitchen — готовый проект">
-            <div class="rev__blue">
-              <img src="assets/img/hero.jpg" alt="">
-              <span class="rev__grid"></span>
-            </div>
-            <span class="rev__line"></span>
-            <span class="rev__knob">↔</span>
-            <span class="rev__lbl rev__lbl--l">Чертёж</span>
-            <span class="rev__lbl rev__lbl--r">Готово</span>
-            <span class="rev__hint">Потяните</span>
-          </div>
+        <div class="rev" id="rev" role="slider" tabindex="0"
+             aria-label="Чертёж и готовая мебель"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="52">
+          <img src="assets/img/hero.jpg" alt="Кухня Rich Kitchen" loading="eager">
+          <div class="rev__blue"><img src="assets/img/hero.jpg" alt=""><span class="rev__grid"></span></div>
+          <span class="rev__line"></span>
+          <span class="rev__knob">↔</span>
+          <span class="rev__lbl rev__lbl--l" data-ru="Чертёж" data-uz="Chizma">Чертёж</span>
+          <span class="rev__lbl rev__lbl--r" data-ru="Готово" data-uz="Tayyor">Готово</span>
+          <span class="rev__hint" data-ru="Потяните" data-uz="Torting">Потяните</span>
         </div>
-        <div class="frame__cap">Ил.01 — кухня, орех и латунь</div>
       </div>
-      <div class="hero__tblock tblock">
-        <div class="tblock__row"><span class="k">Гарантия</span><span class="v">5 лет</span></div>
-        <div class="tblock__row"><span class="k">Масштаб</span><span class="v">М 1:20</span></div>
+      <div class="hero__mini"><img src="assets/img/project-6.jpg" alt="Проект Rich Kitchen" loading="lazy"></div>
+      <span class="hero__stamp" aria-hidden="true"><b>20</b><i data-ru="лет" data-uz="yil">лет</i></span>
+      <div class="hero__badge">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><path d="M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7z"/></svg></div>
+        <div><b data-ru="Гарантия 5 лет" data-uz="5 yil kafolat">Гарантия 5 лет</b><span data-ru="на всю мебель" data-uz="barcha mebelga">на всю мебель</span></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ STRIP ============ -->
-<div class="strip">
-  <div class="strip__mask" aria-hidden="true">
-    <div class="strip__row">
-      <span>Кухни</span><span>Гардеробные</span><span>Гостиные</span><span>Ванные комнаты</span><span>Прихожие</span><span>Шкафы-купе</span><span>Матрасы</span><span>Решётки и люки</span>
-    </div>
-    <div class="strip__row">
-      <span>Кухни</span><span>Гардеробные</span><span>Гостиные</span><span>Ванные комнаты</span><span>Прихожие</span><span>Шкафы-купе</span><span>Матрасы</span><span>Решётки и люки</span>
-    </div>
+<!-- ============ MARQUEE ============ -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee__track" id="marquee">
+    <span data-ru="Кухни" data-uz="Oshxonalar">Кухни</span>
+    <span data-ru="Гардеробные" data-uz="Garderoblar">Гардеробные</span>
+    <span data-ru="Гостиные" data-uz="Mehmonxonalar">Гостиные</span>
+    <span data-ru="Ванные комнаты" data-uz="Hammomlar">Ванные комнаты</span>
+    <span data-ru="Прихожие" data-uz="Yoʻlaklar">Прихожие</span>
+    <span data-ru="Шкафы-купе" data-uz="Kupe shkaflar">Шкафы-купе</span>
+    <span data-ru="Матрасы" data-uz="Matraslar">Матрасы</span>
   </div>
 </div>
 
 <!-- ============ ABOUT ============ -->
-<section class="sec" id="about">
+<section class="section" id="about">
   <div class="wrap about__grid">
-    <div class="about__media up">
-      <div class="frame">
-        <span class="tk-br"></span><span class="tk-bl"></span>
-        <div class="frame__img"><img src="assets/img/about.jpg" alt="Производство Rich Kitchen"></div>
-      </div>
+    <div class="about__media reveal">
+      <img src="assets/img/about.jpg" alt="Производство Rich Kitchen">
       <div class="about__quote">
-        <p>«Роскошь — это когда каждая деталь на своём месте.»</p>
+        <span data-ru="«Роскошь — это когда каждая деталь на своём месте.»" data-uz="«Hashamat — bu har bir tafsilot oʻz oʻrnida boʻlgani.»">«Роскошь — это когда каждая деталь на своём месте.»</span>
         <cite>Rich Kitchen Studio</cite>
       </div>
     </div>
-    <div>
-      <div class="field up">О компании</div>
-      <h2 class="h2 up" data-d="1">Мы создаём не мебель, а среду, в которой хочется жить.</h2>
-      <p class="about__lead up" data-d="1">20 лет Rich Kitchen делает мебель на заказ для тех, кто ценит качество, а не компромиссы.</p>
-      <div class="about__body up" data-d="2">
-        <p>Каждый проект начинается с вашего пространства и образа жизни. Мы проектируем в 3D, производим на собственном оборудовании и собираем вручную — так мы контролируем результат от первого эскиза до последнего шва.</p>
+    <div class="about__body">
+      <span class="eyebrow reveal" data-ru="О компании" data-uz="Kompaniya haqida">О компании</span>
+      <h2 class="h2 reveal" data-d="1" style="margin:20px 0 26px" data-ru="Мы создаём не мебель, а среду, в которой хочется жить." data-uz="Biz shunchaki mebel emas, yashagingiz keladigan muhit yaratamiz.">Мы создаём не мебель, а среду, в которой хочется жить.</h2>
+      <p class="lead reveal" data-d="1" data-ru="20 лет Rich Kitchen делает мебель на заказ для тех, кто ценит качество, а не компромиссы." data-uz="20 yildan beri Rich Kitchen sifatni qadrlaydigan mijozlar uchun buyurtma asosida mebel yaratadi.">20 лет Rich Kitchen делает мебель на заказ для тех, кто ценит качество, а не компромиссы.</p>
+      <div class="about__body reveal" data-d="2">
+        <p data-ru="Каждый проект начинается с вашего пространства и образа жизни. Мы проектируем в 3D, производим на собственном оборудовании и собираем вручную — так мы контролируем результат от первого эскиза до последнего шва." data-uz="Har bir loyiha sizning makoningiz va turmush tarzingizdan boshlanadi. Biz 3D da loyihalaymiz, oʻz uskunalarimizda ishlab chiqaramiz va qoʻlda yigʻamiz — natijani birinchi eskizdan oxirgi choknigacha nazorat qilamiz.">Каждый проект начинается с вашего пространства и образа жизни. Мы проектируем в 3D, производим на собственном оборудовании и собираем вручную — так мы контролируем результат от первого эскиза до последнего шва.</p>
       </div>
-      <ul class="about__list up" data-d="2">
-        <li><span class="num">01</span><span>Собственное производство полного цикла</span></li>
-        <li><span class="num">02</span><span>Дизайн-проект и 3D-визуализация</span></li>
-        <li><span class="num">03</span><span>Европейская фурнитура Blum и Hettich</span></li>
-        <li><span class="num">04</span><span>Монтаж и сервис под ключ</span></li>
+      <ul class="about__list reveal" data-d="2">
+        <li><span class="num">01</span><span data-ru="Собственное производство полного цикла" data-uz="Toʻliq siklli oʻz ishlab chiqarishimiz">Собственное производство полного цикла</span></li>
+        <li><span class="num">02</span><span data-ru="Дизайн-проект и 3D-визуализация" data-uz="Dizayn-loyiha va 3D vizualizatsiya">Дизайн-проект и 3D-визуализация</span></li>
+        <li><span class="num">03</span><span data-ru="Европейская фурнитура Blum и Hettich" data-uz="Blum va Hettich yevropa furnituralari">Европейская фурнитура Blum и Hettich</span></li>
+        <li><span class="num">04</span><span data-ru="Монтаж и сервис под ключ" data-uz="Oʻrnatish va xizmat koʻrsatish">Монтаж и сервис под ключ</span></li>
       </ul>
     </div>
   </div>
 </section>
 
-<!-- ============ DIMENSIONS / STATS ============ -->
-<section class="dims" id="dims">
-  <div class="wrap sec--tight">
-    <div class="field" style="margin-bottom:30px">Цифры</div>
-    <div class="dims__list">
-      <div class="dim-row"><div class="num" data-to="20">20</div><div class="leader"></div><div class="lbl">лет на рынке</div></div>
-      <div class="dim-row"><div class="num"><em data-to="1000" data-suffix="+">1000+</em></div><div class="leader"></div><div class="lbl">проектов сдано</div></div>
-      <div class="dim-row"><div class="num" data-to="18000" data-suffix=" м²">18 000 м²</div><div class="leader"></div><div class="lbl">произведено</div></div>
-      <div class="dim-row"><div class="num" data-to="98" data-suffix="%">98%</div><div class="leader"></div><div class="lbl">клиентов рекомендуют</div></div>
+<!-- ============ CATALOG / CATEGORIES ============ -->
+<section class="section section--tight" id="catalog">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="eyebrow reveal" data-ru="Что мы делаем" data-uz="Biz nima qilamiz">Что мы делаем</span>
+        <h2 class="h2 reveal" data-d="1" style="margin-top:18px" data-ru="Категории и услуги" data-uz="Toifalar va xizmatlar">Категории и услуги</h2>
+      </div>
+      <p class="reveal" data-d="1" data-ru="От кухни до гардеробной, а также матрасы на заказ и алюминиевые вентиляционные решётки и люки — единое качество в каждом изделии." data-uz="Oshxonadan garderobgacha, shuningdek buyurtma matraslar va alyuminiy ventilyatsiya panjaralari va lyuklar — har bir buyumda yagona sifat.">От кухни до гардеробной, а также матрасы на заказ и алюминиевые вентиляционные решётки и люки — единое качество в каждом изделии.</p>
+    </div>
+    <div class="cats">
+      <a class="cat reveal" href="#contact">
+        <img src="assets/img/cat-kitchen.jpg" alt="Кухни на заказ">
+        <div class="cat__body"><h3 data-ru="Кухни" data-uz="Oshxonalar">Кухни</h3><span class="count" data-ru="Проектов: 280+" data-uz="Loyihalar: 280+">Проектов: 280+</span><span class="go" data-ru="Смотреть →" data-uz="Koʻrish →">Смотреть →</span></div>
+      </a>
+      <a class="cat reveal" data-d="1" href="#contact">
+        <img src="assets/img/cat-wardrobe.jpg" alt="Гардеробные на заказ">
+        <div class="cat__body"><h3 data-ru="Гардеробные" data-uz="Garderoblar">Гардеробные</h3><span class="count" data-ru="Проектов: 160+" data-uz="Loyihalar: 160+">Проектов: 160+</span><span class="go" data-ru="Смотреть →" data-uz="Koʻrish →">Смотреть →</span></div>
+      </a>
+      <a class="cat reveal" data-d="2" href="#contact">
+        <img src="assets/img/projects/living-tv-marble.jpg" alt="Мебель для гостиной">
+        <div class="cat__body"><h3 data-ru="Гостиные" data-uz="Mehmonxonalar">Гостиные</h3><span class="count" data-ru="Проектов: 120+" data-uz="Loyihalar: 120+">Проектов: 120+</span><span class="go" data-ru="Смотреть →" data-uz="Koʻrish →">Смотреть →</span></div>
+      </a>
+      <a class="cat reveal" data-d="3" href="#contact">
+        <img src="assets/img/cat-bath.jpg" alt="Мебель для прихожей">
+        <div class="cat__body"><h3 data-ru="Прихожие" data-uz="Yoʻlaklar">Прихожие</h3><span class="count" data-ru="Проектов: 90+" data-uz="Loyihalar: 90+">Проектов: 90+</span><span class="go" data-ru="Смотреть →" data-uz="Koʻrish →">Смотреть →</span></div>
+      </a>
+      <a class="cat reveal" data-d="4" href="draft-matrasy.html">
+        <img src="assets/img/mattress-ortho.jpg" alt="Матрасы на заказ">
+        <div class="cat__body"><h3 data-ru="Матрасы" data-uz="Matraslar">Матрасы</h3><span class="count" data-ru="Любой размер · ~3 дня" data-uz="Har qanday oʻlcham · ~3 kun">Любой размер · ~3 дня</span><span class="go" data-ru="Смотреть →" data-uz="Koʻrish →">Смотреть →</span></div>
+      </a>
+      <a class="cat reveal" data-d="5" href="draft-reshetki.html">
+        <img src="assets/img/grille-double.jpg" alt="Вентиляционные решётки и люки">
+        <div class="cat__body"><h3 data-ru="Решётки и люки" data-uz="Panjara va lyuklar">Решётки и люки</h3><span class="count" data-ru="Алюминий · любой цвет" data-uz="Alyuminiy · har qanday rang">Алюминий · любой цвет</span><span class="go" data-ru="Смотреть →" data-uz="Koʻrish →">Смотреть →</span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MATERIALS ============ -->
+<section class="section materials" id="materials">
+  <div class="wrap mat__grid">
+    <div>
+      <span class="eyebrow reveal" data-ru="Материалы" data-uz="Materiallar">Материалы</span>
+      <h2 class="h2 reveal" data-d="1" style="margin:20px 0 20px" data-ru="Натуральная палитра, созданная жить долго." data-uz="Uzoq xizmat qilish uchun yaratilgan tabiiy palitra.">Натуральная палитра, созданная жить долго.</h2>
+      <p class="reveal" data-d="1" style="color:var(--muted);max-width:44ch" data-ru="Мы работаем только с проверенными материалами — от массива дуба до натурального камня и латуни. Каждая поверхность подбирается под ваш интерьер." data-uz="Biz faqat sinovdan oʻtgan materiallar bilan ishlaymiz — eman massividan tabiiy tosh va latungacha. Har bir sirt interyeringizga moslab tanlanadi.">Мы работаем только с проверенными материалами — от массива дуба до натурального камня и латуни. Каждая поверхность подбирается под ваш интерьер.</p>
+      <p class="mat__choice reveal" data-d="2" data-ru="Любые цвета мебели — под ваш вкус. Подберём оттенок фасадов по вашему образцу или из каталога." data-uz="Mebelning istalgan ranglari — didingizga koʻra. Fasad tusini namunangiz yoki katalog boʻyicha tanlaymiz.">Любые цвета мебели — под ваш вкус. Подберём оттенок фасадов по вашему образцу или из каталога.</p>
+      <ul class="mat__list reveal" data-d="3" style="margin-top:32px">
+        <li><div><h4 data-ru="Массив дуба" data-uz="Eman massivi">Массив дуба</h4><p data-ru="Тёплая текстура и прочность на десятилетия" data-uz="Iliq tekstura va oʻn yilliklarga chidamlilik">Тёплая текстура и прочность на десятилетия</p></div></li>
+        <li><div><h4 data-ru="Орех" data-uz="Yongʻoq">Орех</h4><p data-ru="Глубокий благородный тон для акцентов" data-uz="Aksentlar uchun chuqur, olijanob ton">Глубокий благородный тон для акцентов</p></div></li>
+        <li><div><h4 data-ru="Натуральный камень" data-uz="Tabiiy tosh">Натуральный камень</h4><p data-ru="Столешницы из мрамора и кварца" data-uz="Marmar va kvarts ish stollari">Столешницы из мрамора и кварца</p></div></li>
+        <li><div><h4 data-ru="Латунь" data-uz="Latun">Латунь</h4><p data-ru="Фурнитура и детали ручной работы" data-uz="Qoʻlda ishlangan furnitura va tafsilotlar">Фурнитура и детали ручной работы</p></div></li>
+      </ul>
+    </div>
+    <div class="swatches reveal" data-d="1">
+      <div class="swatch" style="background:#C9A987"><span class="tag">01</span><b data-ru="Дуб" data-uz="Eman">Дуб</b></div>
+      <div class="swatch" style="background:#6E4E38"><span class="tag">02</span><b data-ru="Орех" data-uz="Yongʻoq">Орех</b></div>
+      <div class="swatch" style="background:#B7B0A4"><span class="tag">03</span><b data-ru="Камень" data-uz="Tosh">Камень</b></div>
+      <div class="swatch" style="background:#B08D57"><span class="tag">04</span><b data-ru="Латунь" data-uz="Latun">Латунь</b></div>
+      <div class="swatch" style="background:#2B2320"><span class="tag">05</span><b data-ru="Графит" data-uz="Grafit">Графит</b></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="matbrands reveal">
+      <div class="matbrand">
+        <b class="matbrand__name">EGGER</b>
+        <span class="matbrand__country" data-ru="Австрия" data-uz="Avstriya">Австрия</span>
+        <p data-ru="Плиты ЛДСП и МДФ, столешницы и кромка. Европейское качество и стойкость к влаге." data-uz="LDSP va MDF plitalari, ish stollari va qirralar. Yevropa sifati va namlikka chidamlilik.">Плиты ЛДСП и МДФ, столешницы и кромка. Европейское качество и стойкость к влаге.</p>
+      </div>
+      <div class="matbrand">
+        <b class="matbrand__name">ULTRA DECOR</b>
+        <span class="matbrand__country" data-ru="Фасады и декоры" data-uz="Fasadlar va dekorlar">Фасады и декоры</span>
+        <p data-ru="Покрытие фасадов в матовом и глянцевом исполнении — основные цвета ниже." data-uz="Fasad qoplamasi mat va yaltiroq koʻrinishda — asosiy ranglar quyida.">Покрытие фасадов в матовом и глянцевом исполнении — основные цвета ниже.</p>
+      </div>
+    </div>
+
+    <div class="palette-head reveal">
+      <span class="palette-brand">ULTRA DECOR</span>
+      <span class="palette-cap" data-ru="Основные цвета фасадов" data-uz="Fasadlarning asosiy ranglari">Основные цвета фасадов</span>
+    </div>
+    <div class="palette reveal" data-d="1">
+      <figure class="pal"><i style="background:#C6BBA9"></i><b data-ru="Тессея серовато-бежевый" data-uz="Tesseya kulrang-bej">Тессея серовато-бежевый</b></figure>
+      <figure class="pal"><i style="background:#A98A70"></i><b data-ru="Моккочино" data-uz="Mokkachino">Моккочино</b></figure>
+      <figure class="pal"><i style="background:#6B5142"></i><b data-ru="Тессея мокка" data-uz="Tesseya mokka">Тессея мокка</b></figure>
+      <figure class="pal"><i style="background:#DBCDB8"></i><b data-ru="Кашемир" data-uz="Kashemir">Кашемир</b></figure>
+      <figure class="pal"><i style="background:#B99B7B"></i><b data-ru="Капучино" data-uz="Kapuchino">Капучино</b></figure>
+      <figure class="pal"><i style="background:#8D847A"></i><b data-ru="Глиняный серый" data-uz="Loysimon kulrang">Глиняный серый</b></figure>
+    </div>
+    <p class="palette-note reveal" data-d="2" data-ru="Это основные цвета — полный каталог покажем в шоуруме. Подберём любой оттенок под ваш интерьер." data-uz="Bular asosiy ranglar — toʻliq katalogni shourumda koʻrsatamiz. Interyeringizga mos har qanday tusni tanlaymiz.">Это основные цвета — полный каталог покажем в шоуруме. Подберём любой оттенок под ваш интерьер.</p>
+  </div>
+</section>
+
+<!-- ============ HARDWARE / ФУРНИТУРА ============ -->
+<section class="section hardware" id="hardware">
+  <div class="wrap">
+    <span class="eyebrow eyebrow--light reveal" data-ru="Фурнитура премиум-класса" data-uz="Premium sinf furnitura">Фурнитура премиум-класса</span>
+    <h2 class="hardware__title reveal" data-d="1" data-ru="Главное — то, чего не видно, <em>но чувствуется каждый день.</em>" data-uz="Eng muhimi — koʻrinmaydi, <em>lekin har kuni seziladi.</em>">Главное — то, чего не видно, <em>но чувствуется каждый день.</em></h2>
+    <p class="hardware__sub reveal" data-d="2" data-ru="Мы ставим только оригинальную фурнитуру мировых брендов. Именно она решает, будет ли кухня открываться мягко и бесшумно и через десять лет." data-uz="Biz faqat jahon brendlarining original furniturasini oʻrnatamiz. Oshxona oʻn yildan keyin ham yumshoq va shovqinsiz ochilishini aynan shu hal qiladi.">Мы ставим только оригинальную фурнитуру мировых брендов. Именно она решает, будет ли кухня открываться мягко и бесшумно и через десять лет.</p>
+
+    <div class="brands reveal" data-d="3">
+      <div class="brand-card">
+        <b class="brand-card__name">BLUM</b>
+        <span class="brand-card__country" data-ru="Австрия" data-uz="Avstriya">Австрия</span>
+        <p data-ru="Подъёмники и доводчики. Фасад закрывается сам — плавно и без удара." data-uz="Koʻtargichlar va doborchilar. Fasad oʻzi — yumshoq va zarbasiz yopiladi.">Подъёмники и доводчики. Фасад закрывается сам — плавно и без удара.</p>
+      </div>
+      <div class="brand-card">
+        <b class="brand-card__name">HETTICH</b>
+        <span class="brand-card__country" data-ru="Германия" data-uz="Germaniya">Германия</span>
+        <p data-ru="Направляющие и петли с ресурсом на десятилетия ежедневной работы." data-uz="Oʻn yillab kundalik ishlashga moʻljallangan yoʻnaltiruvchilar va ilgaklar.">Направляющие и петли с ресурсом на десятилетия ежедневной работы.</p>
+      </div>
+      <div class="brand-card">
+        <b class="brand-card__name">TALLSEN</b>
+        <span class="brand-card__country" data-ru="Китай · Германия" data-uz="Xitoy · Germaniya">Китай · Германия</span>
+        <p data-ru="Петли, направляющие и системы хранения — надёжный ход каждый день." data-uz="Ilgaklar, yoʻnaltiruvchilar va saqlash tizimlari — har kuni ishonchli yurish.">Петли, направляющие и системы хранения — надёжный ход каждый день.</p>
+      </div>
+    </div>
+
+    <p class="hardware__choice reveal" data-d="4" data-ru="Под ваш выбор мы можем предоставить качественную фурнитуру — подберём марку и механизмы под задачу и бюджет." data-uz="Sizning tanlovingizga koʻra sifatli furnitura taqdim etamiz — vazifa va byudjetga mos markani va mexanizmlarni tanlaymiz.">Под ваш выбор мы можем предоставить качественную фурнитуру — подберём марку и механизмы под задачу и бюджет.</p>
+
+    <div class="hardware__note reveal" data-d="5">
+      <span data-ru="Оригинал, а не копии" data-uz="Original, nusxa emas">Оригинал, а не копии</span>
+      <span data-ru="Любой цвет фасадов" data-uz="Fasadning istalgan rangi">Любой цвет фасадов</span>
+      <span data-ru="Гарантия 5 лет на всю мебель" data-uz="Barcha mebelga 5 yil kafolat">Гарантия 5 лет на всю мебель</span>
+      <span data-ru="20 лет опыта · 1000+ проектов" data-uz="20 yil tajriba · 1000+ loyiha">20 лет опыта · 1000+ проектов</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MATTRESSES ============ -->
+<section class="section section--tight" id="mattresses">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="eyebrow reveal" data-ru="Спальные системы" data-uz="Uyqu tizimlari">Спальные системы</span>
+        <h2 class="h2 reveal" data-d="1" style="margin-top:18px" data-ru="Матрасы для здорового сна" data-uz="Sogʻlom uyqu uchun matraslar">Матрасы для здорового сна</h2>
+      </div>
+      <p class="reveal" data-d="1" data-ru="Собственное производство матрасов — под ваш вес, рост и привычки сна." data-uz="Matraslarni oʻzimiz ishlab chiqaramiz — vazningiz, boʻyingiz va uyqu odatlaringizga mos.">Собственное производство матрасов — под ваш вес, рост и привычки сна.</p>
+    </div>
+    <div class="mattress__grid">
+      <article class="mcard reveal">
+        <div class="mcard__img"><img src="assets/img/mattress-ortho.jpg" alt="Ортопедический матрас"></div>
+        <div class="mcard__body">
+          <h3 data-ru="Ортопедические" data-uz="Ortopedik">Ортопедические</h3>
+          <p data-ru="Усиленный пружинный блок и кокосовая койра — повышенная жёсткость и ровная поддержка позвоночника." data-uz="Kuchaytirilgan prujina bloki va kokos koyri — yuqori qattiqlik va umurtqa uchun tekis tayanch.">Усиленный пружинный блок и кокосовая койра — повышенная жёсткость и ровная поддержка позвоночника.</p>
+          <div class="mcard__feat"><span data-ru="Кокосовая койра" data-uz="Kokos koyri">Кокосовая койра</span><span data-ru="Повышенная жёсткость" data-uz="Yuqori qattiqlik">Повышенная жёсткость</span></div>
+          <div class="mprice" data-ru="от 580 000 сум <small>/ м²</small>" data-uz="580 000 soʻmdan <small>/ m²</small>">от 580 000 сум <small>/ м²</small></div>
+        </div>
+      </article>
+      <article class="mcard reveal" data-d="1">
+        <div class="mcard__img"><img src="assets/img/mattress-anatomic.jpg" alt="Анатомический матрас"></div>
+        <div class="mcard__body">
+          <h3 data-ru="Анатомические" data-uz="Anatomik">Анатомические</h3>
+          <p data-ru="Независимый пружинный блок: каждая пружина в отдельном «стакане» повторяет контуры тела и снимает давление." data-uz="Mustaqil prujina bloki: har bir prujina alohida «stakan»da tana konturlarini takrorlaydi va bosimni yumshatadi.">Независимый пружинный блок: каждая пружина в отдельном «стакане» повторяет контуры тела и снимает давление.</p>
+          <div class="mcard__feat"><span data-ru="Независимые пружины" data-uz="Mustaqil prujinalar">Независимые пружины</span><span data-ru="Точечная поддержка" data-uz="Nuqtali tayanch">Точечная поддержка</span></div>
+          <div class="mprice" data-ru="от 700 000 сум <small>/ м²</small>" data-uz="700 000 soʻmdan <small>/ m²</small>">от 700 000 сум <small>/ м²</small></div>
+        </div>
+      </article>
+      <article class="mcard reveal" data-d="2">
+        <div class="mcard__img"><img src="assets/img/mattress-foam.jpg" alt="Беспружинный матрас"></div>
+        <div class="mcard__body">
+          <h3 data-ru="Без пружины" data-uz="Prujinasiz">Без пружины</h3>
+          <p data-ru="Прочный многослойный пенополиуретан: полная бесшумность и ровная поддержка без эффекта «гамака»." data-uz="Bardoshli koʻp qatlamli penopoliuretan: toʻliq shovqinsizlik va «gamak» effektisiz tekis tayanch.">Прочный многослойный пенополиуретан: полная бесшумность и ровная поддержка без эффекта «гамака».</p>
+          <div class="mcard__feat"><span data-ru="Пенополиуретан" data-uz="Penopoliuretan">Пенополиуретан</span><span data-ru="Бесшумность" data-uz="Shovqinsiz">Бесшумность</span></div>
+          <div class="mprice" data-ru="от 1 050 000 сум <small>/ м²</small>" data-uz="1 050 000 soʻmdan <small>/ m²</small>">от 1 050 000 сум <small>/ м²</small></div>
+        </div>
+      </article>
+    </div>
+    <p class="mattress__note reveal" data-ru="Изготавливаем матрасы <b>любого размера на заказ</b> — замер и консультация бесплатно." data-uz="Har qanday <b>oʻlchamdagi matraslarni buyurtma asosida</b> tayyorlaymiz — oʻlchov va konsultatsiya bepul.">Изготавливаем матрасы <b>любого размера на заказ</b> — замер и консультация бесплатно.</p>
+    <div class="reveal" style="text-align:center;margin-top:26px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+      <a href="draft-matrasy.html" class="btn"><span data-ru="Все матрасы и цены" data-uz="Barcha matraslar va narxlar">Все матрасы и цены</span> <span class="arw">→</span></a>
+      <a href="tel:+998903198638" class="btn btn--ghost" data-ru="Позвонить" data-uz="Qoʻngʻiroq qilish">Позвонить</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROJECTS ============ -->
+<section class="section" id="projects">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="eyebrow reveal" data-ru="Портфолио" data-uz="Portfolio">Портфолио</span>
+        <h2 class="h2 reveal" data-d="1" style="margin-top:18px" data-ru="Избранные проекты" data-uz="Tanlangan loyihalar">Избранные проекты</h2>
+      </div>
+      <div class="filters reveal" data-d="1" id="filters">
+        <button class="active" data-f="all" data-ru="Все" data-uz="Barchasi">Все</button>
+        <button data-f="kitchen" data-ru="Кухни" data-uz="Oshxonalar">Кухни</button>
+        <button data-f="wardrobe" data-ru="Гардеробные" data-uz="Garderoblar">Гардеробные</button>
+        <button data-f="living" data-ru="Гостиные" data-uz="Mehmonxonalar">Гостиные</button>
+        <button data-f="hall" data-ru="Прихожие" data-uz="Yoʻlaklar">Прихожие</button>
+      </div>
+    </div>
+    <div class="projects" id="projects-grid">
+      <article class="proj reveal" data-cat="kitchen">
+        <img src="assets/img/project-1.jpg" alt="Кухня на заказ из массива дуба и кварца — резиденция в ЖК Boulevard, Ташкент" loading="lazy">
+        <div class="proj__body"><span class="cat" data-ru="Кухня" data-uz="Oshxona">Кухня</span><h3 data-ru="Резиденция в ЖК Boulevard" data-uz="Boulevard TJM dagi rezidensiya">Резиденция в ЖК Boulevard</h3><span class="meta" data-ru="Ташкент · массив дуба, кварц" data-uz="Toshkent · eman massivi, kvarts">Ташкент · массив дуба, кварц</span></div>
+      </article>
+      <article class="proj reveal" data-d="1" data-cat="living">
+        <img src="assets/img/project-2.jpg" alt="Гостиная на заказ из ореха с латунью — дом в Юнусабаде, Ташкент" loading="lazy">
+        <div class="proj__body"><span class="cat" data-ru="Гостиная" data-uz="Mehmonxona">Гостиная</span><h3 data-ru="Дом в Юнусабаде" data-uz="Yunusoboddagi uy">Дом в Юнусабаде</h3><span class="meta" data-ru="Орех, латунь" data-uz="Yongʻoq, latun">Орех, латунь</span></div>
+      </article>
+      <article class="proj reveal" data-d="2" data-cat="wardrobe">
+        <img src="assets/img/project-3.jpg" alt="Гардеробная на заказ из шпона со стеклом — апартаменты NEST One, Ташкент" loading="lazy">
+        <div class="proj__body"><span class="cat" data-ru="Гардеробная" data-uz="Garderob">Гардеробная</span><h3 data-ru="Апартаменты NEST One" data-uz="NEST One apartamentlari">Апартаменты NEST One</h3><span class="meta" data-ru="Шпон, стекло" data-uz="Shpon, oyna">Шпон, стекло</span></div>
+      </article>
+      <article class="proj reveal" data-cat="wardrobe">
+        <img src="assets/img/project-4.jpg" alt="Гардеробная в спальне на заказ, эмаль и латунь — Ташкент" loading="lazy">
+        <div class="proj__body"><span class="cat" data-ru="Гардеробная" data-uz="Garderob">Гардеробная</span><h3 data-ru="Гардеробная в спальне" data-uz="Yotoqxonadagi garderob">Гардеробная в спальне</h3><span class="meta" data-ru="Эмаль, латунь" data-uz="Emal, latun">Эмаль, латунь</span></div>
+      </article>
+      <article class="proj reveal" data-d="1" data-cat="hall">
+        <img src="assets/img/project-5.jpg" alt="Прихожая на заказ — стеллаж-витрина из шпона с подсветкой, Ташкент" loading="lazy">
+        <div class="proj__body"><span class="cat" data-ru="Прихожая" data-uz="Yoʻlak">Прихожая</span><h3 data-ru="Стеллаж-витрина" data-uz="Vitrina-stellaj">Стеллаж-витрина</h3><span class="meta" data-ru="Шпон, подсветка" data-uz="Shpon, yoritish">Шпон, подсветка</span></div>
+      </article>
+      <article class="proj reveal" data-d="2" data-cat="living">
+        <img src="assets/img/project-6.jpg" alt="Гостиная на заказ из дуба и натурального камня — загородный дом, Чирчик" loading="lazy">
+        <div class="proj__body"><span class="cat" data-ru="Гостиная" data-uz="Mehmonxona">Гостиная</span><h3 data-ru="Загородный дом, Чирчик" data-uz="Chirchiqdagi shahar tashqarisidagi uy">Загородный дом, Чирчик</h3><span class="meta" data-ru="Дуб, натуральный камень" data-uz="Eman, tabiiy tosh">Дуб, натуральный камень</span></div>
+      </article>
     </div>
   </div>
 </section>
 
 <!-- ============ PROCESS ============ -->
-<section class="sec" id="process">
+<section class="section process" id="process">
   <div class="wrap">
-    <div class="sec-head up">
-      <div class="field">Как мы работаем</div>
-      <h2 class="h2">Путь от идеи до готовой мебели</h2>
+    <div class="sec-head sec-head--center">
+      <span class="eyebrow eyebrow--center reveal" data-ru="Как мы работаем" data-uz="Qanday ishlaymiz">Как мы работаем</span>
+      <h2 class="h2 reveal" data-d="1" style="margin-top:18px" data-ru="Путь от идеи до готовой мебели" data-uz="Gʻoyadan tayyor mebelgacha boʻlgan yoʻl">Путь от идеи до готовой мебели</h2>
     </div>
     <div class="steps">
-      <div class="step"><div class="no">01</div><h3>Замер и бриф</h3><p>Выезжаем на объект, снимаем размеры и обсуждаем задачи и бюджет.</p></div>
-      <div class="step"><div class="no">02</div><h3>Дизайн-проект</h3><p>Готовим 3D-визуализацию, подбираем материалы и фурнитуру.</p></div>
-      <div class="step"><div class="no">03</div><h3>Производство</h3><p>Изготавливаем мебель на собственном производстве по чертежам — в среднем за неделю.</p></div>
-      <div class="step"><div class="no">04</div><h3>Монтаж</h3><p>Доставляем и устанавливаем под ключ. Гарантия 5 лет.</p></div>
+      <div class="step reveal"><div class="no">01</div><h3 data-ru="Замер и бриф" data-uz="Oʻlchov va brif">Замер и бриф</h3><p data-ru="Выезжаем на объект, снимаем размеры и обсуждаем задачи и бюджет." data-uz="Obyektga chiqamiz, oʻlchovlarni olamiz va vazifalar hamda byudjetni muhokama qilamiz.">Выезжаем на объект, снимаем размеры и обсуждаем задачи и бюджет.</p></div>
+      <div class="step reveal" data-d="1"><div class="no">02</div><h3 data-ru="Дизайн-проект" data-uz="Dizayn-loyiha">Дизайн-проект</h3><p data-ru="Готовим 3D-визуализацию, подбираем материалы и фурнитуру." data-uz="3D vizualizatsiya tayyorlaymiz, material va furnitura tanlaymiz.">Готовим 3D-визуализацию, подбираем материалы и фурнитуру.</p></div>
+      <div class="step reveal" data-d="2"><div class="no">03</div><h3 data-ru="Производство" data-uz="Ishlab chiqarish">Производство</h3><p data-ru="Изготавливаем мебель на собственном производстве по чертежам — в среднем за неделю." data-uz="Mebelni chizmalar boʻyicha oʻz ishlab chiqarishimizda tayyorlaymiz — oʻrtacha bir hafta ichida.">Изготавливаем мебель на собственном производстве по чертежам — в среднем за неделю.</p></div>
+      <div class="step reveal" data-d="3"><div class="no">04</div><h3 data-ru="Монтаж" data-uz="Oʻrnatish">Монтаж</h3><p data-ru="Доставляем и устанавливаем под ключ. Гарантия 5 лет." data-uz="Yetkazib beramiz va oʻrnatamiz. 5 yil kafolat.">Доставляем и устанавливаем под ключ. Гарантия 5 лет.</p></div>
     </div>
+  </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section class="section section--tight">
+  <div class="wrap">
+    <div class="sec-head sec-head--center">
+      <span class="eyebrow eyebrow--center reveal" data-ru="Почему Rich Kitchen" data-uz="Nega Rich Kitchen">Почему Rich Kitchen</span>
+      <h2 class="h2 reveal" data-d="1" style="margin-top:18px" data-ru="Причины доверить проект нам" data-uz="Loyihani bizga ishonib topshirish sabablari">Причины доверить проект нам</h2>
+    </div>
+    <div class="feats">
+      <div class="feat reveal">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6"/></svg></div>
+        <h3 data-ru="Своё производство" data-uz="Oʻz ishlab chiqarishimiz">Своё производство</h3>
+        <p data-ru="Полный цикл под одной крышей — без посредников и наценок." data-uz="Bir tom ostida toʻliq sikl — vositachilarsiz va ustama narxlarsiz.">Полный цикл под одной крышей — без посредников и наценок.</p>
+      </div>
+      <div class="feat reveal" data-d="1">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M5 8c0-3 3-5 7-5M19 8c0-3-3-5-7-5"/><path d="M5 8c0 6 3 9 7 9s7-3 7-9"/></svg></div>
+        <h3 data-ru="Натуральные материалы" data-uz="Tabiiy materiallar">Натуральные материалы</h3>
+        <p data-ru="Массив, шпон, камень и латунь — только проверенные поставщики." data-uz="Massiv, shpon, tosh va latun — faqat ishonchli yetkazib beruvchilar.">Массив, шпон, камень и латунь — только проверенные поставщики.</p>
+      </div>
+      <div class="feat reveal" data-d="2">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <h3 data-ru="Сроки под контролем" data-uz="Muddatlar nazoratda">Сроки под контролем</h3>
+        <p data-ru="Фиксируем дату в договоре и держим её. Изготовление занимает около недели." data-uz="Sanani shartnomada belgilaymiz va unga rioya qilamiz. Tayyorlash taxminan bir hafta vaqt oladi.">Фиксируем дату в договоре и держим её. Изготовление занимает около недели.</p>
+      </div>
+      <div class="feat reveal" data-d="3">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <h3 data-ru="Гарантия 5 лет" data-uz="5 yil kafolat">Гарантия 5 лет</h3>
+        <p data-ru="Официальный договор и сервисное обслуживание после установки." data-uz="Rasmiy shartnoma va oʻrnatishdan keyingi servis xizmati.">Официальный договор и сервисное обслуживание после установки.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STATS ============ -->
+<section class="section section--tight stats">
+  <div class="wrap stats__grid">
+    <div class="stat reveal"><div class="n" data-count="20">20</div><div class="l" data-ru="лет на рынке" data-uz="yillik tajriba">лет на рынке</div></div>
+    <div class="stat reveal" data-d="1"><div class="n" data-count="1000"><em>1000</em></div><div class="l" data-ru="проектов сдано" data-uz="loyiha topshirilgan">проектов сдано</div></div>
+    <div class="stat reveal" data-d="2"><div class="n" data-count="18" data-suffix=" 000">18 000</div><div class="l" data-ru="м² произведено" data-uz="m² ishlab chiqarilgan">м² произведено</div></div>
+    <div class="stat reveal" data-d="3"><div class="n" data-count="98" data-suffix="%">98%</div><div class="l" data-ru="клиентов рекомендуют" data-uz="mijozlar tavsiya qiladi">клиентов рекомендуют</div></div>
   </div>
 </section>
 
 <!-- ============ CTA ============ -->
 <section class="cta">
-  <div class="cta__bg"><img src="assets/img/cta.jpg" alt="Премиальная мебель на заказ Rich Kitchen"></div>
+  <div class="cta__bg"><img src="assets/img/cta.jpg" alt="Премиальная мебель на заказ Rich Kitchen — Ташкент" loading="lazy"></div>
   <div class="wrap">
-    <div class="field up" style="color:var(--brass)">Бесплатная консультация</div>
-    <h2 class="up" data-d="1" style="margin-top:18px">Расскажите о вашем проекте — остальное сделаем мы.</h2>
-    <p>Замер, дизайн-проект и расчёт стоимости — бесплатно. Ни к чему не обязывает.</p>
-    <div class="cta__actions up" data-d="2">
-      <a href="#contact" class="btn btn--brass">Оставить заявку <span class="arw">→</span></a>
-      <a href="tel:+998903198638" class="btn btn--light">Позвонить</a>
+    <span class="eyebrow eyebrow--center reveal" style="color:var(--oak)" data-ru="Бесплатная консультация" data-uz="Bepul konsultatsiya">Бесплатная консультация</span>
+    <h2 class="reveal" data-d="1" style="margin-top:20px" data-ru="Расскажите о вашем проекте — остальное сделаем мы." data-uz="Loyihangiz haqida gapiring — qolganini biz qilamiz.">Расскажите о вашем проекте — остальное сделаем мы.</h2>
+    <p class="reveal" data-d="1" data-ru="Замер, дизайн-проект и расчёт стоимости — бесплатно. Ни к чему не обязывает." data-uz="Oʻlchov, dizayn-loyiha va narx hisob-kitobi — bepul. Hech narsaga majbur qilmaydi.">Замер, дизайн-проект и расчёт стоимости — бесплатно. Ни к чему не обязывает.</p>
+    <div class="cta__actions reveal" data-d="2">
+      <a href="#contact" class="btn btn--brass"><span data-ru="Оставить заявку" data-uz="Ariza qoldirish">Оставить заявку</span> <span class="arw">→</span></a>
+      <a href="tel:+998903198638" class="btn btn--light" data-ru="Позвонить" data-uz="Qoʻngʻiroq qilish">Позвонить</a>
     </div>
   </div>
 </section>
 
 <!-- ============ CONTACT ============ -->
-<section class="sec" id="contact">
+<section class="section" id="contact">
   <div class="wrap contact__grid">
-    <div>
-      <div class="field">Контакты</div>
-      <h2 class="h2">Приезжайте в шоурум или напишите нам</h2>
-      <p style="margin-top:18px;color:var(--ink);opacity:.72;max-width:42ch;font-size:15.5px;line-height:1.6">Покажем образцы материалов, готовые проекты и обсудим вашу задачу за чашкой кофе.</p>
-      <ul class="info-list">
-        <li><span class="k">Телефон</span><a class="v" href="tel:+998903198638">+998 (90) 319-86-38</a></li>
-        <li><span class="k">Шоурум</span><span class="v">Ташкент, Юнусабадский р-н, МСГ Янгитарнов</span></li>
-        <li><span class="k">Часы работы</span><span class="v">Пн–Сб · 10:00–19:00</span></li>
+    <div class="contact__info">
+      <span class="eyebrow reveal" data-ru="Контакты" data-uz="Aloqa">Контакты</span>
+      <h2 class="h2 reveal" data-d="1" data-ru="Приезжайте в шоурум или напишите нам" data-uz="Shourumga keling yoki bizga yozing">Приезжайте в шоурум или напишите нам</h2>
+      <p class="reveal" data-d="1" style="color:var(--muted);max-width:42ch" data-ru="Покажем образцы материалов, готовые проекты и обсудим вашу задачу за чашкой кофе." data-uz="Material namunalarini, tayyor loyihalarni koʻrsatamiz va bir piyola qahva ustida vazifangizni muhokama qilamiz.">Покажем образцы материалов, готовые проекты и обсудим вашу задачу за чашкой кофе.</p>
+      <ul class="info-list reveal" data-d="2">
+        <li>
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.7 2z"/></svg></div>
+          <div><div class="k" data-ru="Телефон" data-uz="Telefon">Телефон</div><a class="v" href="tel:+998903198638">+998 (90) 319-86-38</a></div>
+        </li>
+        <li>
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          <div><div class="k" data-ru="Шоурум" data-uz="Shourum">Шоурум</div><a class="v" href="https://yandex.ru/maps/org/rich_kitchen/243747041936" target="_blank" rel="noopener" data-ru="Ташкент, Юнусабадский р-н, МСГ Янгитарнов" data-uz="Toshkent, Yunusobod tumani, Yangitarnov MFY">Ташкент, Юнусабадский р-н, МСГ Янгитарнов</a></div>
+        </li>
+        <li>
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+          <div><div class="k" data-ru="Часы работы" data-uz="Ish vaqti">Часы работы</div><div class="v" data-ru="Пн–Сб · 10:00–19:00" data-uz="Du–Sha · 10:00–19:00">Пн–Сб · 10:00–19:00</div></div>
+        </li>
       </ul>
-    </div>
-    <div class="order up" data-d="1">
-      <h3>Оставить заявку</h3>
-      <p class="order__sub">Перезвоним в течение 15 минут в рабочее время и озвучим точную цену — каждый проект индивидуален.</p>
-      <div class="ofield"><label>Ваше имя</label><input type="text" placeholder="Иван"></div>
-      <div class="ofield ofield--row">
-        <div class="ofield"><label>Телефон</label><input type="tel" placeholder="+998 90 000 00 00"></div>
-        <div class="ofield"><label>Что нужно</label>
-          <select><option>Кухня</option><option>Гардеробная</option><option>Гостиная</option><option>Ванная</option><option>Комплексная мебель</option></select>
-        </div>
+      <div class="socials reveal" data-d="2">
+        <a href="https://instagram.com/bobur.abdumajidov2023" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+        <a href="https://t.me/+998903198638" target="_blank" rel="noopener" aria-label="Telegram"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linejoin="round"><path d="M21 4 3 11l6 2 2 6 3-4 4 3z"/><path d="m9 13 8-6"/></svg></a>
+        <a href="https://wa.me/998903198638" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.6 7.3L3 20.5l1.8-5.3A8.5 8.5 0 1 1 21 11.5z"/><path d="M8.5 9c.2 3 2.5 5.3 5.5 5.5.7 0 1.3-.6 1.3-1.3l-.1-.9-1.8-.6-.9.9c-1-.5-1.8-1.3-2.3-2.3l.9-.9-.6-1.8-.9-.1c-.7 0-1.3.6-1.3 1.3z"/></svg></a>
       </div>
-      <div class="ofield"><label>Комментарий (необязательно)</label><textarea placeholder="..."></textarea></div>
-      <label class="oconsent"><input type="checkbox"><span>Согласен(-на) на обработку персональных данных — <a href="privacy.html">политика</a></span></label>
-      <a href="#" class="btn btn--block">Отправить заявку <span class="arw">→</span></a>
     </div>
+
+    <form class="form reveal" data-d="1" id="lead-form" novalidate>
+      <h3 data-ru="Оставить заявку" data-uz="Ariza qoldirish">Оставить заявку</h3>
+      <p class="form__sub" data-ru="Перезвоним в течение 15 минут в рабочее время и озвучим точную цену — каждый проект индивидуален." data-uz="Ish vaqtida 15 daqiqa ichida qoʻngʻiroq qilamiz va aniq narxni aytamiz — har bir loyiha individual.">Перезвоним в течение 15 минут в рабочее время и озвучим точную цену — каждый проект индивидуален.</p>
+      <div class="form__body" id="form-body">
+        <input type="text" id="company" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+        <div class="field">
+          <label for="name" data-ru="Ваше имя" data-uz="Ismingiz">Ваше имя</label>
+          <input id="name" name="name" type="text" required placeholder="Иван" data-ph-ru="Иван" data-ph-uz="Ism">
+        </div>
+        <div class="field--row">
+          <div class="field">
+            <label for="phone" data-ru="Телефон" data-uz="Telefon">Телефон</label>
+            <input id="phone" name="phone" type="tel" required placeholder="+998 90 000 00 00">
+          </div>
+          <div class="field">
+            <label for="type" data-ru="Что нужно" data-uz="Nima kerak">Что нужно</label>
+            <select id="type" name="type">
+              <option data-ru="Кухня" data-uz="Oshxona">Кухня</option>
+              <option data-ru="Гардеробная" data-uz="Garderob">Гардеробная</option>
+              <option data-ru="Гостиная" data-uz="Mehmonxona">Гостиная</option>
+              <option data-ru="Ванная" data-uz="Hammom">Ванная</option>
+              <option data-ru="Комплексная мебель" data-uz="Kompleks mebel">Комплексная мебель</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="msg" data-ru="Комментарий (необязательно)" data-uz="Izoh (ixtiyoriy)">Комментарий (необязательно)</label>
+          <textarea id="msg" name="msg" placeholder="..." ></textarea>
+        </div>
+        <label class="consent" id="consent-label">
+          <input type="checkbox" id="consent" name="consent">
+          <span data-ru="Согласен(-на) на обработку персональных данных" data-uz="Shaxsiy maʼlumotlarni qayta ishlashga roziman">Согласен(-на) на обработку персональных данных</span>
+          <a href="privacy.html" target="_blank" rel="noopener" data-ru="— политика" data-uz="— siyosat">— политика</a>
+        </label>
+        <button type="submit" class="btn btn--block"><span data-ru="Отправить заявку" data-uz="Arizani yuborish">Отправить заявку</span> <span class="arw">→</span></button>
+      </div>
+      <div class="form__ok" id="form-ok">
+        <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+        <h3 data-ru="Заявка отправлена!" data-uz="Ariza yuborildi!">Заявка отправлена!</h3>
+        <p class="form__sub" data-ru="Спасибо! Мы свяжемся с вами в ближайшее время." data-uz="Rahmat! Tez orada siz bilan bogʻlanamiz.">Спасибо! Мы свяжемся с вами в ближайшее время.</p>
+      </div>
+    </form>
   </div>
 </section>
 
@@ -468,106 +619,75 @@ a{color:inherit;text-decoration:none}
 <footer class="footer">
   <div class="wrap">
     <div class="footer__top">
-      <div>
-        <div class="footer__brand">Rich<em>·</em>Kitchen</div>
-        <p class="footer__desc">Премиальная мебель на заказ в Ташкенте. Кухни, гардеробные и корпусная мебель полного цикла.</p>
+      <div class="footer__brand">
+        <img src="assets/logo/richkitchen-cream.png" alt="Rich Kitchen">
+        <p data-ru="Премиальная мебель на заказ в Ташкенте. Кухни, гардеробные и корпусная мебель полного цикла." data-uz="Toshkentda buyurtma asosida premium mebel. Toʻliq siklli oshxonalar, garderoblar va korpusli mebel.">Премиальная мебель на заказ в Ташкенте. Кухни, гардеробные и корпусная мебель полного цикла.</p>
       </div>
-      <div>
-        <h4>Навигация</h4>
-        <nav><a href="#about">О нас</a><a href="#dims">Цифры</a><a href="#process">Процесс</a><a href="#contact">Контакты</a></nav>
+      <div class="footer__col">
+        <h4 data-ru="Навигация" data-uz="Navigatsiya">Навигация</h4>
+        <a href="#about" data-ru="О нас" data-uz="Biz haqimizda">О нас</a>
+        <a href="#catalog" data-ru="Каталог" data-uz="Katalog">Каталог</a>
+        <a href="#projects" data-ru="Проекты" data-uz="Loyihalar">Проекты</a>
+        <a href="#process" data-ru="Процесс" data-uz="Jarayon">Процесс</a>
       </div>
-      <div>
-        <h4>Категории</h4>
-        <nav><a href="#">Кухни</a><a href="#">Гардеробные</a><a href="matrasy.html">Матрасы</a><a href="reshetki.html">Решётки</a><a href="portfolio.html">Портфолио</a></nav>
+      <div class="footer__col">
+        <h4 data-ru="Категории" data-uz="Toifalar">Категории</h4>
+        <a href="#contact" data-ru="Кухни" data-uz="Oshxonalar">Кухни</a>
+        <a href="#contact" data-ru="Гардеробные" data-uz="Garderoblar">Гардеробные</a>
+        <a href="#contact" data-ru="Гостиные" data-uz="Mehmonxonalar">Гостиные</a>
+        <a href="#contact" data-ru="Прихожие" data-uz="Yoʻlaklar">Прихожие</a>
+        <a href="draft-matrasy.html" data-ru="Матрасы" data-uz="Matraslar">Матрасы</a>
+        <a href="draft-reshetki.html" data-ru="Решётки" data-uz="Panjaralar">Решётки</a>
+        <a href="draft-portfolio.html" data-ru="Портфолио" data-uz="Portfolio">Портфолио</a>
       </div>
-      <div>
-        <h4>Контакты</h4>
-        <nav><a href="tel:+998903198638">+998 (90) 319-86-38</a><a href="https://t.me/+998903198638">Telegram</a><a href="https://instagram.com/bobur.abdumajidov2023">Instagram</a></nav>
+      <div class="footer__col">
+        <h4 data-ru="Контакты" data-uz="Aloqa">Контакты</h4>
+        <a href="tel:+998903198638">+998 (90) 319-86-38</a>
+        <a href="https://instagram.com/bobur.abdumajidov2023" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://t.me/+998903198638" target="_blank" rel="noopener">Telegram</a>
       </div>
     </div>
     <div class="footer__bottom">
-      <span>© 2026 Rich Kitchen. Все права защищены.</span>
-      <span>Мебель на заказ · Ташкент, Узбекистан</span>
+      <span>© <span id="year">2026</span> Rich Kitchen. <span data-ru="Все права защищены." data-uz="Barcha huquqlar himoyalangan.">Все права защищены.</span> · <a href="privacy.html" data-ru="Политика конфиденциальности" data-uz="Maxfiylik siyosati">Политика конфиденциальности</a></span>
+      <span data-ru="Мебель на заказ · Ташкент, Узбекистан" data-uz="Buyurtma asosida mebel · Toshkent, Oʻzbekiston">Мебель на заказ · Ташкент, Узбекистан</span>
     </div>
   </div>
 </footer>
 
+<!-- CALL BUTTON — всегда на экране, слева внизу -->
+<a class="igfab" href="https://instagram.com/bobur.abdumajidov2023" target="_blank" rel="noopener"
+   aria-label="Instagram Rich Kitchen">
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" aria-hidden="true">
+    <rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/>
+    <circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/>
+  </svg>
+  <span class="igfab__tip">Instagram</span>
+</a>
+<a class="callfab" href="tel:+998903198638" aria-label="Позвонить +998 90 319 86 38">
+  <span class="callfab__ring" aria-hidden="true"></span>
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 1.9.6 2.8a2 2 0 0 1-.5 2.1L8.1 9.8a16 16 0 0 0 6 6l1.2-1.1a2 2 0 0 1 2.1-.5c.9.3 1.8.5 2.8.6a2 2 0 0 1 1.8 2.1z"/>
+  </svg>
+</a>
+<button class="toTop" id="toTop" aria-label="Наверх"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+
+<script src="js/main.js?v=22"></script>
 <script>
+/* Failsafe: контент виден даже если основной скрипт не загрузился */
 (function(){
-  "use strict";
-  var reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  /* ---- Ползунок «чертёж → готово» ---- */
-  var rev = document.getElementById("rev");
-  if (rev) {
-    var dragging = false;
-    function setPos(clientX){
-      var r = rev.getBoundingClientRect();
-      var pct = ((clientX - r.left) / r.width) * 100;
-      pct = Math.max(2, Math.min(98, pct));
-      rev.style.setProperty("--pos", pct.toFixed(1) + "%");
-      rev.setAttribute("aria-valuenow", Math.round(pct));
-      rev.classList.add("is-touched");
-    }
-    rev.addEventListener("pointerdown", function(e){
-      dragging = true; rev.setPointerCapture(e.pointerId); setPos(e.clientX);
-    });
-    rev.addEventListener("pointermove", function(e){ if (dragging) setPos(e.clientX); });
-    ["pointerup","pointercancel"].forEach(function(ev){
-      rev.addEventListener(ev, function(){ dragging = false; });
-    });
-    // клавиатура — стрелками
-    rev.addEventListener("keydown", function(e){
-      var cur = parseFloat(rev.style.getPropertyValue("--pos")) || 52;
-      if (e.key === "ArrowLeft")  { cur -= 4; } else if (e.key === "ArrowRight") { cur += 4; } else { return; }
-      e.preventDefault();
-      cur = Math.max(2, Math.min(98, cur));
-      rev.style.setProperty("--pos", cur + "%");
-      rev.setAttribute("aria-valuenow", Math.round(cur));
-      rev.classList.add("is-touched");
+  function show(){
+    var vh = window.innerHeight || 800;
+    document.querySelectorAll('.reveal:not(.in)').forEach(function(el){
+      if (el.getBoundingClientRect().top < vh * 1.08) el.classList.add('in');
     });
   }
-
-  /* ---- Появление блоков при скролле ---- */
-  var io = new IntersectionObserver(function(entries){
-    entries.forEach(function(en){
-      if (en.isIntersecting) { en.target.classList.add("is-in"); io.unobserve(en.target); }
-    });
-  }, { threshold: .18, rootMargin: "0px 0px -8% 0px" });
-
-  document.querySelectorAll(".up, .dims, .steps").forEach(function(el){ io.observe(el); });
-
-  /* ---- Счёт цифр ---- */
-  function countUp(el){
-    var to = parseInt(el.getAttribute("data-to"), 10);
-    var suffix = el.getAttribute("data-suffix") || "";
-    if (reduced || !to) return;
-    var dur = 1100, start = null;
-    function fmt(n){ return n.toLocaleString("ru-RU").replace(/,/g, " "); }
-    function tick(ts){
-      if (!start) start = ts;
-      var p = Math.min((ts - start) / dur, 1);
-      var eased = 1 - Math.pow(1 - p, 3);
-      el.textContent = fmt(Math.round(to * eased)) + suffix;
-      if (p < 1) requestAnimationFrame(tick);
-    }
-    el.textContent = "0" + suffix;
-    requestAnimationFrame(tick);
-  }
-
-  var dims = document.querySelector(".dims");
-  if (dims) {
-    var dio = new IntersectionObserver(function(entries){
-      entries.forEach(function(en){
-        if (!en.isIntersecting) return;
-        en.target.querySelectorAll("[data-to]").forEach(countUp);
-        dio.unobserve(en.target);
-      });
-    }, { threshold: .3 });
-    dio.observe(dims);
-  }
+  window.addEventListener('scroll', show, {passive:true});
+  window.addEventListener('load', function(){ setTimeout(show, 300); });
+  setTimeout(show, 1800);
 })();
 </script>
 
+<div class="draftbar">Черновик дизайна — <b>не финальная версия</b>, только для просмотра</div>
+<script src="js/draft-extra.js?v=1"></script>
 </body>
 </html>
