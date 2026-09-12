@@ -129,10 +129,17 @@ https://api.telegram.org/bot<ТОКЕН>/setWebhook?url=https://<ПРОЕКТ>.s
 по размерам, а не лепится вручную.
 
 ```
-tools/blender/kitchen.py       # генератор модели
-assets/3d/rich-kitchen.blend   # готовый файл, открывается в Blender
-assets/3d/renders/*.png        # визуализации (4 камеры)
+tools/blender/kitchen.py          # генератор модели
+assets/3d/rich-kitchen.blend      # готовый файл, открывается в Blender
+assets/3d/rich-kitchen.glb        # та же кухня в универсальном формате
+assets/3d/rich-kitchen-web.glb    # без потолка и передней стены — чтобы заглянуть внутрь
+assets/3d/renders/*.png           # визуализации (4 камеры)
 ```
+
+**Посмотреть без Blender:** файлы `.glb` открываются штатными средствами —
+в Windows двойным щелчком (приложение «Просмотр 3D»), на macOS перетаскиванием
+в браузер. Комната в модели закрыта со всех сторон, поэтому для осмотра снаружи
+берите вариант `-web.glb`.
 
 **Открыть модель:** Blender → File → Open → `assets/3d/rich-kitchen.blend`.
 Объекты разложены по коллекциям (помещение, нижние модули, столешница,
