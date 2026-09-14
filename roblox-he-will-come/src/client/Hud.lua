@@ -1,10 +1,11 @@
 --!nonstrict
--- HUD матча: фаза, предохранители, рассудок, шум, команда, статус "он идёт за тобой".
+-- HUD: ключи, стамина, команда, статус, экран "ты упал", всплывающие сообщения.
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 
 local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
 
 local Hud = {}
 
@@ -13,13 +14,6 @@ local COLORS = {
 	bad = Color3.fromRGB(255, 85, 85),
 	info = Color3.fromRGB(205, 210, 225),
 }
-
-local gui = Instance.new("ScreenGui")
-gui.Name = "HWC_Hud"
-gui.ResetOnSpawn = false
-gui.IgnoreGuiInset = true
-gui.Enabled = false
-gui.Parent = player:WaitForChild("PlayerGui")
 
 local function label(parent, text, size, position, textSize)
 	local element = Instance.new("TextLabel")
@@ -44,64 +38,69 @@ local function bar(parent, size, position, color)
 	back.BackgroundTransparency = 0.3
 	back.BorderSizePixel = 0
 	back.Parent = parent
-
 	local corner = Instance.new("UICorner")
 	corner.CornerRadius = UDim.new(0, 5)
 	corner.Parent = back
-
 	local fill = Instance.new("Frame")
 	fill.Size = UDim2.fromScale(1, 1)
 	fill.BackgroundColor3 = color
 	fill.BorderSizePixel = 0
 	fill.Parent = back
-
 	local fillCorner = Instance.new("UICorner")
 	fillCorner.CornerRadius = UDim.new(0, 5)
 	fillCorner.Parent = fill
-
 	return back, fill
 end
 
--- сверху слева: задача
-local objective = label(gui, "", UDim2.fromOffset(420, 28), UDim2.fromOffset(20, 16), 20)
-local phaseLabel = label(gui, "", UDim2.fromOffset(420, 22), UDim2.fromOffset(20, 44), 15)
+-- слой сообщений: работает и в лобби
+local toastGui = Instance.new("ScreenGui")
+toastGui.Name = "HWC_Toasts"
+toastGui.ResetOnSpawn = false
+toastGui.IgnoreGuiInset = true
+toastGui.DisplayOrder = 5
+toastGui.Parent = playerGui
+
+local toast = label(toastGui, "", UDim2.fromOffset(800, 30), UDim2.new(0.5, -400, 0.76, 0), 20)
+toast.TextXAlignment = Enum.TextXAlignment.Center
+toast.TextTransparency = 1
+
+-- HUD матча
+local gui = Instance.new("ScreenGui")
+gui.Name = "HWC_Hud"
+gui.ResetOnSpawn = false
+gui.IgnoreGuiInset = true
+gui.Enabled = false
+gui.Parent = playerGui
+
+local objective = label(gui, "", UDim2.fromOffset(460, 30), UDim2.fromOffset(20, 16), 22)
+local phaseLabel = label(gui, "", UDim2.fromOffset(460, 22), UDim2.fromOffset(20, 46), 15)
 phaseLabel.TextColor3 = Color3.fromRGB(180, 185, 200)
 
--- рассудок
-local sanityText = label(gui, "Рассудок", UDim2.fromOffset(240, 18), UDim2.new(0, 20, 1, -96), 13)
-local _, sanityFill = bar(gui, UDim2.fromOffset(240, 12), UDim2.new(0, 20, 1, -78), Color3.fromRGB(150, 120, 230))
+local staminaText = label(gui, "Выносливость", UDim2.fromOffset(260, 18), UDim2.new(0, 20, 1, -70), 13)
+local _, staminaFill = bar(gui, UDim2.fromOffset(260, 12), UDim2.new(0, 20, 1, -52), Color3.fromRGB(110, 190, 255))
+local moveState = label(gui, "", UDim2.fromOffset(400, 18), UDim2.new(0, 20, 1, -34), 13)
+moveState.TextColor3 = Color3.fromRGB(170, 175, 190)
 
--- шум
-local noiseText = label(gui, "Шум", UDim2.fromOffset(240, 18), UDim2.new(0, 20, 1, -58), 13)
-local _, noiseFill = bar(gui, UDim2.fromOffset(240, 12), UDim2.new(0, 20, 1, -40), Color3.fromRGB(230, 170, 60))
-
--- выносливость
-local _, staminaFill = bar(gui, UDim2.fromOffset(240, 8), UDim2.new(0, 20, 1, -22), Color3.fromRGB(110, 190, 255))
-
--- команда справа
-local teamTitle = label(gui, "Команда", UDim2.fromOffset(220, 20), UDim2.new(1, -240, 0, 16), 15)
+local teamTitle = label(gui, "Команда", UDim2.fromOffset(240, 20), UDim2.new(1, -260, 0, 16), 15)
 teamTitle.TextColor3 = Color3.fromRGB(180, 185, 200)
 local teamLabels = {}
 for index = 1, 4 do
-	local element = label(gui, "", UDim2.fromOffset(220, 20), UDim2.new(1, -240, 0, 16 + index * 22), 15)
-	teamLabels[index] = element
+	teamLabels[index] = label(gui, "", UDim2.fromOffset(240, 20), UDim2.new(1, -260, 0, 16 + index * 22), 15)
 end
 
--- статус по центру
-local statusLabel = label(gui, "", UDim2.fromOffset(600, 30), UDim2.new(0.5, -300, 0, 20), 22)
+local statusLabel = label(gui, "", UDim2.fromOffset(700, 34), UDim2.new(0.5, -350, 0, 18), 24)
 statusLabel.TextXAlignment = Enum.TextXAlignment.Center
 
-local hintLabel = label(
+local hint = label(
 	gui,
-	"Shift - бег (громко)   |   C - красться (тихо)   |   F - фонарь (он это чувствует)   |   E - взаимодействие",
-	UDim2.fromOffset(900, 20),
-	UDim2.new(0.5, -450, 1, -24),
+	"Shift бег  |  C красться  |  Shift+C подкат  |  F фонарь  |  E обыскать / спрятаться / поднять  |  T крикнуть (приманить его к себе)",
+	UDim2.fromOffset(1000, 20),
+	UDim2.new(0.5, -500, 1, -14),
 	13
 )
-hintLabel.TextXAlignment = Enum.TextXAlignment.Center
-hintLabel.TextColor3 = Color3.fromRGB(150, 155, 170)
+hint.TextXAlignment = Enum.TextXAlignment.Center
+hint.TextColor3 = Color3.fromRGB(150, 155, 170)
 
--- экран "ты упал"
 local downFrame = Instance.new("Frame")
 downFrame.Size = UDim2.fromScale(1, 1)
 downFrame.BackgroundColor3 = Color3.fromRGB(60, 0, 0)
@@ -110,28 +109,15 @@ downFrame.BorderSizePixel = 0
 downFrame.Visible = false
 downFrame.ZIndex = 20
 downFrame.Parent = gui
-
 local downText = label(downFrame, "ТЫ УПАЛ", UDim2.fromScale(1, 0.1), UDim2.fromScale(0, 0.4), 36)
 downText.TextXAlignment = Enum.TextXAlignment.Center
 downText.ZIndex = 21
 local _, bleedFill = bar(downFrame, UDim2.fromOffset(320, 14), UDim2.new(0.5, -160, 0.52, 0), Color3.fromRGB(220, 60, 60))
 bleedFill.ZIndex = 21
 
--- Отдельный слой для сообщений: он работает и в лобби, когда HUD выключен.
-local toastGui = Instance.new("ScreenGui")
-toastGui.Name = "HWC_Toasts"
-toastGui.ResetOnSpawn = false
-toastGui.IgnoreGuiInset = true
-toastGui.DisplayOrder = 5
-toastGui.Parent = player:WaitForChild("PlayerGui")
-
-local toast = label(toastGui, "", UDim2.fromOffset(760, 28), UDim2.new(0.5, -380, 0.74, 0), 19)
-toast.TextXAlignment = Enum.TextXAlignment.Center
-toast.TextTransparency = 1
-
 local toastToken = 0
 
-function Hud.toast(text: string, color: string?)
+function Hud.toast(text, color)
 	toastToken += 1
 	local token = toastToken
 	toast.Text = text
@@ -144,46 +130,57 @@ function Hud.toast(text: string, color: string?)
 	end)
 end
 
-function Hud.setVisible(visible: boolean)
+function Hud.setVisible(visible)
 	gui.Enabled = visible
 	if not visible then
 		downFrame.Visible = false
 	end
 end
 
-function Hud.setStamina(value: number, max: number)
+function Hud.setStamina(value, max)
 	staminaFill.Size = UDim2.fromScale(math.clamp(value / max, 0, 1), 1)
+	staminaFill.BackgroundColor3 = value < 20 and Color3.fromRGB(255, 120, 120) or Color3.fromRGB(110, 190, 255)
+end
+
+function Hud.setMoveState(crouching, sprinting, flashlight)
+	local parts = {}
+	if crouching then
+		table.insert(parts, "крадёшься (бесшумно)")
+	elseif sprinting then
+		table.insert(parts, "БЕЖИШЬ (громко)")
+	else
+		table.insert(parts, "идёшь")
+	end
+	if flashlight then
+		table.insert(parts, "фонарь ВКЛ (тебя видно издалека)")
+	end
+	moveState.Text = table.concat(parts, "  |  ")
 end
 
 function Hud.update(data)
-	objective.Text = data.generatorOn and "ВОРОТА ОТКРЫТЫ - НА ЮГ"
-		or string.format("Предохранители %d/%d", data.fuses, data.fusesRequired)
+	objective.Text = data.gateOpen and "ВОРОТА ОТКРЫТЫ - на юг через главный вход"
+		or string.format("Ключи %d/%d - обыскивай рюкзаки", data.keys, data.keysRequired)
 
 	if data.phase == "prep" then
-		phaseLabel.Text = string.format("Тишина. ОН придёт через %d сек.", math.ceil(data.timeLeft))
+		phaseLabel.Text = string.format("Тихо. ОН проснётся через %d сек.", math.ceil(data.timeLeft))
 		phaseLabel.TextColor3 = COLORS.good
 	else
-		phaseLabel.Text = data.generatorOn and "Бегите к воротам" or "ОН здесь. Ищите щитки."
+		phaseLabel.Text = "ОН ходит по школе"
 		phaseLabel.TextColor3 = COLORS.bad
 	end
 
-	sanityFill.Size = UDim2.fromScale(math.clamp(data.sanity / data.sanityMax, 0, 1), 1)
-	sanityText.Text = data.gazing and "Рассудок  (СМОТРИШЬ НА НЕГО)" or "Рассудок"
-	sanityText.TextColor3 = data.gazing and COLORS.bad or Color3.fromRGB(200, 200, 215)
-
-	noiseFill.Size = UDim2.fromScale(math.clamp(data.heat / data.heatMax, 0, 1), 1)
-	noiseText.Text = data.hunted and "Шум  (ОН ИДЁТ ЗА ТОБОЙ)" or "Шум"
-	noiseText.TextColor3 = data.hunted and COLORS.bad or Color3.fromRGB(200, 200, 215)
-
-	if data.panic then
-		statusLabel.Text = "ПАНИКА"
+	if data.hidden then
+		statusLabel.Text = "ТЫ В ШКАФУ. E - выйти"
+		statusLabel.TextColor3 = Color3.fromRGB(150, 200, 255)
+	elseif data.hunted then
+		statusLabel.Text = "ОН БЕЖИТ ЗА ТОБОЙ - ЛОМАЙ ЕМУ ОБЗОР, ПРЯЧЬСЯ"
 		statusLabel.TextColor3 = COLORS.bad
-	elseif data.gazing then
-		statusLabel.Text = "ДЕРЖИ ЕГО ВЗГЛЯДОМ"
-		statusLabel.TextColor3 = Color3.fromRGB(255, 200, 90)
-	elseif data.distance and data.distance < 25 then
+	elseif data.distance and data.distance < 22 then
 		statusLabel.Text = "ОН РЯДОМ"
 		statusLabel.TextColor3 = COLORS.bad
+	elseif data.distance and data.distance < 45 then
+		statusLabel.Text = "слышны шаги..."
+		statusLabel.TextColor3 = Color3.fromRGB(230, 170, 60)
 	else
 		statusLabel.Text = ""
 	end
@@ -191,24 +188,22 @@ function Hud.update(data)
 	downFrame.Visible = data.downed == true
 	if data.downed then
 		bleedFill.Size = UDim2.fromScale(math.clamp(data.bleed / data.bleedMax, 0, 1), 1)
-		downText.Text = string.format("ТЫ УПАЛ - %d сек", math.ceil(data.bleed))
+		downText.Text = string.format("ТЫ УПАЛ - %d сек. Кричи T, чтобы тебя нашли", math.ceil(data.bleed))
 	end
 
 	local teammates = data.teammates or {}
 	for index, element in teamLabels do
 		local mate = teammates[index]
 		if mate then
-			local status = "в игре"
-			local color = COLORS.good
+			local status, color = "в игре", COLORS.good
 			if mate.out then
-				status = "потерян"
-				color = Color3.fromRGB(120, 120, 130)
+				status, color = "потерян", Color3.fromRGB(120, 120, 130)
 			elseif mate.escaped then
-				status = "выбрался"
-				color = Color3.fromRGB(120, 200, 255)
+				status, color = "выбрался", Color3.fromRGB(120, 200, 255)
 			elseif mate.downed then
-				status = "УПАЛ"
-				color = COLORS.bad
+				status, color = "УПАЛ", COLORS.bad
+			elseif mate.hidden then
+				status, color = "прячется", Color3.fromRGB(150, 200, 255)
 			end
 			element.Text = string.format("%s - %s", mate.name, status)
 			element.TextColor3 = color

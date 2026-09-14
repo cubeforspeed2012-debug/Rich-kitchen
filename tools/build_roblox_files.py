@@ -128,7 +128,10 @@ def build(project) -> None:
                 "{inner}"
                 "\t\t</Item>\n"
             ).format(r=ref.next(), inner=folder_item(folder_name, base / src, ref, "\t\t\t"))
-            parts.append(service_item("StarterPlayer", ref, scripts_holder))
+            # R15 нужен для приседания и подката (масштаб роста персонажа)
+            avatar = '\t\t\t<token name="GameSettingsAvatar">1</token>\n'
+            parts.append(service_item("StarterPlayer", ref, scripts_holder).replace(
+                "\t\t</Properties>\n", avatar + "\t\t</Properties>\n", 1))
         else:
             parts.append(service_item(service, ref, folder_item(folder_name, base / src, ref, "\t\t")))
 

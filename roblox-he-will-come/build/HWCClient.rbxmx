@@ -7,7 +7,7 @@
 			<Properties>
 				<string name="Name">Effects</string>
 				<ProtectedString name="Source"><![CDATA[--!nonstrict
--- Тряска, размытие от потери рассудка и экраны испуга.
+-- Экраны испуга, тряска, сердцебиение-виньетка, темнота при приближении.
 
 local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
@@ -19,14 +19,9 @@ local player = Players.LocalPlayer
 
 local Effects = {}
 
-local blur = Instance.new("BlurEffect")
-blur.Name = "HWC_Blur"
-blur.Size = 0
-blur.Parent = Lighting
-
 local correction = Instance.new("ColorCorrectionEffect")
 correction.Name = "HWC_Correction"
-correction.Saturation = -0.2
+correction.Saturation = -0.25
 correction.Parent = Lighting
 
 local gui = Instance.new("ScreenGui")
@@ -36,11 +31,19 @@ gui.IgnoreGuiInset = true
 gui.DisplayOrder = 10
 gui.Parent = player:WaitForChild("PlayerGui")
 
+local vignette = Instance.new("Frame")
+vignette.Size = UDim2.fromScale(1, 1)
+vignette.BackgroundColor3 = Color3.fromRGB(110, 0, 0)
+vignette.BackgroundTransparency = 1
+vignette.BorderSizePixel = 0
+vignette.Parent = gui
+
 local overlay = Instance.new("Frame")
 overlay.Size = UDim2.fromScale(1, 1)
 overlay.BackgroundColor3 = Color3.new(0, 0, 0)
 overlay.BackgroundTransparency = 1
 overlay.BorderSizePixel = 0
+overlay.ZIndex = 2
 overlay.Parent = gui
 
 local overlayText = Instance.new("TextLabel")
@@ -52,74 +55,83 @@ overlayText.TextScaled = true
 overlayText.Font = Enum.Font.GothamBlack
 overlayText.TextColor3 = Color3.fromRGB(230, 230, 235)
 overlayText.TextTransparency = 1
+overlayText.ZIndex = 3
 overlayText.Parent = gui
 
 local shakeUntil = 0
 local shakeStrength = 0
+local pulse = 0
 
-function Effects.shake(duration: number, strength: number)
+function Effects.shake(duration, strength)
 	shakeUntil = os.clock() + duration
 	shakeStrength = strength
 end
 
-local function flash(color: Color3, text: string, holdTime: number)
+local function flash(color, str, holdTime, alpha)
 	overlay.BackgroundColor3 = color
-	overlay.BackgroundTransparency = 0.15
-	overlayText.Text = text
+	overlay.BackgroundTransparency = alpha or 0.15
+	overlayText.Text = str
 	overlayText.TextTransparency = 0
-
 	task.delay(holdTime, function()
 		TweenService:Create(overlay, TweenInfo.new(0.9), { BackgroundTransparency = 1 }):Play()
 		TweenService:Create(overlayText, TweenInfo.new(0.7), { TextTransparency = 1 }):Play()
 	end)
 end
 
-function Effects.scare(kind: string)
+function Effects.play(kind, data)
 	if kind == "arrival" then
-		flash(Color3.new(0, 0, 0), "ОН ПРИШЁЛ", 1.4)
-		Effects.shake(1.6, 1.6)
+		flash(Color3.new(0, 0, 0), "ОН ПРОСНУЛСЯ", 1.3)
+		Effects.shake(1.5, 1.4)
+	elseif kind == "scream" then
+		flash(Color3.fromRGB(70, 0, 0), "", 0.4, 0.55)
+		Effects.shake(1.2, 2.4)
 	elseif kind == "down" then
 		flash(Color3.fromRGB(80, 0, 0), "ОН ТЕБЯ ДОСТАЛ", 1.2)
-		Effects.shake(1.4, 2.6)
-	elseif kind == "panic" then
-		flash(Color3.fromRGB(40, 0, 40), "ТЫ СОРВАЛСЯ", 0.9)
-		Effects.shake(2.2, 2.2)
+		Effects.shake(1.4, 2.8)
 	elseif kind == "revived" then
 		flash(Color3.fromRGB(0, 60, 30), "ТЫ СНОВА НА НОГАХ", 0.7)
 	elseif kind == "out" then
 		flash(Color3.new(0, 0, 0), "ОН ЗАБРАЛ ТЕБЯ", 2)
+	elseif kind == "escaped" then
+		flash(Color3.fromRGB(0, 40, 20), "ТЫ ВЫБРАЛСЯ", 1.5)
+	elseif kind == "key" then
+		flash(Color3.fromRGB(60, 50, 0), "КЛЮЧ!", 0.4, 0.7)
+	elseif kind == "shout" then
+		Effects.shake(0.4, 0.8)
 	end
 end
 
--- Чем меньше рассудка, тем сильнее плывёт картинка.
-function Effects.setSanity(value: number, max: number)
-	local lost = 1 - math.clamp(value / max, 0, 1)
-	blur.Size = lost * 14
-	correction.Contrast = lost * 0.3
-	correction.TintColor = Color3.fromRGB(255, 255 - math.floor(40 * lost), 255 - math.floor(60 * lost))
-	if lost > 0.55 then
-		Effects.shake(0.2, lost * 0.6)
+-- чем ближе он, тем краснее края и сильнее "пульс"
+function Effects.setDistance(distance, hunted)
+	local danger = math.clamp(1 - distance / 50, 0, 1)
+	if hunted then
+		danger = math.max(danger, 0.6)
 	end
+	pulse = danger
+	correction.Contrast = danger * 0.2
+	correction.TintColor = Color3.fromRGB(255, 255 - math.floor(35 * danger), 255 - math.floor(45 * danger))
 end
 
 function Effects.reset()
-	blur.Size = 0
+	pulse = 0
 	correction.Contrast = 0
 	correction.TintColor = Color3.new(1, 1, 1)
+	vignette.BackgroundTransparency = 1
 end
 
 function Effects.start()
 	RunService:BindToRenderStep("HWC_Shake", Enum.RenderPriority.Camera.Value + 1, function()
 		local camera = Workspace.CurrentCamera
-		if not camera or os.clock() >= shakeUntil then
+		if not camera then
 			return
 		end
-		local offset = Vector3.new(
-			(math.random() - 0.5) * shakeStrength,
-			(math.random() - 0.5) * shakeStrength,
-			0
-		)
-		camera.CFrame = camera.CFrame * CFrame.new(offset)
+		if os.clock() < shakeUntil then
+			camera.CFrame = camera.CFrame * CFrame.new((math.random() - 0.5) * shakeStrength, (math.random() - 0.5) * shakeStrength, 0)
+		end
+		if pulse > 0 then
+			local beat = (math.sin(os.clock() * (4 + pulse * 6)) + 1) / 2
+			vignette.BackgroundTransparency = 1 - pulse * (0.25 + beat * 0.25)
+		end
 	end)
 end
 
@@ -129,47 +141,15 @@ return Effects
 		</Item>
 		<Item class="ModuleScript" referent="RBX2">
 			<Properties>
-				<string name="Name">Gaze</string>
-				<ProtectedString name="Source"><![CDATA[--!nonstrict
--- Раз в 0.2 секунды отправляем серверу, куда смотрит камера.
--- Именно по этому серверу понимает, держишь ли ты ЕГО взглядом.
-
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Workspace = game:GetService("Workspace")
-
-local Shared = ReplicatedStorage:WaitForChild("HWCShared")
-local Remotes = require(Shared:WaitForChild("Remotes"))
-
-local gazeEvent = Remotes.get("GazeReport")
-
-local Gaze = {}
-
-function Gaze.start()
-	task.spawn(function()
-		while true do
-			task.wait(0.2)
-			local camera = Workspace.CurrentCamera
-			if camera then
-				gazeEvent:FireServer(camera.CFrame.Position, camera.CFrame.LookVector)
-			end
-		end
-	end)
-end
-
-return Gaze
-]]></ProtectedString>
-			</Properties>
-		</Item>
-		<Item class="ModuleScript" referent="RBX3">
-			<Properties>
 				<string name="Name">Hud</string>
 				<ProtectedString name="Source"><![CDATA[--!nonstrict
--- HUD матча: фаза, предохранители, рассудок, шум, команда, статус "он идёт за тобой".
+-- HUD: ключи, стамина, команда, статус, экран "ты упал", всплывающие сообщения.
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 
 local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
 
 local Hud = {}
 
@@ -178,13 +158,6 @@ local COLORS = {
 	bad = Color3.fromRGB(255, 85, 85),
 	info = Color3.fromRGB(205, 210, 225),
 }
-
-local gui = Instance.new("ScreenGui")
-gui.Name = "HWC_Hud"
-gui.ResetOnSpawn = false
-gui.IgnoreGuiInset = true
-gui.Enabled = false
-gui.Parent = player:WaitForChild("PlayerGui")
 
 local function label(parent, text, size, position, textSize)
 	local element = Instance.new("TextLabel")
@@ -209,64 +182,69 @@ local function bar(parent, size, position, color)
 	back.BackgroundTransparency = 0.3
 	back.BorderSizePixel = 0
 	back.Parent = parent
-
 	local corner = Instance.new("UICorner")
 	corner.CornerRadius = UDim.new(0, 5)
 	corner.Parent = back
-
 	local fill = Instance.new("Frame")
 	fill.Size = UDim2.fromScale(1, 1)
 	fill.BackgroundColor3 = color
 	fill.BorderSizePixel = 0
 	fill.Parent = back
-
 	local fillCorner = Instance.new("UICorner")
 	fillCorner.CornerRadius = UDim.new(0, 5)
 	fillCorner.Parent = fill
-
 	return back, fill
 end
 
--- сверху слева: задача
-local objective = label(gui, "", UDim2.fromOffset(420, 28), UDim2.fromOffset(20, 16), 20)
-local phaseLabel = label(gui, "", UDim2.fromOffset(420, 22), UDim2.fromOffset(20, 44), 15)
+-- слой сообщений: работает и в лобби
+local toastGui = Instance.new("ScreenGui")
+toastGui.Name = "HWC_Toasts"
+toastGui.ResetOnSpawn = false
+toastGui.IgnoreGuiInset = true
+toastGui.DisplayOrder = 5
+toastGui.Parent = playerGui
+
+local toast = label(toastGui, "", UDim2.fromOffset(800, 30), UDim2.new(0.5, -400, 0.76, 0), 20)
+toast.TextXAlignment = Enum.TextXAlignment.Center
+toast.TextTransparency = 1
+
+-- HUD матча
+local gui = Instance.new("ScreenGui")
+gui.Name = "HWC_Hud"
+gui.ResetOnSpawn = false
+gui.IgnoreGuiInset = true
+gui.Enabled = false
+gui.Parent = playerGui
+
+local objective = label(gui, "", UDim2.fromOffset(460, 30), UDim2.fromOffset(20, 16), 22)
+local phaseLabel = label(gui, "", UDim2.fromOffset(460, 22), UDim2.fromOffset(20, 46), 15)
 phaseLabel.TextColor3 = Color3.fromRGB(180, 185, 200)
 
--- рассудок
-local sanityText = label(gui, "Рассудок", UDim2.fromOffset(240, 18), UDim2.new(0, 20, 1, -96), 13)
-local _, sanityFill = bar(gui, UDim2.fromOffset(240, 12), UDim2.new(0, 20, 1, -78), Color3.fromRGB(150, 120, 230))
+local staminaText = label(gui, "Выносливость", UDim2.fromOffset(260, 18), UDim2.new(0, 20, 1, -70), 13)
+local _, staminaFill = bar(gui, UDim2.fromOffset(260, 12), UDim2.new(0, 20, 1, -52), Color3.fromRGB(110, 190, 255))
+local moveState = label(gui, "", UDim2.fromOffset(400, 18), UDim2.new(0, 20, 1, -34), 13)
+moveState.TextColor3 = Color3.fromRGB(170, 175, 190)
 
--- шум
-local noiseText = label(gui, "Шум", UDim2.fromOffset(240, 18), UDim2.new(0, 20, 1, -58), 13)
-local _, noiseFill = bar(gui, UDim2.fromOffset(240, 12), UDim2.new(0, 20, 1, -40), Color3.fromRGB(230, 170, 60))
-
--- выносливость
-local _, staminaFill = bar(gui, UDim2.fromOffset(240, 8), UDim2.new(0, 20, 1, -22), Color3.fromRGB(110, 190, 255))
-
--- команда справа
-local teamTitle = label(gui, "Команда", UDim2.fromOffset(220, 20), UDim2.new(1, -240, 0, 16), 15)
+local teamTitle = label(gui, "Команда", UDim2.fromOffset(240, 20), UDim2.new(1, -260, 0, 16), 15)
 teamTitle.TextColor3 = Color3.fromRGB(180, 185, 200)
 local teamLabels = {}
 for index = 1, 4 do
-	local element = label(gui, "", UDim2.fromOffset(220, 20), UDim2.new(1, -240, 0, 16 + index * 22), 15)
-	teamLabels[index] = element
+	teamLabels[index] = label(gui, "", UDim2.fromOffset(240, 20), UDim2.new(1, -260, 0, 16 + index * 22), 15)
 end
 
--- статус по центру
-local statusLabel = label(gui, "", UDim2.fromOffset(600, 30), UDim2.new(0.5, -300, 0, 20), 22)
+local statusLabel = label(gui, "", UDim2.fromOffset(700, 34), UDim2.new(0.5, -350, 0, 18), 24)
 statusLabel.TextXAlignment = Enum.TextXAlignment.Center
 
-local hintLabel = label(
+local hint = label(
 	gui,
-	"Shift - бег (громко)   |   C - красться (тихо)   |   F - фонарь (он это чувствует)   |   E - взаимодействие",
-	UDim2.fromOffset(900, 20),
-	UDim2.new(0.5, -450, 1, -24),
+	"Shift бег  |  C красться  |  Shift+C подкат  |  F фонарь  |  E обыскать / спрятаться / поднять  |  T крикнуть (приманить его к себе)",
+	UDim2.fromOffset(1000, 20),
+	UDim2.new(0.5, -500, 1, -14),
 	13
 )
-hintLabel.TextXAlignment = Enum.TextXAlignment.Center
-hintLabel.TextColor3 = Color3.fromRGB(150, 155, 170)
+hint.TextXAlignment = Enum.TextXAlignment.Center
+hint.TextColor3 = Color3.fromRGB(150, 155, 170)
 
--- экран "ты упал"
 local downFrame = Instance.new("Frame")
 downFrame.Size = UDim2.fromScale(1, 1)
 downFrame.BackgroundColor3 = Color3.fromRGB(60, 0, 0)
@@ -275,28 +253,15 @@ downFrame.BorderSizePixel = 0
 downFrame.Visible = false
 downFrame.ZIndex = 20
 downFrame.Parent = gui
-
 local downText = label(downFrame, "ТЫ УПАЛ", UDim2.fromScale(1, 0.1), UDim2.fromScale(0, 0.4), 36)
 downText.TextXAlignment = Enum.TextXAlignment.Center
 downText.ZIndex = 21
 local _, bleedFill = bar(downFrame, UDim2.fromOffset(320, 14), UDim2.new(0.5, -160, 0.52, 0), Color3.fromRGB(220, 60, 60))
 bleedFill.ZIndex = 21
 
--- Отдельный слой для сообщений: он работает и в лобби, когда HUD выключен.
-local toastGui = Instance.new("ScreenGui")
-toastGui.Name = "HWC_Toasts"
-toastGui.ResetOnSpawn = false
-toastGui.IgnoreGuiInset = true
-toastGui.DisplayOrder = 5
-toastGui.Parent = player:WaitForChild("PlayerGui")
-
-local toast = label(toastGui, "", UDim2.fromOffset(760, 28), UDim2.new(0.5, -380, 0.74, 0), 19)
-toast.TextXAlignment = Enum.TextXAlignment.Center
-toast.TextTransparency = 1
-
 local toastToken = 0
 
-function Hud.toast(text: string, color: string?)
+function Hud.toast(text, color)
 	toastToken += 1
 	local token = toastToken
 	toast.Text = text
@@ -309,46 +274,57 @@ function Hud.toast(text: string, color: string?)
 	end)
 end
 
-function Hud.setVisible(visible: boolean)
+function Hud.setVisible(visible)
 	gui.Enabled = visible
 	if not visible then
 		downFrame.Visible = false
 	end
 end
 
-function Hud.setStamina(value: number, max: number)
+function Hud.setStamina(value, max)
 	staminaFill.Size = UDim2.fromScale(math.clamp(value / max, 0, 1), 1)
+	staminaFill.BackgroundColor3 = value < 20 and Color3.fromRGB(255, 120, 120) or Color3.fromRGB(110, 190, 255)
+end
+
+function Hud.setMoveState(crouching, sprinting, flashlight)
+	local parts = {}
+	if crouching then
+		table.insert(parts, "крадёшься (бесшумно)")
+	elseif sprinting then
+		table.insert(parts, "БЕЖИШЬ (громко)")
+	else
+		table.insert(parts, "идёшь")
+	end
+	if flashlight then
+		table.insert(parts, "фонарь ВКЛ (тебя видно издалека)")
+	end
+	moveState.Text = table.concat(parts, "  |  ")
 end
 
 function Hud.update(data)
-	objective.Text = data.generatorOn and "ВОРОТА ОТКРЫТЫ - НА ЮГ"
-		or string.format("Предохранители %d/%d", data.fuses, data.fusesRequired)
+	objective.Text = data.gateOpen and "ВОРОТА ОТКРЫТЫ - на юг через главный вход"
+		or string.format("Ключи %d/%d - обыскивай рюкзаки", data.keys, data.keysRequired)
 
 	if data.phase == "prep" then
-		phaseLabel.Text = string.format("Тишина. ОН придёт через %d сек.", math.ceil(data.timeLeft))
+		phaseLabel.Text = string.format("Тихо. ОН проснётся через %d сек.", math.ceil(data.timeLeft))
 		phaseLabel.TextColor3 = COLORS.good
 	else
-		phaseLabel.Text = data.generatorOn and "Бегите к воротам" or "ОН здесь. Ищите щитки."
+		phaseLabel.Text = "ОН ходит по школе"
 		phaseLabel.TextColor3 = COLORS.bad
 	end
 
-	sanityFill.Size = UDim2.fromScale(math.clamp(data.sanity / data.sanityMax, 0, 1), 1)
-	sanityText.Text = data.gazing and "Рассудок  (СМОТРИШЬ НА НЕГО)" or "Рассудок"
-	sanityText.TextColor3 = data.gazing and COLORS.bad or Color3.fromRGB(200, 200, 215)
-
-	noiseFill.Size = UDim2.fromScale(math.clamp(data.heat / data.heatMax, 0, 1), 1)
-	noiseText.Text = data.hunted and "Шум  (ОН ИДЁТ ЗА ТОБОЙ)" or "Шум"
-	noiseText.TextColor3 = data.hunted and COLORS.bad or Color3.fromRGB(200, 200, 215)
-
-	if data.panic then
-		statusLabel.Text = "ПАНИКА"
+	if data.hidden then
+		statusLabel.Text = "ТЫ В ШКАФУ. E - выйти"
+		statusLabel.TextColor3 = Color3.fromRGB(150, 200, 255)
+	elseif data.hunted then
+		statusLabel.Text = "ОН БЕЖИТ ЗА ТОБОЙ - ЛОМАЙ ЕМУ ОБЗОР, ПРЯЧЬСЯ"
 		statusLabel.TextColor3 = COLORS.bad
-	elseif data.gazing then
-		statusLabel.Text = "ДЕРЖИ ЕГО ВЗГЛЯДОМ"
-		statusLabel.TextColor3 = Color3.fromRGB(255, 200, 90)
-	elseif data.distance and data.distance < 25 then
+	elseif data.distance and data.distance < 22 then
 		statusLabel.Text = "ОН РЯДОМ"
 		statusLabel.TextColor3 = COLORS.bad
+	elseif data.distance and data.distance < 45 then
+		statusLabel.Text = "слышны шаги..."
+		statusLabel.TextColor3 = Color3.fromRGB(230, 170, 60)
 	else
 		statusLabel.Text = ""
 	end
@@ -356,24 +332,22 @@ function Hud.update(data)
 	downFrame.Visible = data.downed == true
 	if data.downed then
 		bleedFill.Size = UDim2.fromScale(math.clamp(data.bleed / data.bleedMax, 0, 1), 1)
-		downText.Text = string.format("ТЫ УПАЛ - %d сек", math.ceil(data.bleed))
+		downText.Text = string.format("ТЫ УПАЛ - %d сек. Кричи T, чтобы тебя нашли", math.ceil(data.bleed))
 	end
 
 	local teammates = data.teammates or {}
 	for index, element in teamLabels do
 		local mate = teammates[index]
 		if mate then
-			local status = "в игре"
-			local color = COLORS.good
+			local status, color = "в игре", COLORS.good
 			if mate.out then
-				status = "потерян"
-				color = Color3.fromRGB(120, 120, 130)
+				status, color = "потерян", Color3.fromRGB(120, 120, 130)
 			elseif mate.escaped then
-				status = "выбрался"
-				color = Color3.fromRGB(120, 200, 255)
+				status, color = "выбрался", Color3.fromRGB(120, 200, 255)
 			elseif mate.downed then
-				status = "УПАЛ"
-				color = COLORS.bad
+				status, color = "УПАЛ", COLORS.bad
+			elseif mate.hidden then
+				status, color = "прячется", Color3.fromRGB(150, 200, 255)
 			end
 			element.Text = string.format("%s - %s", mate.name, status)
 			element.TextColor3 = color
@@ -387,11 +361,232 @@ return Hud
 ]]></ProtectedString>
 			</Properties>
 		</Item>
+		<Item class="ModuleScript" referent="RBX3">
+			<Properties>
+				<string name="Name">Input</string>
+				<ProtectedString name="Source"><![CDATA[--!nonstrict
+-- Управление: Shift бег, C присесть, Shift+C подкат, F фонарь, T крик.
+-- Скорость ставится каждый кадр здесь, на клиенте, - это гарантирует, что бег работает.
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local Shared = ReplicatedStorage:WaitForChild("HWCShared")
+local GameConfig = require(Shared:WaitForChild("GameConfig"))
+local Remotes = require(Shared:WaitForChild("Remotes"))
+
+local MOVE = GameConfig.Movement
+
+local player = Players.LocalPlayer
+local actionEvent = Remotes.get("PlayerAction")
+
+local Input = {}
+
+local hud
+local stamina = MOVE.MaxStamina
+local sprintHeld = false
+local crouching = false
+local sliding = false
+local slideReadyAt = 0
+local lastDrainAt = 0
+local flashlightOn = false
+local flashlight = nil
+local lastShout = -100
+
+local function character()
+	local model = player.Character
+	if not model then
+		return nil, nil
+	end
+	return model:FindFirstChildOfClass("Humanoid"), model:FindFirstChild("HumanoidRootPart")
+end
+
+local function setHeight(humanoid, scale)
+	local value = humanoid:FindFirstChild("BodyHeightScale")
+	if value and value:IsA("NumberValue") then
+		value.Value = scale
+	end
+end
+
+local function attachFlashlight()
+	local model = player.Character
+	local head = model and model:FindFirstChild("Head")
+	if not head then
+		return
+	end
+	if flashlight and flashlight.Parent then
+		flashlight:Destroy()
+	end
+	local light = Instance.new("SpotLight")
+	light.Name = "Flashlight"
+	light.Angle = 60
+	light.Range = 60
+	light.Brightness = 3
+	light.Face = Enum.NormalId.Front
+	light.Enabled = flashlightOn
+	light.Parent = head
+	flashlight = light
+end
+
+local function toggleFlashlight()
+	flashlightOn = not flashlightOn
+	if flashlight and flashlight.Parent then
+		flashlight.Enabled = flashlightOn
+	else
+		attachFlashlight()
+	end
+	actionEvent:FireServer({ action = "flashlight", value = flashlightOn })
+end
+
+local function setCrouch(value)
+	crouching = value
+	local humanoid = character()
+	if humanoid then
+		setHeight(humanoid, crouching and 0.7 or 1)
+	end
+	actionEvent:FireServer({ action = "crouch", value = crouching })
+end
+
+local function slide()
+	local humanoid, root = character()
+	if not humanoid or not root or sliding or os.clock() < slideReadyAt then
+		return
+	end
+	if humanoid.MoveDirection.Magnitude < 0.1 or stamina < MOVE.SlideStamina then
+		return
+	end
+	sliding = true
+	stamina -= MOVE.SlideStamina
+	slideReadyAt = os.clock() + MOVE.SlideCooldown
+	actionEvent:FireServer({ action = "slide" })
+
+	local direction = Vector3.new(humanoid.MoveDirection.X, 0, humanoid.MoveDirection.Z).Unit
+	setHeight(humanoid, MOVE.SlideHeightScale)
+
+	local attachment = Instance.new("Attachment")
+	attachment.Parent = root
+	local velocity = Instance.new("LinearVelocity")
+	velocity.Attachment0 = attachment
+	velocity.RelativeTo = Enum.ActuatorRelativeTo.World
+	velocity.VelocityConstraintMode = Enum.VelocityConstraintMode.Line
+	velocity.LineDirection = direction
+	velocity.LineVelocity = MOVE.SlideSpeed
+	velocity.Parent = root
+
+	task.delay(MOVE.SlideDuration, function()
+		velocity:Destroy()
+		attachment:Destroy()
+		local currentHumanoid = character()
+		if currentHumanoid then
+			setHeight(currentHumanoid, crouching and 0.7 or 1)
+		end
+		sliding = false
+	end)
+end
+
+local function shout()
+	if os.clock() - lastShout < GameConfig.Noise.ShoutCooldown then
+		return
+	end
+	lastShout = os.clock()
+	actionEvent:FireServer({ action = "shout" })
+end
+
+function Input.isSprinting()
+	return sprintHeld
+end
+
+function Input.start(hudModule)
+	hud = hudModule
+
+	UserInputService.InputBegan:Connect(function(input, processed)
+		if processed then
+			return
+		end
+		local key = input.KeyCode
+		if key == Enum.KeyCode.LeftShift or key == Enum.KeyCode.RightShift then
+			sprintHeld = true
+		elseif key == Enum.KeyCode.C or key == Enum.KeyCode.LeftControl then
+			local humanoid = character()
+			if sprintHeld and humanoid and humanoid.WalkSpeed >= MOVE.SprintSpeed - 1 then
+				slide()
+			else
+				setCrouch(not crouching)
+			end
+		elseif key == Enum.KeyCode.F then
+			toggleFlashlight()
+		elseif key == Enum.KeyCode.T then
+			shout()
+		end
+	end)
+
+	UserInputService.InputEnded:Connect(function(input)
+		if input.KeyCode == Enum.KeyCode.LeftShift or input.KeyCode == Enum.KeyCode.RightShift then
+			sprintHeld = false
+		end
+	end)
+
+	player.CharacterAdded:Connect(function()
+		stamina = MOVE.MaxStamina
+		sprintHeld = false
+		sliding = false
+		crouching = false
+		task.wait(0.6)
+		attachFlashlight()
+		actionEvent:FireServer({ action = "crouch", value = false })
+		actionEvent:FireServer({ action = "flashlight", value = flashlightOn })
+	end)
+	attachFlashlight()
+
+	RunService.RenderStepped:Connect(function(dt)
+		local humanoid = character()
+		if not humanoid or humanoid.Health <= 0 then
+			return
+		end
+
+		-- лежишь или сидишь в шкафу - стоишь на месте
+		if player:GetAttribute("Downed") or player:GetAttribute("Hidden") then
+			humanoid.WalkSpeed = 0
+			hud.setStamina(stamina, MOVE.MaxStamina)
+			return
+		end
+
+		if sliding then
+			humanoid.WalkSpeed = 6
+			hud.setStamina(stamina, MOVE.MaxStamina)
+			return
+		end
+
+		local moving = humanoid.MoveDirection.Magnitude > 0.1
+		local canSprint = sprintHeld and moving and not crouching and stamina > MOVE.MinSprintStamina
+
+		if canSprint then
+			stamina = math.max(0, stamina - MOVE.SprintDrain * dt)
+			lastDrainAt = os.clock()
+			humanoid.WalkSpeed = MOVE.SprintSpeed
+		else
+			humanoid.WalkSpeed = crouching and MOVE.CrouchSpeed or MOVE.WalkSpeed
+			if os.clock() - lastDrainAt > MOVE.RegenDelay then
+				stamina = math.min(MOVE.MaxStamina, stamina + MOVE.StaminaRegen * dt)
+			end
+		end
+
+		hud.setStamina(stamina, MOVE.MaxStamina)
+		hud.setMoveState(crouching, canSprint, flashlightOn)
+	end)
+end
+
+return Input
+]]></ProtectedString>
+			</Properties>
+		</Item>
 		<Item class="ModuleScript" referent="RBX4">
 			<Properties>
 				<string name="Name">LobbyUI</string>
 				<ProtectedString name="Source"><![CDATA[--!nonstrict
--- Интерфейс лобби: список комнат, создать / войти / выйти / старт.
+-- Окно лобби: список комнат, создать / войти / выйти / старт.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -411,96 +606,81 @@ gui.IgnoreGuiInset = true
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local panel = Instance.new("Frame")
-panel.Size = UDim2.fromOffset(520, 420)
-panel.Position = UDim2.new(0.5, -260, 0.5, -210)
+panel.Size = UDim2.fromOffset(540, 440)
+panel.Position = UDim2.new(0.5, -270, 0.5, -220)
 panel.BackgroundColor3 = Color3.fromRGB(14, 14, 18)
-panel.BackgroundTransparency = 0.08
+panel.BackgroundTransparency = 0.06
 panel.BorderSizePixel = 0
 panel.Parent = gui
-
 local panelCorner = Instance.new("UICorner")
 panelCorner.CornerRadius = UDim.new(0, 12)
 panelCorner.Parent = panel
-
 local stroke = Instance.new("UIStroke")
-stroke.Color = Color3.fromRGB(120, 30, 30)
+stroke.Color = Color3.fromRGB(130, 30, 30)
 stroke.Thickness = 2
 stroke.Parent = panel
 
-local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, -24, 0, 42)
-title.Position = UDim2.fromOffset(12, 10)
-title.BackgroundTransparency = 1
-title.Text = "HE WILL COME"
-title.Font = Enum.Font.GothamBlack
-title.TextSize = 28
-title.TextColor3 = Color3.fromRGB(220, 50, 50)
-title.Parent = panel
+local function text(parent, str, size, position, textSize, color)
+	local element = Instance.new("TextLabel")
+	element.Size = size
+	element.Position = position
+	element.BackgroundTransparency = 1
+	element.Text = str
+	element.Font = Enum.Font.GothamBold
+	element.TextSize = textSize
+	element.TextColor3 = color or Color3.fromRGB(235, 235, 240)
+	element.TextXAlignment = Enum.TextXAlignment.Left
+	element.TextWrapped = true
+	element.Parent = parent
+	return element
+end
 
-local subtitle = Instance.new("TextLabel")
-subtitle.Size = UDim2.new(1, -24, 0, 20)
-subtitle.Position = UDim2.fromOffset(12, 50)
-subtitle.BackgroundTransparency = 1
-subtitle.Text = "Комнаты до 4 человек. Создай свою или зайди к другим."
-subtitle.Font = Enum.Font.Gotham
-subtitle.TextSize = 14
-subtitle.TextColor3 = Color3.fromRGB(170, 170, 185)
-subtitle.Parent = panel
+text(panel, "HE WILL COME", UDim2.new(1, -24, 0, 40), UDim2.fromOffset(14, 10), 28, Color3.fromRGB(220, 50, 50))
+local subtitle = text(panel, "", UDim2.new(1, -24, 0, 36), UDim2.fromOffset(14, 50), 14, Color3.fromRGB(170, 170, 185))
 
 local list = Instance.new("ScrollingFrame")
-list.Size = UDim2.new(1, -24, 0, 240)
-list.Position = UDim2.fromOffset(12, 78)
+list.Size = UDim2.new(1, -28, 0, 236)
+list.Position = UDim2.fromOffset(14, 92)
 list.BackgroundColor3 = Color3.fromRGB(22, 22, 28)
 list.BackgroundTransparency = 0.3
 list.BorderSizePixel = 0
-list.ScrollBarThickness = 5
+list.ScrollBarThickness = 6
 list.CanvasSize = UDim2.new()
 list.AutomaticCanvasSize = Enum.AutomaticSize.Y
 list.Parent = panel
-
 local layout = Instance.new("UIListLayout")
 layout.Padding = UDim.new(0, 6)
 layout.SortOrder = Enum.SortOrder.LayoutOrder
 layout.Parent = list
-
 local padding = Instance.new("UIPadding")
 padding.PaddingTop = UDim.new(0, 6)
 padding.PaddingLeft = UDim.new(0, 6)
 padding.PaddingRight = UDim.new(0, 6)
 padding.Parent = list
 
-local empty = Instance.new("TextLabel")
-empty.Size = UDim2.new(1, -12, 0, 40)
-empty.BackgroundTransparency = 1
-empty.Text = "Комнат пока нет. Создай первую."
-empty.Font = Enum.Font.Gotham
-empty.TextSize = 15
-empty.TextColor3 = Color3.fromRGB(140, 140, 155)
-empty.Parent = list
+local empty = text(list, "Комнат пока нет. Создай первую.", UDim2.new(1, -12, 0, 40), UDim2.new(), 15, Color3.fromRGB(140, 140, 155))
 
-local function makeButton(text: string, position: UDim2, size: UDim2, color: Color3): TextButton
-	local button = Instance.new("TextButton")
-	button.Size = size
-	button.Position = position
-	button.BackgroundColor3 = color
-	button.BorderSizePixel = 0
-	button.Text = text
-	button.Font = Enum.Font.GothamBold
-	button.TextSize = 16
-	button.TextColor3 = Color3.fromRGB(255, 255, 255)
-	button.AutoButtonColor = true
-	button.Parent = panel
-
+local function button(parent, str, size, position, color)
+	local element = Instance.new("TextButton")
+	element.Size = size
+	element.Position = position
+	element.BackgroundColor3 = color
+	element.BorderSizePixel = 0
+	element.Text = str
+	element.Font = Enum.Font.GothamBold
+	element.TextSize = 16
+	element.TextColor3 = Color3.fromRGB(255, 255, 255)
+	element.AutoButtonColor = true
+	element.Parent = parent
 	local corner = Instance.new("UICorner")
 	corner.CornerRadius = UDim.new(0, 8)
-	corner.Parent = button
-
-	return button
+	corner.Parent = element
+	return element
 end
 
-local createButton = makeButton("Создать комнату", UDim2.fromOffset(12, 330), UDim2.fromOffset(240, 38), Color3.fromRGB(50, 90, 60))
-local leaveButton = makeButton("Выйти из комнаты", UDim2.fromOffset(268, 330), UDim2.fromOffset(240, 38), Color3.fromRGB(70, 40, 40))
-local startButton = makeButton("НАЧАТЬ ИГРУ", UDim2.fromOffset(12, 374), UDim2.fromOffset(496, 36), Color3.fromRGB(150, 35, 35))
+local createButton = button(panel, "Создать комнату", UDim2.fromOffset(250, 40), UDim2.fromOffset(14, 340), Color3.fromRGB(50, 95, 60))
+local leaveButton = button(panel, "Выйти из комнаты", UDim2.fromOffset(250, 40), UDim2.fromOffset(276, 340), Color3.fromRGB(75, 40, 40))
+local startButton = button(panel, "НАЧАТЬ ИГРУ", UDim2.fromOffset(512, 40), UDim2.fromOffset(14, 388), Color3.fromRGB(160, 35, 35))
 
 createButton.Activated:Connect(function()
 	roomAction:FireServer({ action = "create" })
@@ -514,82 +694,51 @@ end)
 
 local rows = {}
 
-local function clearRows()
+function LobbyUI.update(data)
 	for _, row in rows do
 		row:Destroy()
 	end
 	table.clear(rows)
-end
-
-function LobbyUI.update(data)
-	clearRows()
 
 	local roomsData = data.rooms or {}
+	local myRoom = data.myRoom or 0
 	empty.Visible = #roomsData == 0
 
 	for index, room in roomsData do
 		local row = Instance.new("Frame")
-		row.Size = UDim2.new(1, -12, 0, 54)
-		row.BackgroundColor3 = room.id == data.myRoom and Color3.fromRGB(45, 60, 45) or Color3.fromRGB(30, 30, 38)
+		row.Size = UDim2.new(1, -12, 0, 56)
+		row.BackgroundColor3 = room.id == myRoom and Color3.fromRGB(45, 65, 45) or Color3.fromRGB(30, 30, 38)
 		row.BorderSizePixel = 0
 		row.LayoutOrder = index
 		row.Parent = list
-
 		local corner = Instance.new("UICorner")
 		corner.CornerRadius = UDim.new(0, 8)
 		corner.Parent = row
 
-		local label = Instance.new("TextLabel")
-		label.Size = UDim2.new(1, -110, 1, 0)
-		label.Position = UDim2.fromOffset(12, 0)
-		label.BackgroundTransparency = 1
-		label.TextXAlignment = Enum.TextXAlignment.Left
-		label.Font = Enum.Font.GothamBold
-		label.TextSize = 15
-		label.TextColor3 = Color3.fromRGB(235, 235, 240)
-		label.Text = string.format(
-			"Комната #%d  -  %d/%d\n%s%s",
-			room.id,
-			room.count,
-			room.max,
-			table.concat(room.players, ", "),
-			room.state == "playing" and "   [идёт игра]" or ""
-		)
-		label.Parent = row
+		local names = table.concat(room.players or {}, ", ")
+		local state = room.state == "playing" and "  [идёт игра]" or ""
+		text(row, string.format("Комната #%d  -  %d/%d%s\n%s", room.id, room.count, room.max, state, names), UDim2.new(1, -120, 1, 0), UDim2.fromOffset(12, 0), 15)
 
-		if room.id ~= data.myRoom and room.state == "waiting" and room.count < room.max and not data.myRoom then
-			local joinButton = Instance.new("TextButton")
-			joinButton.Size = UDim2.fromOffset(90, 34)
-			joinButton.Position = UDim2.new(1, -100, 0.5, -17)
-			joinButton.BackgroundColor3 = Color3.fromRGB(55, 75, 110)
-			joinButton.BorderSizePixel = 0
-			joinButton.Text = "Войти"
-			joinButton.Font = Enum.Font.GothamBold
-			joinButton.TextSize = 15
-			joinButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-			joinButton.Parent = row
-
-			local joinCorner = Instance.new("UICorner")
-			joinCorner.CornerRadius = UDim.new(0, 6)
-			joinCorner.Parent = joinButton
-
-			joinButton.Activated:Connect(function()
+		if myRoom == 0 and room.state == "waiting" and room.count < room.max then
+			local join = button(row, "Войти", UDim2.fromOffset(96, 36), UDim2.new(1, -106, 0.5, -18), Color3.fromRGB(55, 75, 115))
+			join.Activated:Connect(function()
 				roomAction:FireServer({ action = "join", roomId = room.id })
 			end)
 		end
-
 		table.insert(rows, row)
 	end
 
-	createButton.Visible = data.myRoom == nil
-	leaveButton.Visible = data.myRoom ~= nil
+	createButton.Visible = myRoom == 0
+	leaveButton.Visible = myRoom ~= 0
 	startButton.Visible = data.isHost == true
-	subtitle.Text = data.myRoom
-			and string.format("Ты в комнате #%d. Максимум %d игрока(ов).", data.myRoom, data.maxPlayers or 4)
-		or string.format("Комнаты до %d человек. Создай свою или зайди к другим.", data.maxPlayers or 4)
+	if myRoom ~= 0 then
+		subtitle.Text = string.format("Ты в комнате #%d. Максимум %d игрока. Хозяин жмёт СТАРТ.", myRoom, data.maxPlayers or 4)
+	else
+		subtitle.Text = string.format("Комнаты до %d человек. Создай свою или зайди к другим.", data.maxPlayers or 4)
+	end
 end
 
-function LobbyUI.setVisible(visible: boolean)
+function LobbyUI.setVisible(visible)
 	gui.Enabled = visible
 end
 
@@ -601,217 +750,89 @@ return LobbyUI
 			<Properties>
 				<string name="Name">Main</string>
 				<ProtectedString name="Source"><![CDATA[--!nonstrict
--- HE WILL COME - точка входа клиента.
+-- HE WILL COME v2 - точка входа клиента.
+-- Если что-то падает, ошибка показывается прямо на экране, а не прячется в Output.
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local Shared = ReplicatedStorage:WaitForChild("HWCShared")
-local Remotes = require(Shared:WaitForChild("Remotes"))
-
-local LobbyUI = require(script.Parent:WaitForChild("LobbyUI"))
-local Hud = require(script.Parent:WaitForChild("Hud"))
-local Movement = require(script.Parent:WaitForChild("Movement"))
-local Gaze = require(script.Parent:WaitForChild("Gaze"))
-local Effects = require(script.Parent:WaitForChild("Effects"))
-
-Movement.start(Hud)
-Gaze.start()
-Effects.start()
-
-local inMatch = false
-
-Remotes.get("RoomList").OnClientEvent:Connect(function(data)
-	LobbyUI.update(data)
-end)
-
-Remotes.get("MatchSync").OnClientEvent:Connect(function(data)
-	if not data.inMatch then
-		if inMatch then
-			inMatch = false
-			Hud.setVisible(false)
-			LobbyUI.setVisible(true)
-			Effects.reset()
-			Movement.setBlocked(false)
-		end
-		return
-	end
-
-	if not inMatch then
-		inMatch = true
-		Hud.setVisible(true)
-		LobbyUI.setVisible(false)
-	end
-
-	Hud.update(data)
-	Effects.setSanity(data.sanity, data.sanityMax)
-	Movement.setBlocked(data.panic == true or data.downed == true)
-end)
-
-Remotes.get("Notify").OnClientEvent:Connect(function(text: string, color: string?)
-	Hud.toast(text, color)
-end)
-
-Remotes.get("Scare").OnClientEvent:Connect(function(kind: string)
-	Effects.scare(kind)
-end)
-
--- просим сервер прислать список комнат сразу после входа
-Remotes.get("RoomAction"):FireServer({ action = "refresh" })
-]]></ProtectedString>
-			</Properties>
-		</Item>
-		<Item class="ModuleScript" referent="RBX6">
-			<Properties>
-				<string name="Name">Movement</string>
-				<ProtectedString name="Source"><![CDATA[--!nonstrict
--- Бег, приседание и фонарь. Всё это - про громкость.
-
-local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
-
-local Shared = ReplicatedStorage:WaitForChild("HWCShared")
-local GameConfig = require(Shared:WaitForChild("GameConfig"))
-local Remotes = require(Shared:WaitForChild("Remotes"))
-
-local MOVE = GameConfig.Movement
 
 local player = Players.LocalPlayer
-local crouchEvent = Remotes.get("Crouch")
-local flashlightEvent = Remotes.get("Flashlight")
 
-local Movement = {}
-
-local hud
-local stamina = MOVE.MaxStamina
-local sprinting = false
-local crouching = false
-local flashlightOn = false
-local flashlight: SpotLight? = nil
-local lastDrainAt = 0
-local blocked = false -- паника: бежать нельзя
-
-local function getHumanoid(): Humanoid?
-	local character = player.Character
-	return character and character:FindFirstChildOfClass("Humanoid")
+local function showFatal(message)
+	warn("[HE WILL COME] " .. message)
+	local gui = Instance.new("ScreenGui")
+	gui.Name = "HWC_Error"
+	gui.ResetOnSpawn = false
+	gui.DisplayOrder = 100
+	gui.Parent = player:WaitForChild("PlayerGui")
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(1, -40, 0, 120)
+	label.Position = UDim2.fromOffset(20, 20)
+	label.BackgroundColor3 = Color3.fromRGB(60, 0, 0)
+	label.BackgroundTransparency = 0.2
+	label.TextColor3 = Color3.fromRGB(255, 220, 220)
+	label.TextWrapped = true
+	label.TextSize = 16
+	label.Font = Enum.Font.Code
+	label.Text = "ОШИБКА КЛИЕНТА (скинь этот текст):\n" .. message
+	label.Parent = gui
 end
 
-local function setCrouchVisual(humanoid: Humanoid, value: boolean)
-	local scale = humanoid:FindFirstChild("BodyHeightScale")
-	if scale and scale:IsA("NumberValue") then
-		scale.Value = value and 0.65 or 1
+local ok, err = pcall(function()
+	local Shared = ReplicatedStorage:WaitForChild("HWCShared", 20)
+	if not Shared then
+		error("Нет папки HWCShared в ReplicatedStorage")
 	end
-end
+	local Remotes = require(Shared:WaitForChild("Remotes"))
 
-local function attachFlashlight()
-	local character = player.Character
-	local head = character and character:FindFirstChild("Head")
-	if not head then
-		return
-	end
-	if flashlight and flashlight.Parent then
-		flashlight:Destroy()
-	end
-	local light = Instance.new("SpotLight")
-	light.Name = "Flashlight"
-	light.Angle = 65
-	light.Range = 55
-	light.Brightness = 2.6
-	light.Face = Enum.NormalId.Front
-	light.Enabled = flashlightOn
-	light.Parent = head
-	flashlight = light
-end
+	local LobbyUI = require(script.Parent:WaitForChild("LobbyUI"))
+	local Hud = require(script.Parent:WaitForChild("Hud"))
+	local Input = require(script.Parent:WaitForChild("Input"))
+	local Effects = require(script.Parent:WaitForChild("Effects"))
 
-local function onSprint(_, state)
-	sprinting = state == Enum.UserInputState.Begin
-	return Enum.ContextActionResult.Pass
-end
+	Input.start(Hud)
+	Effects.start()
 
-local function onCrouch(_, state)
-	if state ~= Enum.UserInputState.Begin then
-		return Enum.ContextActionResult.Pass
-	end
-	crouching = not crouching
-	local humanoid = getHumanoid()
-	if humanoid then
-		setCrouchVisual(humanoid, crouching)
-	end
-	crouchEvent:FireServer(crouching)
-	return Enum.ContextActionResult.Pass
-end
+	local inMatch = false
 
-local function onFlashlight(_, state)
-	if state ~= Enum.UserInputState.Begin then
-		return Enum.ContextActionResult.Pass
-	end
-	flashlightOn = not flashlightOn
-	if flashlight and flashlight.Parent then
-		flashlight.Enabled = flashlightOn
-	else
-		attachFlashlight()
-	end
-	flashlightEvent:FireServer(flashlightOn)
-	return Enum.ContextActionResult.Pass
-end
-
-function Movement.setBlocked(value: boolean)
-	blocked = value
-end
-
-function Movement.start(hudModule)
-	hud = hudModule
-
-	ContextActionService:BindAction("HWCSprint", onSprint, true, Enum.KeyCode.LeftShift, Enum.KeyCode.RightShift)
-	ContextActionService:BindAction("HWCCrouch", onCrouch, true, Enum.KeyCode.C, Enum.KeyCode.LeftControl)
-	ContextActionService:BindAction("HWCLight", onFlashlight, true, Enum.KeyCode.F)
-	ContextActionService:SetTitle("HWCSprint", "Бег")
-	ContextActionService:SetTitle("HWCCrouch", "Красться")
-	ContextActionService:SetTitle("HWCLight", "Фонарь")
-
-	player.CharacterAdded:Connect(function()
-		stamina = MOVE.MaxStamina
-		crouching = false
-		sprinting = false
-		task.wait(0.6)
-		attachFlashlight()
-		crouchEvent:FireServer(false)
-		flashlightEvent:FireServer(flashlightOn)
+	Remotes.get("RoomList").OnClientEvent:Connect(function(data)
+		LobbyUI.update(data)
 	end)
-	attachFlashlight()
 
-	RunService.RenderStepped:Connect(function(dt)
-		local humanoid = getHumanoid()
-		if not humanoid or humanoid.Health <= 0 then
-			return
-		end
-
-		-- когда лежишь, сервер держит скорость в нуле - не мешаем
-		if humanoid.WalkSpeed == 0 then
-			hud.setStamina(stamina, MOVE.MaxStamina)
-			return
-		end
-
-		local moving = humanoid.MoveDirection.Magnitude > 0.1
-		local canSprint = sprinting and moving and not crouching and not blocked and stamina > MOVE.MinSprintStamina
-
-		if canSprint then
-			stamina = math.max(0, stamina - MOVE.SprintDrain * dt)
-			lastDrainAt = os.clock()
-			humanoid.WalkSpeed = MOVE.SprintSpeed
-		else
-			humanoid.WalkSpeed = crouching and MOVE.CrouchSpeed or MOVE.WalkSpeed
-			if os.clock() - lastDrainAt > MOVE.RegenDelay then
-				stamina = math.min(MOVE.MaxStamina, stamina + MOVE.StaminaRegen * dt)
+	Remotes.get("MatchSync").OnClientEvent:Connect(function(data)
+		if not data.inMatch then
+			if inMatch then
+				inMatch = false
+				Hud.setVisible(false)
+				LobbyUI.setVisible(true)
+				Effects.reset()
 			end
+			return
 		end
-
-		hud.setStamina(stamina, MOVE.MaxStamina)
+		if not inMatch then
+			inMatch = true
+			Hud.setVisible(true)
+			LobbyUI.setVisible(false)
+		end
+		Hud.update(data)
+		Effects.setDistance(data.distance or 999, data.hunted == true)
 	end)
-end
 
-return Movement
+	Remotes.get("Notify").OnClientEvent:Connect(function(str, color)
+		Hud.toast(str, color)
+	end)
+
+	Remotes.get("Effect").OnClientEvent:Connect(function(kind, data)
+		Effects.play(kind, data)
+	end)
+
+	Remotes.get("RoomAction"):FireServer({ action = "refresh" })
+	print("[HE WILL COME] клиент запущен")
+end)
+
+if not ok then
+	showFatal(tostring(err))
+end
 ]]></ProtectedString>
 			</Properties>
 		</Item>

@@ -7,84 +7,80 @@
 			<Properties>
 				<string name="Name">GameConfig</string>
 				<ProtectedString name="Source"><![CDATA[--!nonstrict
--- HE WILL COME - все настройки в одном месте.
+-- HE WILL COME v2 - все настройки игры. Комментарии на русском, числа в стадах/секундах.
 
 local GameConfig = {}
 
 GameConfig.Rooms = {
-	MaxPlayers = 4,          -- больше 4 в комнату нельзя
-	MaxRooms = 4,            -- сколько комнат живёт на одном сервере
-	ArenaSpacing = 3000,     -- комнаты стоят далеко друг от друга, чтобы не мешать
-	ArenaBaseOffset = Vector3.new(3000, 0, 0),
+	MaxPlayers = 4,            -- больше 4 в комнату не пустит
+	MaxRooms = 4,              -- комнат одновременно на одном сервере
+	ArenaSpacing = 1200,       -- расстояние между аренами разных комнат
+	ArenaBaseOffset = Vector3.new(1500, 0, 0),
 	LobbyCenter = Vector3.new(0, 0, 0),
 }
 
 GameConfig.Movement = {
-	WalkSpeed = 15,
+	WalkSpeed = 14,
 	SprintSpeed = 24,
 	CrouchSpeed = 7,
 	MaxStamina = 100,
-	SprintDrain = 15,
-	StaminaRegen = 10,
-	RegenDelay = 1.2,
-	MinSprintStamina = 6,
+	SprintDrain = 14,          -- полной шкалы хватает на ~7 секунд бега
+	StaminaRegen = 9,
+	RegenDelay = 1.5,
+	MinSprintStamina = 5,
+	SlideSpeed = 42,
+	SlideDuration = 0.55,
+	SlideCooldown = 3,
+	SlideStamina = 20,
+	SlideHeightScale = 0.5,
 }
 
--- Громкость действий. ОН слепой и охотится только на звук и свет.
+-- радиус, с которого монстр слышит действие
 GameConfig.Noise = {
-	TickInterval = 0.5,
-	Crouch = 0,              -- присел и крадёшься - ты для него не существуешь
-	Walk = 14,
-	Sprint = 34,
-	Flashlight = 16,         -- включённый фонарь он тоже "чувствует"
-	Fuse = 70,               -- вставил предохранитель - шум на весь дом
-	Scream = 140,            -- паника при нуле рассудка
-	Decay = 12,              -- сколько "тепла" спадает в секунду
-	MaxHeat = 200,
-	SenseRadius = 9,         -- вплотную чувствует даже молчащего
+	Sprint = 42,
+	SprintInterval = 0.4,
+	Walk = 12,
+	Crouch = 0,                -- крадёшься - не слышно вообще
+	Slide = 30,
+	Search = 36,               -- шаришь по парте - шумно
+	Locker = 22,
+	Shout = 1000,              -- крик слышно по всей школе
+	ShoutCooldown = 8,
 }
 
--- ОН
-GameConfig.He = {
-	BaseSpeed = 11,
-	MaxSpeed = 27,
-	Momentum = 0.45,         -- прибавка скорости в секунду, пока на него не смотрят
-	MomentumLossOnGaze = 6,  -- сколько скорости теряет за секунду под взглядом
-	GazeSpeedFactor = 0.18,  -- под взглядом почти стоит
-	GazeRange = 70,
-	GazeAngle = 22,          -- насколько точно надо смотреть, в градусах
-	CatchDistance = 4.2,
-	CatchCooldown = 6,
-	RepathInterval = 0.5,
-	WanderRadius = 45,
-}
-
-GameConfig.Sanity = {
-	Max = 100,
-	GazeDrain = 9,           -- смотреть на него страшно и дорого
-	Regen = 4.5,
-	RegenDelay = 2,
-	PanicRefill = 30,
-	PanicLockTime = 5,       -- после паники нельзя бежать
-	NearDrain = 3,           -- он рядом - рассудок тоже капает
-	NearDistance = 18,
+GameConfig.Monster = {
+	PatrolSpeed = 12,
+	InvestigateSpeed = 17,
+	ChaseSpeed = 25.5,         -- чуть быстрее спринта: убегать надо умно, а не по прямой
+	SpeedPerKey = 0.9,         -- за каждый найденный ключ он становится быстрее
+	SightRange = 55,
+	SightRangeFlashlight = 95, -- с включённым фонарём тебя видно издалека
+	FieldOfView = 100,
+	CloseSense = 9,            -- вплотную чует без обзора
+	CatchDistance = 4,
+	LoseSightGrace = 3,        -- столько секунд помнит тебя без прямой видимости
+	SearchTime = 6,
+	RepathInterval = 0.4,
+	ScreamCooldown = 12,       -- заметив игрока, орёт на всю школу
+	CatchCooldown = 3,
+	LockerPullGrace = 1.5,     -- видел, как ты прыгнул в шкаф - вытащит
 }
 
 GameConfig.Match = {
-	PrepTime = 30,           -- тихая фаза до его прихода
-	FusesRequired = 3,
-	FuseHoldTime = 4,
+	PrepTime = 20,             -- свет горит, монстр ещё спит
+	KeysRequired = 5,
+	SearchHoldTime = 2.5,
+	SearchCooldown = 1,
 	ReviveTime = 4,
-	BleedOutTime = 45,
-	EndScreenTime = 8,
-	MaxMatchTime = 600,
+	BleedOutTime = 40,
+	EndScreenTime = 7,
+	MaxMatchTime = 720,
+	DimLights = 0.28,          -- яркость ламп после прихода монстра
 }
 
-GameConfig.Arena = {
-	WallHeight = 16,
-	WallThickness = 2,
-	HalfX = 90,
-	HalfZ = 70,
+GameConfig.Map = {
+	WallHeight = 12,
+	TileSize = 4,
 }
 
 return GameConfig
@@ -95,34 +91,31 @@ return GameConfig
 			<Properties>
 				<string name="Name">Remotes</string>
 				<ProtectedString name="Source"><![CDATA[--!nonstrict
--- Общий список Remote-событий лобби и матча.
+-- Все Remote-события в одном месте. Сервер создаёт, клиент ждёт.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
+local FOLDER_NAME = "HWCRemotes"
+
 local EVENT_NAMES = {
-	-- лобби
-	"RoomAction",   -- клиент -> сервер: {action = "create"/"join"/"leave"/"start", roomId = n}
+	"RoomAction",   -- клиент -> сервер: { action = "create" | "join" | "leave" | "start" | "refresh", roomId = n }
 	"RoomList",     -- сервер -> клиент: список комнат
-	-- матч
-	"MatchSync",    -- сервер -> клиент: состояние матча и игрока
-	"GazeReport",   -- клиент -> сервер: куда смотрит камера
-	"Notify",       -- сервер -> клиент: текст
-	"Scare",        -- сервер -> клиент: он тебя достал
-	"Crouch",       -- клиент -> сервер: приседание (влияет на шум)
-	"Flashlight",   -- клиент -> сервер: фонарь включён/выключен
+	"MatchSync",    -- сервер -> клиент: состояние матча
+	"PlayerAction", -- клиент -> сервер: { action = "slide" | "shout" | "flashlight" | "crouch", value = ... }
+	"Notify",       -- сервер -> клиент: текст на экран
+	"Effect",       -- сервер -> клиент: "arrival" | "scream" | "down" | "revived" | "out" | "escaped" | "key"
 }
 
 local Remotes = {}
 
-local folder: Folder
+local folder
+
 if RunService:IsServer() then
-	local existing = ReplicatedStorage:FindFirstChild("HWCRemotes")
-	if existing then
-		folder = existing
-	else
+	folder = ReplicatedStorage:FindFirstChild(FOLDER_NAME)
+	if not folder then
 		folder = Instance.new("Folder")
-		folder.Name = "HWCRemotes"
+		folder.Name = FOLDER_NAME
 		folder.Parent = ReplicatedStorage
 	end
 	for _, name in EVENT_NAMES do
@@ -133,11 +126,19 @@ if RunService:IsServer() then
 		end
 	end
 else
-	folder = ReplicatedStorage:WaitForChild("HWCRemotes")
+	-- ждём не бесконечно: если сервер упал, клиент должен показать ошибку, а не висеть
+	folder = ReplicatedStorage:WaitForChild(FOLDER_NAME, 20)
+	if not folder then
+		error("Папка " .. FOLDER_NAME .. " не появилась за 20 секунд. Серверный скрипт не запустился - смотри Output.")
+	end
 end
 
 function Remotes.get(name: string): RemoteEvent
-	return folder:WaitForChild(name)
+	local event = folder:WaitForChild(name, 10)
+	if not event then
+		error("Нет RemoteEvent с именем " .. name)
+	end
+	return event
 end
 
 return Remotes
@@ -148,33 +149,28 @@ return Remotes
 			<Properties>
 				<string name="Name">Util</string>
 				<ProtectedString name="Source"><![CDATA[--!nonstrict
--- Общие помощники.
+-- Мелкие помощники для сервера и клиента.
 
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 
 local Util = {}
 
-function Util.getRoot(character): BasePart?
-	if not character then
-		return nil
-	end
-	return character:FindFirstChild("HumanoidRootPart")
+function Util.getRoot(character)
+	return character and character:FindFirstChild("HumanoidRootPart") or nil
 end
 
-function Util.getHumanoid(character): Humanoid?
-	if not character then
-		return nil
-	end
-	return character:FindFirstChildOfClass("Humanoid")
+function Util.getHumanoid(character)
+	return character and character:FindFirstChildOfClass("Humanoid") or nil
 end
 
-function Util.isAlive(player: Player): boolean
+function Util.isAlive(player)
 	local humanoid = Util.getHumanoid(player.Character)
 	return humanoid ~= nil and humanoid.Health > 0
 end
 
-function Util.hasLineOfSight(fromPos: Vector3, toPos: Vector3, ignore): boolean
+-- Нет ли стены между двумя точками. Персонажи игроков не считаются преградой.
+function Util.hasLineOfSight(fromPos, toPos, ignore)
 	local params = RaycastParams.new()
 	params.FilterType = Enum.RaycastFilterType.Exclude
 	params.FilterDescendantsInstances = ignore
@@ -191,7 +187,7 @@ function Util.hasLineOfSight(fromPos: Vector3, toPos: Vector3, ignore): boolean
 	return false
 end
 
-function Util.makePart(parent: Instance, name: string, size: Vector3, position: Vector3, color: Color3, material: Enum.Material): Part
+function Util.makePart(parent, name, size, position, color, material)
 	local part = Instance.new("Part")
 	part.Name = name
 	part.Size = size
@@ -212,6 +208,10 @@ function Util.shuffle(list)
 		copy[i], copy[j] = copy[j], copy[i]
 	end
 	return copy
+end
+
+function Util.flat(v)
+	return Vector3.new(v.X, 0, v.Z)
 end
 
 return Util

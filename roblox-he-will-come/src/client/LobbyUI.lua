@@ -1,5 +1,5 @@
 --!nonstrict
--- Интерфейс лобби: список комнат, создать / войти / выйти / старт.
+-- Окно лобби: список комнат, создать / войти / выйти / старт.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -19,96 +19,81 @@ gui.IgnoreGuiInset = true
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local panel = Instance.new("Frame")
-panel.Size = UDim2.fromOffset(520, 420)
-panel.Position = UDim2.new(0.5, -260, 0.5, -210)
+panel.Size = UDim2.fromOffset(540, 440)
+panel.Position = UDim2.new(0.5, -270, 0.5, -220)
 panel.BackgroundColor3 = Color3.fromRGB(14, 14, 18)
-panel.BackgroundTransparency = 0.08
+panel.BackgroundTransparency = 0.06
 panel.BorderSizePixel = 0
 panel.Parent = gui
-
 local panelCorner = Instance.new("UICorner")
 panelCorner.CornerRadius = UDim.new(0, 12)
 panelCorner.Parent = panel
-
 local stroke = Instance.new("UIStroke")
-stroke.Color = Color3.fromRGB(120, 30, 30)
+stroke.Color = Color3.fromRGB(130, 30, 30)
 stroke.Thickness = 2
 stroke.Parent = panel
 
-local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, -24, 0, 42)
-title.Position = UDim2.fromOffset(12, 10)
-title.BackgroundTransparency = 1
-title.Text = "HE WILL COME"
-title.Font = Enum.Font.GothamBlack
-title.TextSize = 28
-title.TextColor3 = Color3.fromRGB(220, 50, 50)
-title.Parent = panel
+local function text(parent, str, size, position, textSize, color)
+	local element = Instance.new("TextLabel")
+	element.Size = size
+	element.Position = position
+	element.BackgroundTransparency = 1
+	element.Text = str
+	element.Font = Enum.Font.GothamBold
+	element.TextSize = textSize
+	element.TextColor3 = color or Color3.fromRGB(235, 235, 240)
+	element.TextXAlignment = Enum.TextXAlignment.Left
+	element.TextWrapped = true
+	element.Parent = parent
+	return element
+end
 
-local subtitle = Instance.new("TextLabel")
-subtitle.Size = UDim2.new(1, -24, 0, 20)
-subtitle.Position = UDim2.fromOffset(12, 50)
-subtitle.BackgroundTransparency = 1
-subtitle.Text = "Комнаты до 4 человек. Создай свою или зайди к другим."
-subtitle.Font = Enum.Font.Gotham
-subtitle.TextSize = 14
-subtitle.TextColor3 = Color3.fromRGB(170, 170, 185)
-subtitle.Parent = panel
+text(panel, "HE WILL COME", UDim2.new(1, -24, 0, 40), UDim2.fromOffset(14, 10), 28, Color3.fromRGB(220, 50, 50))
+local subtitle = text(panel, "", UDim2.new(1, -24, 0, 36), UDim2.fromOffset(14, 50), 14, Color3.fromRGB(170, 170, 185))
 
 local list = Instance.new("ScrollingFrame")
-list.Size = UDim2.new(1, -24, 0, 240)
-list.Position = UDim2.fromOffset(12, 78)
+list.Size = UDim2.new(1, -28, 0, 236)
+list.Position = UDim2.fromOffset(14, 92)
 list.BackgroundColor3 = Color3.fromRGB(22, 22, 28)
 list.BackgroundTransparency = 0.3
 list.BorderSizePixel = 0
-list.ScrollBarThickness = 5
+list.ScrollBarThickness = 6
 list.CanvasSize = UDim2.new()
 list.AutomaticCanvasSize = Enum.AutomaticSize.Y
 list.Parent = panel
-
 local layout = Instance.new("UIListLayout")
 layout.Padding = UDim.new(0, 6)
 layout.SortOrder = Enum.SortOrder.LayoutOrder
 layout.Parent = list
-
 local padding = Instance.new("UIPadding")
 padding.PaddingTop = UDim.new(0, 6)
 padding.PaddingLeft = UDim.new(0, 6)
 padding.PaddingRight = UDim.new(0, 6)
 padding.Parent = list
 
-local empty = Instance.new("TextLabel")
-empty.Size = UDim2.new(1, -12, 0, 40)
-empty.BackgroundTransparency = 1
-empty.Text = "Комнат пока нет. Создай первую."
-empty.Font = Enum.Font.Gotham
-empty.TextSize = 15
-empty.TextColor3 = Color3.fromRGB(140, 140, 155)
-empty.Parent = list
+local empty = text(list, "Комнат пока нет. Создай первую.", UDim2.new(1, -12, 0, 40), UDim2.new(), 15, Color3.fromRGB(140, 140, 155))
 
-local function makeButton(text: string, position: UDim2, size: UDim2, color: Color3): TextButton
-	local button = Instance.new("TextButton")
-	button.Size = size
-	button.Position = position
-	button.BackgroundColor3 = color
-	button.BorderSizePixel = 0
-	button.Text = text
-	button.Font = Enum.Font.GothamBold
-	button.TextSize = 16
-	button.TextColor3 = Color3.fromRGB(255, 255, 255)
-	button.AutoButtonColor = true
-	button.Parent = panel
-
+local function button(parent, str, size, position, color)
+	local element = Instance.new("TextButton")
+	element.Size = size
+	element.Position = position
+	element.BackgroundColor3 = color
+	element.BorderSizePixel = 0
+	element.Text = str
+	element.Font = Enum.Font.GothamBold
+	element.TextSize = 16
+	element.TextColor3 = Color3.fromRGB(255, 255, 255)
+	element.AutoButtonColor = true
+	element.Parent = parent
 	local corner = Instance.new("UICorner")
 	corner.CornerRadius = UDim.new(0, 8)
-	corner.Parent = button
-
-	return button
+	corner.Parent = element
+	return element
 end
 
-local createButton = makeButton("Создать комнату", UDim2.fromOffset(12, 330), UDim2.fromOffset(240, 38), Color3.fromRGB(50, 90, 60))
-local leaveButton = makeButton("Выйти из комнаты", UDim2.fromOffset(268, 330), UDim2.fromOffset(240, 38), Color3.fromRGB(70, 40, 40))
-local startButton = makeButton("НАЧАТЬ ИГРУ", UDim2.fromOffset(12, 374), UDim2.fromOffset(496, 36), Color3.fromRGB(150, 35, 35))
+local createButton = button(panel, "Создать комнату", UDim2.fromOffset(250, 40), UDim2.fromOffset(14, 340), Color3.fromRGB(50, 95, 60))
+local leaveButton = button(panel, "Выйти из комнаты", UDim2.fromOffset(250, 40), UDim2.fromOffset(276, 340), Color3.fromRGB(75, 40, 40))
+local startButton = button(panel, "НАЧАТЬ ИГРУ", UDim2.fromOffset(512, 40), UDim2.fromOffset(14, 388), Color3.fromRGB(160, 35, 35))
 
 createButton.Activated:Connect(function()
 	roomAction:FireServer({ action = "create" })
@@ -122,82 +107,51 @@ end)
 
 local rows = {}
 
-local function clearRows()
+function LobbyUI.update(data)
 	for _, row in rows do
 		row:Destroy()
 	end
 	table.clear(rows)
-end
-
-function LobbyUI.update(data)
-	clearRows()
 
 	local roomsData = data.rooms or {}
+	local myRoom = data.myRoom or 0
 	empty.Visible = #roomsData == 0
 
 	for index, room in roomsData do
 		local row = Instance.new("Frame")
-		row.Size = UDim2.new(1, -12, 0, 54)
-		row.BackgroundColor3 = room.id == data.myRoom and Color3.fromRGB(45, 60, 45) or Color3.fromRGB(30, 30, 38)
+		row.Size = UDim2.new(1, -12, 0, 56)
+		row.BackgroundColor3 = room.id == myRoom and Color3.fromRGB(45, 65, 45) or Color3.fromRGB(30, 30, 38)
 		row.BorderSizePixel = 0
 		row.LayoutOrder = index
 		row.Parent = list
-
 		local corner = Instance.new("UICorner")
 		corner.CornerRadius = UDim.new(0, 8)
 		corner.Parent = row
 
-		local label = Instance.new("TextLabel")
-		label.Size = UDim2.new(1, -110, 1, 0)
-		label.Position = UDim2.fromOffset(12, 0)
-		label.BackgroundTransparency = 1
-		label.TextXAlignment = Enum.TextXAlignment.Left
-		label.Font = Enum.Font.GothamBold
-		label.TextSize = 15
-		label.TextColor3 = Color3.fromRGB(235, 235, 240)
-		label.Text = string.format(
-			"Комната #%d  -  %d/%d\n%s%s",
-			room.id,
-			room.count,
-			room.max,
-			table.concat(room.players, ", "),
-			room.state == "playing" and "   [идёт игра]" or ""
-		)
-		label.Parent = row
+		local names = table.concat(room.players or {}, ", ")
+		local state = room.state == "playing" and "  [идёт игра]" or ""
+		text(row, string.format("Комната #%d  -  %d/%d%s\n%s", room.id, room.count, room.max, state, names), UDim2.new(1, -120, 1, 0), UDim2.fromOffset(12, 0), 15)
 
-		if room.id ~= data.myRoom and room.state == "waiting" and room.count < room.max and not data.myRoom then
-			local joinButton = Instance.new("TextButton")
-			joinButton.Size = UDim2.fromOffset(90, 34)
-			joinButton.Position = UDim2.new(1, -100, 0.5, -17)
-			joinButton.BackgroundColor3 = Color3.fromRGB(55, 75, 110)
-			joinButton.BorderSizePixel = 0
-			joinButton.Text = "Войти"
-			joinButton.Font = Enum.Font.GothamBold
-			joinButton.TextSize = 15
-			joinButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-			joinButton.Parent = row
-
-			local joinCorner = Instance.new("UICorner")
-			joinCorner.CornerRadius = UDim.new(0, 6)
-			joinCorner.Parent = joinButton
-
-			joinButton.Activated:Connect(function()
+		if myRoom == 0 and room.state == "waiting" and room.count < room.max then
+			local join = button(row, "Войти", UDim2.fromOffset(96, 36), UDim2.new(1, -106, 0.5, -18), Color3.fromRGB(55, 75, 115))
+			join.Activated:Connect(function()
 				roomAction:FireServer({ action = "join", roomId = room.id })
 			end)
 		end
-
 		table.insert(rows, row)
 	end
 
-	createButton.Visible = data.myRoom == nil
-	leaveButton.Visible = data.myRoom ~= nil
+	createButton.Visible = myRoom == 0
+	leaveButton.Visible = myRoom ~= 0
 	startButton.Visible = data.isHost == true
-	subtitle.Text = data.myRoom
-			and string.format("Ты в комнате #%d. Максимум %d игрока(ов).", data.myRoom, data.maxPlayers or 4)
-		or string.format("Комнаты до %d человек. Создай свою или зайди к другим.", data.maxPlayers or 4)
+	if myRoom ~= 0 then
+		subtitle.Text = string.format("Ты в комнате #%d. Максимум %d игрока. Хозяин жмёт СТАРТ.", myRoom, data.maxPlayers or 4)
+	else
+		subtitle.Text = string.format("Комнаты до %d человек. Создай свою или зайди к другим.", data.maxPlayers or 4)
+	end
 end
 
-function LobbyUI.setVisible(visible: boolean)
+function LobbyUI.setVisible(visible)
 	gui.Enabled = visible
 end
 

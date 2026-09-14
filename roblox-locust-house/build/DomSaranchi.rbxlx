@@ -1791,6 +1791,7 @@ return RoundService
 	<Item class="StarterPlayer" referent="RBX17">
 		<Properties>
 			<string name="Name">StarterPlayer</string>
+			<token name="GameSettingsAvatar">1</token>
 		</Properties>
 		<Item class="StarterPlayerScripts" referent="RBX10">
 			<Properties>

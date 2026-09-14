@@ -1,6 +1,6 @@
 --!nonstrict
--- Комнаты: создать, войти, выйти, запустить. Максимум 4 человека в комнате.
--- Каждая запущенная комната получает свою арену далеко в стороне и своего ОНа.
+-- Комнаты лобби: создать / войти / выйти / старт. Не больше 4 человек.
+-- Каждая запущенная комната получает свою школу в стороне и своего монстра.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -9,20 +9,20 @@ local Shared = ReplicatedStorage:WaitForChild("HWCShared")
 local GameConfig = require(Shared:WaitForChild("GameConfig"))
 local Remotes = require(Shared:WaitForChild("Remotes"))
 
-local ArenaBuilder = require(script.Parent:WaitForChild("ArenaBuilder"))
-local HeMonster = require(script.Parent:WaitForChild("HeMonster"))
-local MatchService = require(script.Parent:WaitForChild("MatchService"))
+local MapBuilder = require(script.Parent:WaitForChild("MapBuilder"))
+local Monster = require(script.Parent:WaitForChild("Monster"))
+local Match = require(script.Parent:WaitForChild("Match"))
 
 local ROOMS = GameConfig.Rooms
 
 local roomListEvent = Remotes.get("RoomList")
 local notifyEvent = Remotes.get("Notify")
 
-local RoomService = {}
-RoomService.__index = RoomService
+local Rooms = {}
+Rooms.__index = Rooms
 
-function RoomService.new(lobby, monsterCollisionGroup: string?)
-	local self = setmetatable({}, RoomService)
+function Rooms.new(lobby, monsterCollisionGroup)
+	local self = setmetatable({}, Rooms)
 	self.lobby = lobby
 	self.monsterCollisionGroup = monsterCollisionGroup
 	self.rooms = {}
@@ -34,11 +34,11 @@ function RoomService.new(lobby, monsterCollisionGroup: string?)
 	return self
 end
 
-function RoomService:_notify(player: Player, text: string, color: string?)
+function Rooms:_notify(player, text, color)
 	notifyEvent:FireClient(player, text, color)
 end
 
-function RoomService:findRoomOf(player: Player)
+function Rooms:findRoomOf(player)
 	for _, room in self.rooms do
 		if table.find(room.players, player) then
 			return room
@@ -47,12 +47,12 @@ function RoomService:findRoomOf(player: Player)
 	return nil
 end
 
-function RoomService:getMatchOf(player: Player)
+function Rooms:getMatchOf(player)
 	local room = self:findRoomOf(player)
 	return room and room.match or nil
 end
 
-function RoomService:_freeSlot(): number?
+function Rooms:_freeSlot()
 	for index, busy in self.slots do
 		if not busy then
 			return index
@@ -61,25 +61,22 @@ function RoomService:_freeSlot(): number?
 	return nil
 end
 
-function RoomService:broadcast()
+function Rooms:broadcast()
 	local list = {}
 	for _, room in self.rooms do
+		local names = {}
+		for _, player in room.players do
+			table.insert(names, player.DisplayName)
+		end
 		table.insert(list, {
 			id = room.id,
 			host = room.host and room.host.DisplayName or "?",
 			count = #room.players,
 			max = ROOMS.MaxPlayers,
 			state = room.state,
-			players = (function()
-				local names = {}
-				for _, player in room.players do
-					table.insert(names, player.DisplayName)
-				end
-				return names
-			end)(),
+			players = names,
 		})
 	end
-
 	table.sort(list, function(a, b)
 		return a.id < b.id
 	end)
@@ -88,55 +85,42 @@ function RoomService:broadcast()
 		local room = self:findRoomOf(player)
 		roomListEvent:FireClient(player, {
 			rooms = list,
-			myRoom = room and room.id or nil,
+			myRoom = room and room.id or 0,
 			isHost = room ~= nil and room.host == player,
-			maxRooms = ROOMS.MaxRooms,
 			maxPlayers = ROOMS.MaxPlayers,
 		})
 	end
 end
 
-function RoomService:create(player: Player)
+function Rooms:create(player)
 	if self:findRoomOf(player) then
 		self:_notify(player, "Ты уже в комнате", "bad")
 		return
 	end
 	if #self.rooms >= ROOMS.MaxRooms then
-		self:_notify(player, "Все комнаты на этом сервере заняты", "bad")
+		self:_notify(player, "Все комнаты на сервере заняты", "bad")
 		return
 	end
-
-	local room = {
-		id = self.nextId,
-		host = player,
-		players = { player },
-		state = "waiting",
-		arena = nil,
-		monster = nil,
-		match = nil,
-		slot = nil,
-	}
+	local room = { id = self.nextId, host = player, players = { player }, state = "waiting" }
 	self.nextId += 1
 	table.insert(self.rooms, room)
-
-	self:_notify(player, string.format("Комната #%d создана. Максимум %d игрока(ов).", room.id, ROOMS.MaxPlayers), "good")
+	self:_notify(player, string.format("Комната #%d создана. Жми СТАРТ, когда все соберутся.", room.id), "good")
 	self:broadcast()
 end
 
-function RoomService:join(player: Player, roomId: number)
+function Rooms:join(player, roomId)
 	if self:findRoomOf(player) then
 		self:_notify(player, "Сначала выйди из своей комнаты", "bad")
 		return
 	end
-
 	for _, room in self.rooms do
 		if room.id == roomId then
 			if room.state ~= "waiting" then
-				self:_notify(player, "Комната уже в игре", "bad")
+				self:_notify(player, "Там уже идёт игра", "bad")
 				return
 			end
 			if #room.players >= ROOMS.MaxPlayers then
-				self:_notify(player, string.format("В комнате уже %d человека - больше нельзя", ROOMS.MaxPlayers), "bad")
+				self:_notify(player, string.format("В комнате уже %d - больше нельзя", ROOMS.MaxPlayers), "bad")
 				return
 			end
 			table.insert(room.players, player)
@@ -145,39 +129,39 @@ function RoomService:join(player: Player, roomId: number)
 			return
 		end
 	end
-
-	self:_notify(player, "Комната не найдена", "bad")
+	self:_notify(player, "Комнаты уже нет", "bad")
 end
 
-function RoomService:leave(player: Player)
+function Rooms:leave(player)
 	local room = self:findRoomOf(player)
 	if not room then
 		return
 	end
-
 	local index = table.find(room.players, player)
 	if index then
 		table.remove(room.players, index)
 	end
-
 	if room.match then
 		room.match:playerLeft(player)
+		local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+		if root then
+			root.Anchored = false
+			root.CFrame = CFrame.new(self.lobby.SpawnPosition)
+		end
 	end
-
 	if room.host == player then
 		room.host = room.players[1]
 	end
-
 	if #room.players == 0 then
 		self:_destroyRoom(room)
 	end
-
 	self:broadcast()
 end
 
-function RoomService:start(player: Player)
+function Rooms:start(player)
 	local room = self:findRoomOf(player)
 	if not room then
+		self:_notify(player, "Сначала создай комнату", "bad")
 		return
 	end
 	if room.host ~= player then
@@ -187,7 +171,6 @@ function RoomService:start(player: Player)
 	if room.state ~= "waiting" then
 		return
 	end
-
 	local slot = self:_freeSlot()
 	if not slot then
 		self:_notify(player, "Нет свободной арены, подожди", "bad")
@@ -199,21 +182,20 @@ function RoomService:start(player: Player)
 	room.state = "playing"
 
 	local origin = ROOMS.ArenaBaseOffset + Vector3.new(ROOMS.ArenaSpacing * (slot - 1), 0, 0)
-	room.arena = ArenaBuilder.build(origin, slot)
-	room.monster = HeMonster.new(room.arena, self.monsterCollisionGroup)
+	room.arena = MapBuilder.build(origin, slot)
+	room.monster = Monster.new(room.arena, self.monsterCollisionGroup)
 
 	local participants = table.clone(room.players)
-	room.match = MatchService.new(room.arena, room.monster, participants, self.lobby.SpawnPosition, function()
+	room.match = Match.new(room.arena, room.monster, participants, self.lobby.SpawnPosition, function()
 		task.delay(GameConfig.Match.EndScreenTime, function()
 			self:_endMatch(room)
 		end)
 	end)
-
 	room.match:start()
 	self:broadcast()
 end
 
-function RoomService:_endMatch(room)
+function Rooms:_endMatch(room)
 	if room.monster then
 		room.monster:destroy()
 		room.monster = nil
@@ -228,25 +210,27 @@ function RoomService:_endMatch(room)
 		room.slot = nil
 	end
 	room.state = "waiting"
-
 	if #room.players == 0 then
 		self:_destroyRoom(room)
 	end
 	self:broadcast()
 end
 
-function RoomService:_destroyRoom(room)
-	if room.match then
+function Rooms:_destroyRoom(room)
+	if room.match and not room.match.finished then
 		room.match:finish("lose")
 	end
 	if room.monster then
 		room.monster:destroy()
+		room.monster = nil
 	end
 	if room.arena and room.arena.Model then
 		room.arena.Model:Destroy()
+		room.arena = nil
 	end
 	if room.slot then
 		self.slots[room.slot] = false
+		room.slot = nil
 	end
 	local index = table.find(self.rooms, room)
 	if index then
@@ -254,7 +238,7 @@ function RoomService:_destroyRoom(room)
 	end
 end
 
-function RoomService:handleAction(player: Player, payload)
+function Rooms:handleAction(player, payload)
 	if typeof(payload) ~= "table" then
 		return
 	end
@@ -274,8 +258,4 @@ function RoomService:handleAction(player: Player, payload)
 	end
 end
 
-function RoomService:playerRemoving(player: Player)
-	self:leave(player)
-end
-
-return RoomService
+return Rooms

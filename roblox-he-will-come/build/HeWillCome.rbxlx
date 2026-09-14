@@ -21,84 +21,80 @@
 				<Properties>
 					<string name="Name">GameConfig</string>
 					<ProtectedString name="Source"><![CDATA[--!nonstrict
--- HE WILL COME - все настройки в одном месте.
+-- HE WILL COME v2 - все настройки игры. Комментарии на русском, числа в стадах/секундах.
 
 local GameConfig = {}
 
 GameConfig.Rooms = {
-	MaxPlayers = 4,          -- больше 4 в комнату нельзя
-	MaxRooms = 4,            -- сколько комнат живёт на одном сервере
-	ArenaSpacing = 3000,     -- комнаты стоят далеко друг от друга, чтобы не мешать
-	ArenaBaseOffset = Vector3.new(3000, 0, 0),
+	MaxPlayers = 4,            -- больше 4 в комнату не пустит
+	MaxRooms = 4,              -- комнат одновременно на одном сервере
+	ArenaSpacing = 1200,       -- расстояние между аренами разных комнат
+	ArenaBaseOffset = Vector3.new(1500, 0, 0),
 	LobbyCenter = Vector3.new(0, 0, 0),
 }
 
 GameConfig.Movement = {
-	WalkSpeed = 15,
+	WalkSpeed = 14,
 	SprintSpeed = 24,
 	CrouchSpeed = 7,
 	MaxStamina = 100,
-	SprintDrain = 15,
-	StaminaRegen = 10,
-	RegenDelay = 1.2,
-	MinSprintStamina = 6,
+	SprintDrain = 14,          -- полной шкалы хватает на ~7 секунд бега
+	StaminaRegen = 9,
+	RegenDelay = 1.5,
+	MinSprintStamina = 5,
+	SlideSpeed = 42,
+	SlideDuration = 0.55,
+	SlideCooldown = 3,
+	SlideStamina = 20,
+	SlideHeightScale = 0.5,
 }
 
--- Громкость действий. ОН слепой и охотится только на звук и свет.
+-- радиус, с которого монстр слышит действие
 GameConfig.Noise = {
-	TickInterval = 0.5,
-	Crouch = 0,              -- присел и крадёшься - ты для него не существуешь
-	Walk = 14,
-	Sprint = 34,
-	Flashlight = 16,         -- включённый фонарь он тоже "чувствует"
-	Fuse = 70,               -- вставил предохранитель - шум на весь дом
-	Scream = 140,            -- паника при нуле рассудка
-	Decay = 12,              -- сколько "тепла" спадает в секунду
-	MaxHeat = 200,
-	SenseRadius = 9,         -- вплотную чувствует даже молчащего
+	Sprint = 42,
+	SprintInterval = 0.4,
+	Walk = 12,
+	Crouch = 0,                -- крадёшься - не слышно вообще
+	Slide = 30,
+	Search = 36,               -- шаришь по парте - шумно
+	Locker = 22,
+	Shout = 1000,              -- крик слышно по всей школе
+	ShoutCooldown = 8,
 }
 
--- ОН
-GameConfig.He = {
-	BaseSpeed = 11,
-	MaxSpeed = 27,
-	Momentum = 0.45,         -- прибавка скорости в секунду, пока на него не смотрят
-	MomentumLossOnGaze = 6,  -- сколько скорости теряет за секунду под взглядом
-	GazeSpeedFactor = 0.18,  -- под взглядом почти стоит
-	GazeRange = 70,
-	GazeAngle = 22,          -- насколько точно надо смотреть, в градусах
-	CatchDistance = 4.2,
-	CatchCooldown = 6,
-	RepathInterval = 0.5,
-	WanderRadius = 45,
-}
-
-GameConfig.Sanity = {
-	Max = 100,
-	GazeDrain = 9,           -- смотреть на него страшно и дорого
-	Regen = 4.5,
-	RegenDelay = 2,
-	PanicRefill = 30,
-	PanicLockTime = 5,       -- после паники нельзя бежать
-	NearDrain = 3,           -- он рядом - рассудок тоже капает
-	NearDistance = 18,
+GameConfig.Monster = {
+	PatrolSpeed = 12,
+	InvestigateSpeed = 17,
+	ChaseSpeed = 25.5,         -- чуть быстрее спринта: убегать надо умно, а не по прямой
+	SpeedPerKey = 0.9,         -- за каждый найденный ключ он становится быстрее
+	SightRange = 55,
+	SightRangeFlashlight = 95, -- с включённым фонарём тебя видно издалека
+	FieldOfView = 100,
+	CloseSense = 9,            -- вплотную чует без обзора
+	CatchDistance = 4,
+	LoseSightGrace = 3,        -- столько секунд помнит тебя без прямой видимости
+	SearchTime = 6,
+	RepathInterval = 0.4,
+	ScreamCooldown = 12,       -- заметив игрока, орёт на всю школу
+	CatchCooldown = 3,
+	LockerPullGrace = 1.5,     -- видел, как ты прыгнул в шкаф - вытащит
 }
 
 GameConfig.Match = {
-	PrepTime = 30,           -- тихая фаза до его прихода
-	FusesRequired = 3,
-	FuseHoldTime = 4,
+	PrepTime = 20,             -- свет горит, монстр ещё спит
+	KeysRequired = 5,
+	SearchHoldTime = 2.5,
+	SearchCooldown = 1,
 	ReviveTime = 4,
-	BleedOutTime = 45,
-	EndScreenTime = 8,
-	MaxMatchTime = 600,
+	BleedOutTime = 40,
+	EndScreenTime = 7,
+	MaxMatchTime = 720,
+	DimLights = 0.28,          -- яркость ламп после прихода монстра
 }
 
-GameConfig.Arena = {
-	WallHeight = 16,
-	WallThickness = 2,
-	HalfX = 90,
-	HalfZ = 70,
+GameConfig.Map = {
+	WallHeight = 12,
+	TileSize = 4,
 }
 
 return GameConfig
@@ -109,34 +105,31 @@ return GameConfig
 				<Properties>
 					<string name="Name">Remotes</string>
 					<ProtectedString name="Source"><![CDATA[--!nonstrict
--- Общий список Remote-событий лобби и матча.
+-- Все Remote-события в одном месте. Сервер создаёт, клиент ждёт.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
+local FOLDER_NAME = "HWCRemotes"
+
 local EVENT_NAMES = {
-	-- лобби
-	"RoomAction",   -- клиент -> сервер: {action = "create"/"join"/"leave"/"start", roomId = n}
+	"RoomAction",   -- клиент -> сервер: { action = "create" | "join" | "leave" | "start" | "refresh", roomId = n }
 	"RoomList",     -- сервер -> клиент: список комнат
-	-- матч
-	"MatchSync",    -- сервер -> клиент: состояние матча и игрока
-	"GazeReport",   -- клиент -> сервер: куда смотрит камера
-	"Notify",       -- сервер -> клиент: текст
-	"Scare",        -- сервер -> клиент: он тебя достал
-	"Crouch",       -- клиент -> сервер: приседание (влияет на шум)
-	"Flashlight",   -- клиент -> сервер: фонарь включён/выключен
+	"MatchSync",    -- сервер -> клиент: состояние матча
+	"PlayerAction", -- клиент -> сервер: { action = "slide" | "shout" | "flashlight" | "crouch", value = ... }
+	"Notify",       -- сервер -> клиент: текст на экран
+	"Effect",       -- сервер -> клиент: "arrival" | "scream" | "down" | "revived" | "out" | "escaped" | "key"
 }
 
 local Remotes = {}
 
-local folder: Folder
+local folder
+
 if RunService:IsServer() then
-	local existing = ReplicatedStorage:FindFirstChild("HWCRemotes")
-	if existing then
-		folder = existing
-	else
+	folder = ReplicatedStorage:FindFirstChild(FOLDER_NAME)
+	if not folder then
 		folder = Instance.new("Folder")
-		folder.Name = "HWCRemotes"
+		folder.Name = FOLDER_NAME
 		folder.Parent = ReplicatedStorage
 	end
 	for _, name in EVENT_NAMES do
@@ -147,11 +140,19 @@ if RunService:IsServer() then
 		end
 	end
 else
-	folder = ReplicatedStorage:WaitForChild("HWCRemotes")
+	-- ждём не бесконечно: если сервер упал, клиент должен показать ошибку, а не висеть
+	folder = ReplicatedStorage:WaitForChild(FOLDER_NAME, 20)
+	if not folder then
+		error("Папка " .. FOLDER_NAME .. " не появилась за 20 секунд. Серверный скрипт не запустился - смотри Output.")
+	end
 end
 
 function Remotes.get(name: string): RemoteEvent
-	return folder:WaitForChild(name)
+	local event = folder:WaitForChild(name, 10)
+	if not event then
+		error("Нет RemoteEvent с именем " .. name)
+	end
+	return event
 end
 
 return Remotes
@@ -162,33 +163,28 @@ return Remotes
 				<Properties>
 					<string name="Name">Util</string>
 					<ProtectedString name="Source"><![CDATA[--!nonstrict
--- Общие помощники.
+-- Мелкие помощники для сервера и клиента.
 
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 
 local Util = {}
 
-function Util.getRoot(character): BasePart?
-	if not character then
-		return nil
-	end
-	return character:FindFirstChild("HumanoidRootPart")
+function Util.getRoot(character)
+	return character and character:FindFirstChild("HumanoidRootPart") or nil
 end
 
-function Util.getHumanoid(character): Humanoid?
-	if not character then
-		return nil
-	end
-	return character:FindFirstChildOfClass("Humanoid")
+function Util.getHumanoid(character)
+	return character and character:FindFirstChildOfClass("Humanoid") or nil
 end
 
-function Util.isAlive(player: Player): boolean
+function Util.isAlive(player)
 	local humanoid = Util.getHumanoid(player.Character)
 	return humanoid ~= nil and humanoid.Health > 0
 end
 
-function Util.hasLineOfSight(fromPos: Vector3, toPos: Vector3, ignore): boolean
+-- Нет ли стены между двумя точками. Персонажи игроков не считаются преградой.
+function Util.hasLineOfSight(fromPos, toPos, ignore)
 	local params = RaycastParams.new()
 	params.FilterType = Enum.RaycastFilterType.Exclude
 	params.FilterDescendantsInstances = ignore
@@ -205,7 +201,7 @@ function Util.hasLineOfSight(fromPos: Vector3, toPos: Vector3, ignore): boolean
 	return false
 end
 
-function Util.makePart(parent: Instance, name: string, size: Vector3, position: Vector3, color: Color3, material: Enum.Material): Part
+function Util.makePart(parent, name, size, position, color, material)
 	local part = Instance.new("Part")
 	part.Name = name
 	part.Size = size
@@ -228,6 +224,10 @@ function Util.shuffle(list)
 	return copy
 end
 
+function Util.flat(v)
+	return Vector3.new(v.X, 0, v.Z)
+end
+
 return Util
 ]]></ProtectedString>
 				</Properties>
@@ -244,544 +244,19 @@ return Util
 			</Properties>
 			<Item class="ModuleScript" referent="RBX8">
 				<Properties>
-					<string name="Name">ArenaBuilder</string>
-					<ProtectedString name="Source"><![CDATA[--!nonstrict
--- Арена одной комнаты: дом, куда телепортируются 4 игрока.
--- Строится по смещению origin, поэтому несколько комнат живут параллельно.
-
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Workspace = game:GetService("Workspace")
-
-local Shared = ReplicatedStorage:WaitForChild("HWCShared")
-local GameConfig = require(Shared:WaitForChild("GameConfig"))
-local Util = require(Shared:WaitForChild("Util"))
-
-local ARENA = GameConfig.Arena
-local WALL_H = ARENA.WallHeight
-local WALL_T = ARENA.WallThickness
-local HALF_X = ARENA.HalfX
-local HALF_Z = ARENA.HalfZ
-
-local WALL_COLOR = Color3.fromRGB(52, 48, 46)
-local FLOOR_COLOR = Color3.fromRGB(28, 26, 25)
-
-local ArenaBuilder = {}
-
-function ArenaBuilder.build(origin: Vector3, index: number)
-	local model = Instance.new("Model")
-	model.Name = "HWC_Arena_" .. index
-	model.Parent = Workspace
-
-	local lights = {}
-
-	local function pos(x: number, y: number, z: number): Vector3
-		return origin + Vector3.new(x, y, z)
-	end
-
-	local function wallZ(x: number, zFrom: number, zTo: number)
-		local length = zTo - zFrom
-		Util.makePart(model, "Wall", Vector3.new(WALL_T, WALL_H, length), pos(x, WALL_H / 2, (zFrom + zTo) / 2), WALL_COLOR, Enum.Material.Concrete)
-	end
-
-	local function wallX(z: number, xFrom: number, xTo: number)
-		local length = xTo - xFrom
-		Util.makePart(model, "Wall", Vector3.new(length, WALL_H, WALL_T), pos((xFrom + xTo) / 2, WALL_H / 2, z), WALL_COLOR, Enum.Material.Concrete)
-	end
-
-	local function ceilingLight(x: number, z: number)
-		local lamp = Util.makePart(model, "Lamp", Vector3.new(6, 0.5, 6), pos(x, WALL_H - 1, z), Color3.fromRGB(255, 240, 210), Enum.Material.Neon)
-		local light = Instance.new("PointLight")
-		light.Range = 45
-		light.Brightness = 1.8
-		light.Color = Color3.fromRGB(255, 235, 200)
-		light.Parent = lamp
-		table.insert(lights, { Part = lamp, Light = light })
-	end
-
-	-- пол и потолок
-	Util.makePart(model, "Floor", Vector3.new(HALF_X * 2, 2, HALF_Z * 2), pos(0, -1, 0), FLOOR_COLOR, Enum.Material.WoodPlanks)
-	Util.makePart(model, "Ceiling", Vector3.new(HALF_X * 2, 2, HALF_Z * 2), pos(0, WALL_H + 1, 0), Color3.fromRGB(20, 19, 18), Enum.Material.Slate)
-
-	-- внешние стены, в южной - проём под ворота
-	wallX(-HALF_Z, -HALF_X, HALF_X)
-	wallX(HALF_Z, -HALF_X, -8)
-	wallX(HALF_Z, 8, HALF_X)
-	wallZ(-HALF_X, -HALF_Z, HALF_Z)
-	wallZ(HALF_X, -HALF_Z, HALF_Z)
-
-	-- центральный зал с генератором
-	wallZ(-40, -70, -40)
-	wallZ(-40, -32, 10)
-	wallZ(-40, 18, 70)
-	wallZ(40, -70, -16)
-	wallZ(40, -8, 34)
-	wallZ(40, 42, 70)
-	wallX(-30, -40, -6)
-	wallX(-30, 2, 40)
-	wallX(30, -40, 20)
-	wallX(30, 28, 40)
-
-	-- перегородки в западном и восточном крыле
-	wallX(-20, -90, -70)
-	wallX(-20, -62, -40)
-	wallX(25, -90, -58)
-	wallX(25, -50, -40)
-	wallX(-45, 40, 60)
-	wallX(-45, 68, 90)
-	wallX(20, 40, 50)
-	wallX(20, 58, 90)
-
-	-- перегородки в северном и южном крыле
-	wallZ(0, -70, -60)
-	wallZ(0, -52, -30)
-	wallZ(10, 30, 46)
-	wallZ(10, 54, 70)
-
-	-- свет
-	for _, point in { { -65, -50 }, { -65, 0 }, { -65, 50 }, { 0, -50 }, { 0, 0 }, { 0, 50 }, { 65, -50 }, { 65, 0 }, { 65, 50 } } do
-		ceilingLight(point[1], point[2])
-	end
-
-	-- генератор в центре
-	local generator = Util.makePart(model, "Generator", Vector3.new(10, 8, 6), pos(0, 4, 0), Color3.fromRGB(70, 80, 70), Enum.Material.DiamondPlate)
-	local generatorLight = Instance.new("PointLight")
-	generatorLight.Color = Color3.fromRGB(255, 60, 60)
-	generatorLight.Range = 25
-	generatorLight.Brightness = 2
-	generatorLight.Parent = generator
-
-	-- ворота выхода
-	local gate = Util.makePart(model, "ExitGate", Vector3.new(16, 15, WALL_T), pos(0, 7.5, HALF_Z), Color3.fromRGB(120, 30, 30), Enum.Material.Metal)
-	gate:SetAttribute("Locked", true)
-
-	Util.makePart(model, "ExitFloor", Vector3.new(30, 2, 30), pos(0, -1, HALF_Z + 15), FLOOR_COLOR, Enum.Material.Slate)
-	local exitPad = Util.makePart(model, "ExitPad", Vector3.new(18, 1, 12), pos(0, 0.5, HALF_Z + 10), Color3.fromRGB(60, 210, 130), Enum.Material.Neon)
-	exitPad.Transparency = 0.4
-
-	local fuseSpots = {
-		pos(-70, 3, -50),
-		pos(70, 3, -58),
-		pos(-70, 3, 50),
-		pos(68, 3, 52),
-		pos(-20, 3, -52),
-		pos(28, 3, 55),
-	}
-
-	local wanderNodes = {
-		pos(-65, 3, -50),
-		pos(-65, 3, 0),
-		pos(-65, 3, 50),
-		pos(-20, 3, -52),
-		pos(20, 3, -52),
-		pos(0, 3, 0),
-		pos(-20, 3, 52),
-		pos(25, 3, 52),
-		pos(65, 3, -50),
-		pos(65, 3, 0),
-		pos(65, 3, 50),
-	}
-
-	local spawnPositions = {
-		pos(-32, 4, -62),
-		pos(-22, 4, -62),
-		pos(-32, 4, -50),
-		pos(-22, 4, -50),
-	}
-
-	return {
-		Model = model,
-		Index = index,
-		Origin = origin,
-		Lights = lights,
-		Generator = generator,
-		GeneratorLight = generatorLight,
-		Gate = gate,
-		ExitPad = exitPad,
-		FuseSpots = fuseSpots,
-		WanderNodes = wanderNodes,
-		SpawnPositions = spawnPositions,
-		MonsterSpawn = pos(70, 4, 60),
-	}
-end
-
-return ArenaBuilder
-]]></ProtectedString>
-				</Properties>
-			</Item>
-			<Item class="ModuleScript" referent="RBX9">
-				<Properties>
-					<string name="Name">GazeTracker</string>
-					<ProtectedString name="Source"><![CDATA[--!nonstrict
--- Клиент раз в 0.2 сек присылает, куда смотрит камера. Здесь мы это храним и проверяем.
-
-local GazeTracker = {}
-
-local data = {}
-
-function GazeTracker.set(player: Player, cameraPosition: Vector3, lookVector: Vector3)
-	if typeof(cameraPosition) ~= "Vector3" or typeof(lookVector) ~= "Vector3" then
-		return
-	end
-	if lookVector.Magnitude < 0.1 then
-		return
-	end
-	-- камера не может быть далеко от самого игрока: отсекаем совсем грубую подделку
-	local character = player.Character
-	local root = character and character:FindFirstChild("HumanoidRootPart")
-	if not root or (root.Position - cameraPosition).Magnitude > 30 then
-		return
-	end
-	data[player] = {
-		position = cameraPosition,
-		look = lookVector.Unit,
-		time = os.clock(),
-	}
-end
-
-function GazeTracker.get(player: Player)
-	local entry = data[player]
-	if not entry then
-		return nil
-	end
-	-- данные старше секунды не считаем: игрок мог отвалиться
-	if os.clock() - entry.time > 1 then
-		return nil
-	end
-	return entry
-end
-
-function GazeTracker.clear(player: Player)
-	data[player] = nil
-end
-
-return GazeTracker
-]]></ProtectedString>
-				</Properties>
-			</Item>
-			<Item class="ModuleScript" referent="RBXA">
-				<Properties>
-					<string name="Name">HeMonster</string>
-					<ProtectedString name="Source"><![CDATA[--!nonstrict
--- ОН.
--- Не патрулирует и не высматривает: ОН слеп. Идёт на того, кто громче шумит.
--- Пока хотя бы один игрок смотрит ему в лицо - почти стоит на месте.
--- Как только все отвернулись - разгоняется, и чем дольше никто не смотрит, тем быстрее.
-
-local PathfindingService = game:GetService("PathfindingService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Workspace = game:GetService("Workspace")
-
-local Shared = ReplicatedStorage:WaitForChild("HWCShared")
-local GameConfig = require(Shared:WaitForChild("GameConfig"))
-local Util = require(Shared:WaitForChild("Util"))
-
-local GazeTracker = require(script.Parent:WaitForChild("GazeTracker"))
-
-local HE = GameConfig.He
-local NOISE = GameConfig.Noise
-
-local HeMonster = {}
-HeMonster.__index = HeMonster
-
-local BODY_COLOR = Color3.fromRGB(38, 38, 44)
-local SKIN_COLOR = Color3.fromRGB(196, 190, 178)
-
-local function limb(model: Model, name: string, size: Vector3, color: Color3, collide: boolean): Part
-	local part = Instance.new("Part")
-	part.Name = name
-	part.Size = size
-	part.Color = color
-	part.Material = Enum.Material.Sand
-	part.CanCollide = collide
-	part.TopSurface = Enum.SurfaceType.Smooth
-	part.BottomSurface = Enum.SurfaceType.Smooth
-	part.Parent = model
-	return part
-end
-
-local function weld(a: BasePart, b: BasePart, offset: Vector3)
-	b.CFrame = a.CFrame * CFrame.new(offset)
-	local joint = Instance.new("Weld")
-	joint.Part0 = a
-	joint.Part1 = b
-	joint.C0 = CFrame.new(offset)
-	joint.Parent = a
-end
-
-local function buildRig(spawnPosition: Vector3, collisionGroup: string?)
-	local model = Instance.new("Model")
-	model.Name = "HE"
-
-	local root = limb(model, "HumanoidRootPart", Vector3.new(2, 2, 1), BODY_COLOR, false)
-	root.Transparency = 1
-	root.CFrame = CFrame.new(spawnPosition + Vector3.new(0, 5.5, 0))
-	model.PrimaryPart = root
-
-	local torso = limb(model, "Torso", Vector3.new(2.2, 4, 1.2), BODY_COLOR, true)
-	weld(root, torso, Vector3.new(0, 0, 0))
-
-	-- лицо без лица
-	local head = limb(model, "Head", Vector3.new(1.5, 1.9, 1.5), SKIN_COLOR, true)
-	weld(torso, head, Vector3.new(0, 2.8, 0))
-
-	weld(torso, limb(model, "Right Arm", Vector3.new(0.9, 5, 0.9), BODY_COLOR, false), Vector3.new(1.6, -0.6, 0))
-	weld(torso, limb(model, "Left Arm", Vector3.new(0.9, 5, 0.9), BODY_COLOR, false), Vector3.new(-1.6, -0.6, 0))
-	weld(torso, limb(model, "Right Leg", Vector3.new(1, 4, 1), BODY_COLOR, true), Vector3.new(0.6, -3.5, 0))
-	weld(torso, limb(model, "Left Leg", Vector3.new(1, 4, 1), BODY_COLOR, true), Vector3.new(-0.6, -3.5, 0))
-
-	-- еле заметный контур: в темноте видно только силуэт
-	local rim = Instance.new("PointLight")
-	rim.Color = Color3.fromRGB(190, 190, 200)
-	rim.Range = 11
-	rim.Brightness = 0.5
-	rim.Parent = head
-
-	local humanoid = Instance.new("Humanoid")
-	humanoid.RigType = Enum.HumanoidRigType.R6
-	humanoid.MaxHealth = 100000
-	humanoid.Health = 100000
-	humanoid.BreakJointsOnDeath = false
-	humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
-	humanoid.WalkSpeed = 0
-	humanoid.Parent = model
-
-	if collisionGroup then
-		for _, descendant in model:GetDescendants() do
-			if descendant:IsA("BasePart") then
-				descendant.CollisionGroup = collisionGroup
-			end
-		end
-	end
-
-	return { Model = model, Humanoid = humanoid, Root = root, Head = head, Rim = rim }
-end
-
-function HeMonster.new(arena, collisionGroup: string?)
-	local self = setmetatable({}, HeMonster)
-
-	self.arena = arena
-	self.rig = buildRig(arena.MonsterSpawn, collisionGroup)
-	self.rig.Model.Parent = Workspace
-
-	self.momentum = 0
-	self.gazed = false
-	self.gazers = {}
-	self.targetPlayer = nil
-	self.wanderIndex = 1
-	self.lastCatch = 0
-	self.active = false
-
-	self._waypoints = {}
-	self._waypointIndex = 1
-	self._pathGoal = Vector3.zero
-	self._lastPath = 0
-
-	self._path = PathfindingService:CreatePath({
-		AgentRadius = 3,
-		AgentHeight = 10,
-		AgentCanJump = false,
-	})
-
-	self.onCatch = nil
-	return self
-end
-
-function HeMonster:destroy()
-	self.active = false
-	if self.rig.Model then
-		self.rig.Model:Destroy()
-	end
-end
-
-function HeMonster:_computePath(destination: Vector3)
-	self._lastPath = os.clock()
-	self._pathGoal = destination
-	local ok = pcall(function()
-		self._path:ComputeAsync(self.rig.Root.Position, destination)
-	end)
-	if ok and self._path.Status == Enum.PathStatus.Success then
-		self._waypoints = self._path:GetWaypoints()
-		self._waypointIndex = 2
-	else
-		self._waypoints = {}
-	end
-end
-
-function HeMonster:_moveTo(destination: Vector3, speed: number)
-	self.rig.Humanoid.WalkSpeed = speed
-
-	local now = os.clock()
-	if #self._waypoints == 0 or now - self._lastPath > HE.RepathInterval or (self._pathGoal - destination).Magnitude > 8 then
-		self:_computePath(destination)
-	end
-
-	local waypoint = self._waypoints[self._waypointIndex]
-	while waypoint do
-		local flat = Vector3.new(waypoint.Position.X, self.rig.Root.Position.Y, waypoint.Position.Z)
-		if (flat - self.rig.Root.Position).Magnitude < 4 then
-			self._waypointIndex += 1
-			waypoint = self._waypoints[self._waypointIndex]
-		else
-			break
-		end
-	end
-
-	if waypoint then
-		self.rig.Humanoid:MoveTo(waypoint.Position)
-	else
-		self.rig.Humanoid:MoveTo(destination)
-	end
-end
-
--- Кто сейчас смотрит ему в лицо.
-function HeMonster:_updateGaze(players)
-	local cosLimit = math.cos(math.rad(HE.GazeAngle))
-	local headPosition = self.rig.Head.Position
-
-	table.clear(self.gazers)
-	local gazed = false
-
-	for _, player in players do
-		local entry = GazeTracker.get(player)
-		local root = Util.getRoot(player.Character)
-		if entry and root and Util.isAlive(player) then
-			local offset = headPosition - entry.position
-			local distance = offset.Magnitude
-			if distance <= HE.GazeRange and distance > 1 then
-				if offset.Unit:Dot(entry.look) >= cosLimit then
-					if Util.hasLineOfSight(entry.position, headPosition, { self.rig.Model, player.Character }) then
-						gazed = true
-						table.insert(self.gazers, player)
-					end
-				end
-			end
-		end
-	end
-
-	self.gazed = gazed
-	return gazed
-end
-
--- Куда идти: на самый громкий источник.
-function HeMonster:_pickTarget(heat)
-	local bestPlayer = nil
-	local bestHeat = 1
-
-	for player, value in heat do
-		local root = Util.getRoot(player.Character)
-		if root and Util.isAlive(player) and value > bestHeat then
-			bestPlayer = player
-			bestHeat = value
-		end
-	end
-
-	if bestPlayer then
-		return bestPlayer
-	end
-
-	-- никто не шумит - но вплотную он чует и молчащего
-	local closest = nil
-	local closestDistance = NOISE.SenseRadius
-	for player in heat do
-		local root = Util.getRoot(player.Character)
-		if root and Util.isAlive(player) then
-			local distance = (root.Position - self.rig.Root.Position).Magnitude
-			if distance < closestDistance then
-				closest = player
-				closestDistance = distance
-			end
-		end
-	end
-
-	return closest
-end
-
-function HeMonster:step(dt: number, players, heat)
-	if not self.active then
-		return
-	end
-
-	local gazed = self:_updateGaze(players)
-
-	if gazed then
-		self.momentum = math.max(0, self.momentum - HE.MomentumLossOnGaze * dt)
-		-- поворачивается лицом к тому, кто смотрит
-		local watcher = self.gazers[1]
-		local watcherRoot = watcher and Util.getRoot(watcher.Character)
-		if watcherRoot then
-			local flat = Vector3.new(watcherRoot.Position.X, self.rig.Root.Position.Y, watcherRoot.Position.Z)
-			self.rig.Root.CFrame = CFrame.lookAt(self.rig.Root.Position, flat)
-		end
-	else
-		self.momentum = math.min(HE.MaxSpeed - HE.BaseSpeed, self.momentum + HE.Momentum * dt)
-	end
-
-	local speed = gazed and HE.BaseSpeed * HE.GazeSpeedFactor or (HE.BaseSpeed + self.momentum)
-
-	local target = self:_pickTarget(heat)
-	self.targetPlayer = target
-
-	local destination
-	if target then
-		local root = Util.getRoot(target.Character)
-		destination = root and root.Position
-	end
-
-	if not destination then
-		local node = self.arena.WanderNodes[self.wanderIndex]
-		destination = node
-		if (node - self.rig.Root.Position).Magnitude < 10 then
-			self.wanderIndex = math.random(1, #self.arena.WanderNodes)
-		end
-		speed = math.min(speed, HE.BaseSpeed)
-	end
-
-	self:_moveTo(destination, speed)
-
-	-- поймал?
-	if target and os.clock() - self.lastCatch > HE.CatchCooldown then
-		local root = Util.getRoot(target.Character)
-		if root and (root.Position - self.rig.Root.Position).Magnitude <= HE.CatchDistance then
-			self.lastCatch = os.clock()
-			if self.onCatch then
-				self.onCatch(target)
-			end
-		end
-	end
-end
-
-function HeMonster:arrive()
-	self.active = true
-	self.momentum = 0
-	self.rig.Root.CFrame = CFrame.new(self.arena.MonsterSpawn + Vector3.new(0, 5.5, 0))
-end
-
-function HeMonster:getSpeed(): number
-	return self.rig.Humanoid.WalkSpeed
-end
-
-return HeMonster
-]]></ProtectedString>
-				</Properties>
-			</Item>
-			<Item class="ModuleScript" referent="RBXB">
-				<Properties>
 					<string name="Name">LobbyBuilder</string>
 					<ProtectedString name="Source"><![CDATA[--!nonstrict
--- Лобби: сюда попадают все при входе, отсюда создают и выбирают комнаты.
+-- Лобби: светлая площадка, откуда создают комнаты.
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("HWCShared")
 local Util = require(Shared:WaitForChild("Util"))
 
 local LobbyBuilder = {}
 
-local FLOOR_COLOR = Color3.fromRGB(30, 30, 36)
-local WALL_COLOR = Color3.fromRGB(48, 48, 58)
-
-function LobbyBuilder.build(center: Vector3)
+function LobbyBuilder.build(center)
 	local old = Workspace:FindFirstChild("HWC_Lobby")
 	if old then
 		old:Destroy()
@@ -789,45 +264,34 @@ function LobbyBuilder.build(center: Vector3)
 
 	local model = Instance.new("Model")
 	model.Name = "HWC_Lobby"
-	model.Parent = Workspace
 
-	local function pos(x: number, y: number, z: number): Vector3
+	local function pos(x, y, z)
 		return center + Vector3.new(x, y, z)
 	end
 
-	Util.makePart(model, "Floor", Vector3.new(180, 2, 180), pos(0, -1, 0), FLOOR_COLOR, Enum.Material.Concrete)
+	local floorColor = Color3.fromRGB(44, 46, 52)
+	local wallColor = Color3.fromRGB(70, 72, 80)
 
-	-- стены по периметру
-	Util.makePart(model, "Wall", Vector3.new(180, 24, 2), pos(0, 12, -90), WALL_COLOR, Enum.Material.Concrete)
-	Util.makePart(model, "Wall", Vector3.new(180, 24, 2), pos(0, 12, 90), WALL_COLOR, Enum.Material.Concrete)
-	Util.makePart(model, "Wall", Vector3.new(2, 24, 180), pos(-90, 12, 0), WALL_COLOR, Enum.Material.Concrete)
-	Util.makePart(model, "Wall", Vector3.new(2, 24, 180), pos(90, 12, 0), WALL_COLOR, Enum.Material.Concrete)
-	Util.makePart(model, "Ceiling", Vector3.new(180, 2, 180), pos(0, 25, 0), WALL_COLOR, Enum.Material.Concrete)
+	Util.makePart(model, "Floor", Vector3.new(160, 2, 160), pos(0, -1, 0), floorColor, Enum.Material.Slate)
+	Util.makePart(model, "Wall", Vector3.new(160, 22, 2), pos(0, 11, -80), wallColor, Enum.Material.Brick)
+	Util.makePart(model, "Wall", Vector3.new(160, 22, 2), pos(0, 11, 80), wallColor, Enum.Material.Brick)
+	Util.makePart(model, "Wall", Vector3.new(2, 22, 160), pos(-80, 11, 0), wallColor, Enum.Material.Brick)
+	Util.makePart(model, "Wall", Vector3.new(2, 22, 160), pos(80, 11, 0), wallColor, Enum.Material.Brick)
+	Util.makePart(model, "Ceiling", Vector3.new(160, 2, 160), pos(0, 23, 0), Color3.fromRGB(30, 30, 34), Enum.Material.Concrete)
 
-	-- лампы, чтобы в лобби было светло и спокойно
-	for _, offset in { Vector3.new(-45, 0, -45), Vector3.new(45, 0, -45), Vector3.new(-45, 0, 45), Vector3.new(45, 0, 45), Vector3.zero } do
-		local lamp = Util.makePart(
-			model,
-			"Lamp",
-			Vector3.new(8, 0.6, 8),
-			pos(offset.X, 23, offset.Z),
-			Color3.fromRGB(255, 245, 220),
-			Enum.Material.Neon
-		)
+	for _, offset in { Vector3.new(-40, 0, -40), Vector3.new(40, 0, -40), Vector3.new(-40, 0, 40), Vector3.new(40, 0, 40), Vector3.zero } do
+		local lamp = Util.makePart(model, "Lamp", Vector3.new(8, 0.5, 8), pos(offset.X, 21.5, offset.Z), Color3.fromRGB(255, 245, 225), Enum.Material.Neon)
 		local light = Instance.new("PointLight")
 		light.Range = 60
-		light.Brightness = 2.4
-		light.Color = Color3.fromRGB(255, 240, 215)
+		light.Brightness = 2
 		light.Parent = lamp
 	end
 
-	-- вывеска
-	local sign = Util.makePart(model, "Sign", Vector3.new(60, 12, 1), pos(0, 14, -88), Color3.fromRGB(12, 12, 14), Enum.Material.SmoothPlastic)
+	local sign = Util.makePart(model, "Sign", Vector3.new(70, 14, 1), pos(0, 13, -78), Color3.fromRGB(10, 10, 12), Enum.Material.SmoothPlastic)
 	local gui = Instance.new("SurfaceGui")
 	gui.Face = Enum.NormalId.Front
-	gui.CanvasSize = Vector2.new(1200, 240)
+	gui.CanvasSize = Vector2.new(1400, 280)
 	gui.Parent = sign
-
 	local title = Instance.new("TextLabel")
 	title.Size = UDim2.fromScale(1, 1)
 	title.BackgroundTransparency = 1
@@ -849,10 +313,12 @@ function LobbyBuilder.build(center: Vector3)
 	spawn.Transparency = 0.5
 	spawn.Parent = model
 
+	model.Parent = Workspace
+
 	return {
 		Model = model,
-		SpawnPosition = pos(0, 4, 30),
 		Spawn = spawn,
+		SpawnPosition = pos(0, 4, 30),
 	}
 end
 
@@ -860,11 +326,12 @@ return LobbyBuilder
 ]]></ProtectedString>
 				</Properties>
 			</Item>
-			<Item class="Script" referent="RBXC">
+			<Item class="Script" referent="RBX9">
 				<Properties>
 					<string name="Name">Main</string>
 					<ProtectedString name="Source"><![CDATA[--!nonstrict
--- HE WILL COME - точка входа сервера.
+-- HE WILL COME v2 - точка входа сервера.
+-- Порядок важен: сначала Remotes (иначе клиент не дождётся), потом всё остальное.
 
 local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
@@ -875,42 +342,40 @@ local Shared = ReplicatedStorage:WaitForChild("HWCShared")
 local GameConfig = require(Shared:WaitForChild("GameConfig"))
 local Remotes = require(Shared:WaitForChild("Remotes"))
 
+print("[HE WILL COME] remotes созданы")
+
 local LobbyBuilder = require(script.Parent:WaitForChild("LobbyBuilder"))
-local RoomService = require(script.Parent:WaitForChild("RoomService"))
-local GazeTracker = require(script.Parent:WaitForChild("GazeTracker"))
+local Rooms = require(script.Parent:WaitForChild("Rooms"))
 
 local GROUP_PLAYERS = "HWCPlayers"
 local GROUP_MONSTER = "HWCMonster"
 
-local function setupCollisionGroups()
-	for _, name in { GROUP_PLAYERS, GROUP_MONSTER } do
-		pcall(function()
-			PhysicsService:RegisterCollisionGroup(name)
-		end)
-	end
-	pcall(function()
-		PhysicsService:CollisionGroupSetCollidable(GROUP_MONSTER, GROUP_PLAYERS, false)
-	end)
-end
+-- монстр не толкает игроков и не даёт себя толкать
+pcall(function()
+	PhysicsService:RegisterCollisionGroup(GROUP_PLAYERS)
+end)
+pcall(function()
+	PhysicsService:RegisterCollisionGroup(GROUP_MONSTER)
+end)
+pcall(function()
+	PhysicsService:CollisionGroupSetCollidable(GROUP_MONSTER, GROUP_PLAYERS, false)
+end)
 
-local function setupLighting()
-	Lighting.ClockTime = 0
-	Lighting.Brightness = 0.4
-	Lighting.Ambient = Color3.fromRGB(10, 10, 14)
-	Lighting.OutdoorAmbient = Color3.fromRGB(14, 14, 20)
-	Lighting.GlobalShadows = true
-	Lighting.FogColor = Color3.fromRGB(6, 6, 9)
-	Lighting.FogStart = 5
-	Lighting.FogEnd = 120
-end
-
-setupCollisionGroups()
-setupLighting()
+-- ночь
+Lighting.ClockTime = 0
+Lighting.Brightness = 0.5
+Lighting.Ambient = Color3.fromRGB(14, 14, 18)
+Lighting.OutdoorAmbient = Color3.fromRGB(22, 22, 30)
+Lighting.GlobalShadows = true
+Lighting.FogColor = Color3.fromRGB(8, 8, 12)
+Lighting.FogStart = 20
+Lighting.FogEnd = 160
 
 local lobby = LobbyBuilder.build(GameConfig.Rooms.LobbyCenter)
-local roomService = RoomService.new(lobby, GROUP_MONSTER)
+local rooms = Rooms.new(lobby, GROUP_MONSTER)
+print("[HE WILL COME] лобби построено")
 
--- Игроки --------------------------------------------------------------------
+-- ---------------- игроки ----------------
 
 local function applyCollisionGroup(character)
 	for _, part in character:GetDescendants() do
@@ -925,15 +390,15 @@ local function applyCollisionGroup(character)
 	end)
 end
 
-local function onCharacterAdded(player: Player, character)
+local function onCharacterAdded(player, character)
 	applyCollisionGroup(character)
-
-	local humanoid = character:WaitForChild("Humanoid")
-	humanoid.WalkSpeed = GameConfig.Movement.WalkSpeed
-	humanoid.UseJumpPower = true
-	humanoid.JumpPower = 45
-
-	local match = roomService:getMatchOf(player)
+	local humanoid = character:WaitForChild("Humanoid", 10)
+	if humanoid then
+		humanoid.WalkSpeed = GameConfig.Movement.WalkSpeed
+		humanoid.UseJumpPower = true
+		humanoid.JumpPower = 45
+	end
+	local match = rooms:getMatchOf(player)
 	if match then
 		task.spawn(function()
 			match:onCharacterAdded(player, character)
@@ -941,15 +406,21 @@ local function onCharacterAdded(player: Player, character)
 	end
 end
 
-local function onPlayerAdded(player: Player)
+local function onPlayerAdded(player)
 	local stats = Instance.new("Folder")
 	stats.Name = "leaderstats"
 	local escapes = Instance.new("IntValue")
 	escapes.Name = "Побеги"
 	escapes.Parent = stats
+	local keys = Instance.new("IntValue")
+	keys.Name = "Ключи"
+	keys.Parent = stats
 	stats.Parent = player
 
 	player.RespawnLocation = lobby.Spawn
+	player:SetAttribute("InMatch", false)
+	player:SetAttribute("Downed", false)
+	player:SetAttribute("Hidden", false)
 
 	player.CharacterAdded:Connect(function(character)
 		onCharacterAdded(player, character)
@@ -960,7 +431,7 @@ local function onPlayerAdded(player: Player)
 
 	task.delay(1, function()
 		if player.Parent then
-			roomService:broadcast()
+			rooms:broadcast()
 		end
 	end)
 end
@@ -971,44 +442,500 @@ for _, player in Players:GetPlayers() do
 end
 
 Players.PlayerRemoving:Connect(function(player)
-	GazeTracker.clear(player)
-	roomService:playerRemoving(player)
+	rooms:leave(player)
 end)
 
--- Ввод от клиента -----------------------------------------------------------
+-- ---------------- ввод от клиента ----------------
 
 Remotes.get("RoomAction").OnServerEvent:Connect(function(player, payload)
-	roomService:handleAction(player, payload)
-end)
-
-Remotes.get("GazeReport").OnServerEvent:Connect(function(player, cameraPosition, lookVector)
-	GazeTracker.set(player, cameraPosition, lookVector)
-end)
-
-Remotes.get("Crouch").OnServerEvent:Connect(function(player, value)
-	local match = roomService:getMatchOf(player)
-	if match then
-		match:setCrouch(player, value)
+	local ok, err = pcall(function()
+		rooms:handleAction(player, payload)
+	end)
+	if not ok then
+		warn("[HE WILL COME] ошибка RoomAction: " .. tostring(err))
 	end
 end)
 
-Remotes.get("Flashlight").OnServerEvent:Connect(function(player, value)
-	local match = roomService:getMatchOf(player)
-	if match then
-		match:setFlashlight(player, value)
+Remotes.get("PlayerAction").OnServerEvent:Connect(function(player, payload)
+	if typeof(payload) ~= "table" or typeof(payload.action) ~= "string" then
+		return
+	end
+	local match = rooms:getMatchOf(player)
+	if not match then
+		return
+	end
+	local ok, err = pcall(function()
+		match:playerAction(player, payload.action, payload.value)
+	end)
+	if not ok then
+		warn("[HE WILL COME] ошибка PlayerAction: " .. tostring(err))
 	end
 end)
 
-print("[HE WILL COME] сервер запущен. Лобби готово.")
+print("[HE WILL COME] сервер запущен")
 ]]></ProtectedString>
 				</Properties>
 			</Item>
-			<Item class="ModuleScript" referent="RBXD">
+			<Item class="ModuleScript" referent="RBXA">
 				<Properties>
-					<string name="Name">MatchService</string>
+					<string name="Name">MapBuilder</string>
 					<ProtectedString name="Source"><![CDATA[--!nonstrict
--- Матч одной комнаты: тихая фаза -> ОН приходит -> предохранители -> генератор -> побег.
--- Плюс рассудок, поднятие напарников и синхронизация HUD.
+-- Строит школу из текстовой схемы MapData.Grid. 1 символ = 4 стада.
+-- Стены, окна, пол, потолок, лампы, шкафчики, парты, двор, забор, ворота.
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+
+local Shared = ReplicatedStorage:WaitForChild("HWCShared")
+local GameConfig = require(Shared:WaitForChild("GameConfig"))
+local Util = require(Shared:WaitForChild("Util"))
+
+local MapData = require(script.Parent:WaitForChild("MapData"))
+
+local T = MapData.TileSize
+local WALL_H = GameConfig.Map.WallHeight
+
+local COLORS = {
+	Wall = Color3.fromRGB(168, 156, 132),
+	WallDark = Color3.fromRGB(96, 84, 70),
+	RoomFloor = Color3.fromRGB(150, 128, 96),
+	CorridorFloor = Color3.fromRGB(104, 110, 112),
+	Ceiling = Color3.fromRGB(52, 50, 48),
+	Grass = Color3.fromRGB(60, 92, 44),
+	Asphalt = Color3.fromRGB(58, 58, 60),
+	Fence = Color3.fromRGB(70, 74, 78),
+	Locker = Color3.fromRGB(58, 72, 66),
+	LockerDoor = Color3.fromRGB(78, 96, 88),
+	Desk = Color3.fromRGB(110, 78, 48),
+	Lintel = Color3.fromRGB(70, 48, 34),
+	Lamp = Color3.fromRGB(255, 240, 210),
+}
+
+local INTERIOR = { ["."] = true, [","] = true, ["D"] = true, ["P"] = true, ["M"] = true, ["B"] = true, ["L"] = true }
+local WALLISH = { ["#"] = true, ["W"] = true }
+
+local MapBuilder = {}
+
+function MapBuilder.build(origin, index)
+	local model = Instance.new("Model")
+	model.Name = "HWC_Arena_" .. tostring(index)
+
+	-- ---------- разбор схемы ----------
+	local rows = {}
+	for _, line in string.split(MapData.Grid, "\n") do
+		if #line > 0 then
+			table.insert(rows, line)
+		end
+	end
+	local H = #rows
+	local W = 0
+	for _, line in rows do
+		W = math.max(W, #line)
+	end
+
+	local function tile(c, r)
+		if c < 0 or r < 0 or c >= W or r >= H then
+			return " "
+		end
+		local line = rows[r + 1]
+		if c + 1 > #line then
+			return " "
+		end
+		return string.sub(line, c + 1, c + 1)
+	end
+
+	local function center(c, r, y)
+		return origin + Vector3.new((c - W / 2 + 0.5) * T, y or 0, (r - H / 2 + 0.5) * T)
+	end
+
+	-- центр отрезка тайлов c1..c2 в строке r
+	local function runCenter(c1, c2, r, y)
+		return origin + Vector3.new(((c1 + c2) / 2 - W / 2 + 0.5) * T, y or 0, (r - H / 2 + 0.5) * T)
+	end
+
+	local function isInterior(ch)
+		return INTERIOR[ch] == true
+	end
+
+	local function isWallish(ch)
+		return WALLISH[ch] == true
+	end
+
+	-- обходим строки и вызываем callback на каждый непрерывный отрезок тайлов одного "класса"
+	local function forRuns(classify, callback)
+		for r = 0, H - 1 do
+			local c = 0
+			while c < W do
+				local class = classify(tile(c, r), c, r)
+				if class then
+					local c2 = c
+					while c2 + 1 < W and classify(tile(c2 + 1, r), c2 + 1, r) == class do
+						c2 += 1
+					end
+					callback(class, c, c2, r)
+					c = c2 + 1
+				else
+					c += 1
+				end
+			end
+		end
+	end
+
+	local result = {
+		Model = model,
+		Origin = origin,
+		Index = index,
+		Lights = {},
+		Lockers = {},
+		Searchables = {},
+		SpawnPositions = {},
+		MonsterSpawn = origin,
+		PatrolNodes = {},
+		Gate = nil,
+		ExitPad = nil,
+	}
+
+	-- ---------- земля ----------
+	local grass = Util.makePart(model, "Grass", Vector3.new(W * T + 40, 2, H * T + 40), origin + Vector3.new(0, -1, 0), COLORS.Grass, Enum.Material.Grass)
+	grass.Name = "Grass"
+
+	-- ---------- асфальт ----------
+	forRuns(function(ch)
+		return ch == "=" and "asphalt" or nil
+	end, function(_, c1, c2, r)
+		Util.makePart(model, "Asphalt", Vector3.new((c2 - c1 + 1) * T, 0.3, T), runCenter(c1, c2, r, 0.05), COLORS.Asphalt, Enum.Material.Asphalt)
+	end)
+
+	-- ---------- пол и потолок ----------
+	forRuns(function(ch)
+		if not isInterior(ch) then
+			return nil
+		end
+		return (ch == "," or ch == "D") and "corridor" or "room"
+	end, function(class, c1, c2, r)
+		local isCorridor = class == "corridor"
+		Util.makePart(
+			model,
+			"Floor",
+			Vector3.new((c2 - c1 + 1) * T, 1.4, T),
+			runCenter(c1, c2, r, -0.5),
+			isCorridor and COLORS.CorridorFloor or COLORS.RoomFloor,
+			isCorridor and Enum.Material.Concrete or Enum.Material.WoodPlanks
+		)
+	end)
+
+	forRuns(function(ch)
+		return isInterior(ch) and "ceil" or nil
+	end, function(_, c1, c2, r)
+		Util.makePart(model, "Ceiling", Vector3.new((c2 - c1 + 1) * T, 1, T), runCenter(c1, c2, r, WALL_H + 0.5), COLORS.Ceiling, Enum.Material.Concrete)
+	end)
+
+	-- ---------- стены ----------
+	forRuns(function(ch)
+		return ch == "#" and "wall" or nil
+	end, function(_, c1, c2, r)
+		local wall = Util.makePart(model, "Wall", Vector3.new((c2 - c1 + 1) * T, WALL_H, T), runCenter(c1, c2, r, WALL_H / 2), COLORS.Wall, Enum.Material.Brick)
+		wall.Name = "Wall"
+	end)
+
+	-- окна: низ стены, стекло, верх стены
+	for r = 0, H - 1 do
+		for c = 0, W - 1 do
+			if tile(c, r) == "W" then
+				Util.makePart(model, "WallLow", Vector3.new(T, 4, T), center(c, r, 2), COLORS.Wall, Enum.Material.Brick)
+				local glass = Util.makePart(model, "Glass", Vector3.new(T, 5, T), center(c, r, 6.5), Color3.fromRGB(150, 190, 210), Enum.Material.Glass)
+				glass.Transparency = 0.55
+				Util.makePart(model, "WallHigh", Vector3.new(T, 3, T), center(c, r, 10.5), COLORS.Wall, Enum.Material.Brick)
+			end
+		end
+	end
+
+	-- перемычки над дверными проёмами (тайлы D)
+	for r = 0, H - 1 do
+		for c = 0, W - 1 do
+			if tile(c, r) == "D" then
+				Util.makePart(model, "Lintel", Vector3.new(T, 3, T), center(c, r, WALL_H - 1.5), COLORS.Lintel, Enum.Material.Wood)
+			end
+		end
+	end
+
+	-- ---------- лампы ----------
+	for r = 0, H - 1 do
+		for c = 0, W - 1 do
+			if isInterior(tile(c, r)) and c % 4 == 2 and r % 4 == 2 then
+				local lamp = Util.makePart(model, "Lamp", Vector3.new(2.6, 0.3, 2.6), center(c, r, WALL_H - 0.4), COLORS.Lamp, Enum.Material.Neon)
+				local light = Instance.new("PointLight")
+				light.Range = 30
+				light.Brightness = 1.1
+				light.Color = Color3.fromRGB(255, 236, 200)
+				light.Shadows = false
+				light.Parent = lamp
+				table.insert(result.Lights, { Part = lamp, Light = light, Position = lamp.Position })
+			end
+		end
+	end
+
+	-- ---------- забор и ворота ----------
+	for r = 0, H - 1 do
+		for c = 0, W - 1 do
+			local ch = tile(c, r)
+			if ch == "F" then
+				local left, right = tile(c - 1, r), tile(c + 1, r)
+				local up, down = tile(c, r - 1), tile(c, r + 1)
+				local horizontal = left == "F" or right == "F" or left == "X" or right == "X"
+				local vertical = up == "F" or down == "F"
+				if horizontal then
+					local panel = Util.makePart(model, "Fence", Vector3.new(T, 9, 0.5), center(c, r, 4.5), COLORS.Fence, Enum.Material.Metal)
+					panel.Transparency = 0.3
+				end
+				if vertical then
+					local panel = Util.makePart(model, "Fence", Vector3.new(0.5, 9, T), center(c, r, 4.5), COLORS.Fence, Enum.Material.Metal)
+					panel.Transparency = 0.3
+				end
+				Util.makePart(model, "FencePost", Vector3.new(1, 9.5, 1), center(c, r, 4.75), COLORS.WallDark, Enum.Material.Metal)
+			end
+		end
+	end
+
+	forRuns(function(ch)
+		return ch == "X" and "gate" or nil
+	end, function(_, c1, c2, r)
+		local width = (c2 - c1 + 1) * T
+		local gate = Util.makePart(model, "ExitGate", Vector3.new(width, 9, 0.8), runCenter(c1, c2, r, 4.5), Color3.fromRGB(130, 32, 32), Enum.Material.Metal)
+		gate:SetAttribute("Locked", true)
+		local light = Instance.new("PointLight")
+		light.Color = Color3.fromRGB(255, 60, 60)
+		light.Range = 20
+		light.Brightness = 2
+		light.Parent = gate
+		result.Gate = gate
+
+		local padCenter = runCenter(c1, c2, r + 1, 0.3)
+		local pad = Util.makePart(model, "ExitPad", Vector3.new(width + 4, 0.5, T * 1.5), padCenter, Color3.fromRGB(60, 210, 130), Enum.Material.Neon)
+		pad.Transparency = 0.4
+		result.ExitPad = pad
+	end)
+
+	-- ---------- деревья ----------
+	for r = 0, H - 1 do
+		for c = 0, W - 1 do
+			if tile(c, r) == "T" then
+				Util.makePart(model, "Trunk", Vector3.new(1.8, 9, 1.8), center(c, r, 4.5), Color3.fromRGB(70, 50, 34), Enum.Material.Wood)
+				local crown = Util.makePart(model, "Crown", Vector3.new(10, 9, 10), center(c, r, 11), Color3.fromRGB(44, 78, 38), Enum.Material.LeafyGrass)
+				crown.Shape = Enum.PartType.Ball
+				crown.CanCollide = false
+			end
+		end
+	end
+
+	-- ---------- шкафчики ----------
+	local function buildLocker(c, r)
+		local base = center(c, r, 0)
+		-- лицом от стены
+		local facing = Vector3.new(0, 0, 1)
+		if isWallish(tile(c, r - 1)) then
+			facing = Vector3.new(0, 0, 1)
+		elseif isWallish(tile(c, r + 1)) then
+			facing = Vector3.new(0, 0, -1)
+		elseif isWallish(tile(c - 1, r)) then
+			facing = Vector3.new(1, 0, 0)
+		elseif isWallish(tile(c + 1, r)) then
+			facing = Vector3.new(-1, 0, 0)
+		end
+		local side = Vector3.new(facing.Z, 0, facing.X) -- перпендикуляр
+		local lockerModel = Instance.new("Model")
+		lockerModel.Name = "Locker"
+		lockerModel.Parent = model
+
+		local width, height, depth = 3.6, 8, 3.2
+		local function panel(name, size, offset, color)
+			return Util.makePart(lockerModel, name, size, base + offset, color, Enum.Material.Metal)
+		end
+		-- ориентация: ширина вдоль side, глубина вдоль facing
+		local function oriented(w, d)
+			return Vector3.new(math.abs(side.X) * w + math.abs(facing.X) * d, height, math.abs(side.Z) * w + math.abs(facing.Z) * d)
+		end
+		panel("Back", oriented(width, 0.3), Vector3.new(0, height / 2, 0) - facing * (depth / 2), COLORS.Locker)
+		panel("SideA", oriented(0.3, depth), Vector3.new(0, height / 2, 0) + side * (width / 2), COLORS.Locker)
+		panel("SideB", oriented(0.3, depth), Vector3.new(0, height / 2, 0) - side * (width / 2), COLORS.Locker)
+		panel("Top", Vector3.new(math.abs(side.X) * width + math.abs(facing.X) * depth, 0.3, math.abs(side.Z) * width + math.abs(facing.Z) * depth), Vector3.new(0, height, 0), COLORS.Locker)
+		local door = panel("Door", oriented(width, 0.3), Vector3.new(0, height / 2, 0) + facing * (depth / 2), COLORS.LockerDoor)
+		door.Transparency = 0.35
+
+		local prompt = Instance.new("ProximityPrompt")
+		prompt.ActionText = "Спрятаться"
+		prompt.ObjectText = "Шкафчик"
+		prompt.HoldDuration = 0.4
+		prompt.MaxActivationDistance = 7
+		prompt.RequiresLineOfSight = false
+		prompt.Parent = door
+
+		table.insert(result.Lockers, {
+			Model = lockerModel,
+			Door = door,
+			Prompt = prompt,
+			Inside = base + Vector3.new(0, 3.2, 0),
+			Outside = base + facing * (T * 0.95) + Vector3.new(0, 3.2, 0),
+			Occupant = nil,
+		})
+	end
+
+	-- ---------- парты с рюкзаками ----------
+	local backpackColors = {
+		Color3.fromRGB(160, 40, 40), Color3.fromRGB(40, 70, 150), Color3.fromRGB(40, 120, 60),
+		Color3.fromRGB(150, 110, 30), Color3.fromRGB(90, 40, 120),
+	}
+	local function buildSearchable(c, r)
+		local base = center(c, r, 0)
+		local deskModel = Instance.new("Model")
+		deskModel.Name = "Desk"
+		deskModel.Parent = model
+		Util.makePart(deskModel, "Top", Vector3.new(3.6, 0.3, 2.2), base + Vector3.new(0, 2.6, 0), COLORS.Desk, Enum.Material.Wood)
+		Util.makePart(deskModel, "LegA", Vector3.new(0.3, 2.5, 2.0), base + Vector3.new(-1.6, 1.25, 0), COLORS.WallDark, Enum.Material.Metal)
+		Util.makePart(deskModel, "LegB", Vector3.new(0.3, 2.5, 2.0), base + Vector3.new(1.6, 1.25, 0), COLORS.WallDark, Enum.Material.Metal)
+		local bag = Util.makePart(deskModel, "Backpack", Vector3.new(1.3, 1.1, 0.8), base + Vector3.new(0.4, 3.3, 0.2), backpackColors[math.random(1, #backpackColors)], Enum.Material.Fabric)
+
+		local prompt = Instance.new("ProximityPrompt")
+		prompt.ActionText = "Обыскать"
+		prompt.ObjectText = "Рюкзак"
+		prompt.HoldDuration = GameConfig.Match.SearchHoldTime
+		prompt.MaxActivationDistance = 7
+		prompt.RequiresLineOfSight = false
+		prompt.Parent = bag
+
+		table.insert(result.Searchables, {
+			Model = deskModel,
+			Bag = bag,
+			Prompt = prompt,
+			Position = base + Vector3.new(0, 3, 0),
+			Searched = false,
+			HasKey = false,
+		})
+	end
+
+	for r = 0, H - 1 do
+		for c = 0, W - 1 do
+			local ch = tile(c, r)
+			if ch == "L" then
+				buildLocker(c, r)
+			elseif ch == "B" then
+				buildSearchable(c, r)
+			elseif ch == "P" then
+				table.insert(result.SpawnPositions, center(c, r, 3.5))
+			elseif ch == "M" then
+				result.MonsterSpawn = center(c, r, 0)
+			end
+		end
+	end
+
+	-- ---------- точки патруля ----------
+	for _, room in MapData.Rooms do
+		table.insert(result.PatrolNodes, center((room.c1 + room.c2) / 2, (room.r1 + room.r2) / 2, 0))
+	end
+	for r = 0, H - 1 do
+		for c = 0, W - 1 do
+			if tile(c, r) == "," and c % 5 == 0 and r % 5 == 0 then
+				table.insert(result.PatrolNodes, center(c, r, 0))
+			end
+		end
+	end
+
+	model.Parent = Workspace
+	return result
+end
+
+return MapBuilder
+]]></ProtectedString>
+				</Properties>
+			</Item>
+			<Item class="ModuleScript" referent="RBXB">
+				<Properties>
+					<string name="Name">MapData</string>
+					<ProtectedString name="Source"><![CDATA[--!nonstrict
+-- Сгенерировано tools/gen_school_map.py - правь генератор, не этот файл.
+-- 1 символ = 4 стада. Легенда в MapBuilder.lua.
+
+local MapData = {}
+
+MapData.TileSize = 4
+
+MapData.Grid = [[
+                                                                
+ FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF 
+ F                                                            F 
+ F T        T            T              T           T         F 
+ F                                                          T F 
+ F                                                            F 
+ F     ==================================================     F 
+ F     ==================================================     F 
+ F      ##W##W##W##W##W##W##W##W##W##W########W##W##W###      F 
+ F      #...........#,,#L.......#L......#,,#L.........L#      F 
+ F   T  W...........#,,#.B.B.B..#.B.B.B.#,,#...........W      F 
+ F      #..B..B.....#,,D........#.......D,,#...........#      F 
+ F      #L..........#,,D.B.B.B..#.B.B.B.D,,#...B...B...#   T  F 
+ F      W...........#,,#........#.......#,,#...........W      F 
+ F      #...........D,,#........#.......#,,D...........#      F 
+ F      #..B..B.....D,,##################,,D...........#      F 
+ F      W...........#,,#.......L#......L#,,#...........W      F 
+ F      #L..........#,,#.B.B.B..#.B.B.B.#,,#...B...B...#      F 
+ F      #........B..#,,#........D.......#,,#...........#      F 
+ F      W...........#,,#.B.B.B..D.B.B.B.#,,#...........W      F 
+ F T    #...........#,,#........#.......#,,#L..........#      F 
+ F      ####DD#######,,####DD######DD####,,#####DD######      F 
+ F      W,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,W    T F 
+ F      #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#      F 
+ F      #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#      F 
+ F      #####DD######,,##DD####DD####DD##,,#############      F 
+ F      #...........#,,#....L#....#.....#,,#L..........#      F 
+ F      #...........#,,#.....#....#.....#,,#...........#      F 
+ F      WL.........L#,,#.B.B.#....#.B.B.#,,D..B..B..B..W      F 
+ F      #...........#,,#.....#....#.....#,,D...........#      F 
+ F  T   #..B..B.....D,,#.....#....#.....#,,#...........#      F 
+ F      W...........D,,#.....#....#L....#,,#..........LW      F 
+ F      #........B..#,,##################,,#############      F 
+ F      #...........#,,#L..............L#,,#...........#   T  F 
+ F      W..B..B.....#,,#......B..B......#,,#...........W      F 
+ F      #...........#,,D................D,,D...........#      F 
+ F      #L..........#,,D..PP........PP..D,,D......M....#      F 
+ F      W...........#,,#................#,,#...........W      F 
+ F      #...........#,,#................#,,#L..........#      F 
+ F      ##W##W##W##W##W##W##W##DD#W##W########W##W##W###      F 
+ F T   ==================================================     F 
+ F     ==================================================     F 
+ F                             ==                             F 
+ F                T            ==               T           T F 
+ F          T         T        ==            T         T      F 
+ F                             ==                             F 
+ FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFXXFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF 
+                                                                
+]]
+
+MapData.Rooms = {
+	{ name = "Библиотека", c1 = 9, r1 = 9, c2 = 19, r2 = 20 },
+	{ name = "Класс A", c1 = 24, r1 = 9, c2 = 31, r2 = 14 },
+	{ name = "Класс B", c1 = 24, r1 = 16, c2 = 31, r2 = 20 },
+	{ name = "Класс C", c1 = 33, r1 = 9, c2 = 39, r2 = 14 },
+	{ name = "Класс D", c1 = 33, r1 = 16, c2 = 39, r2 = 20 },
+	{ name = "Спортзал", c1 = 44, r1 = 9, c2 = 54, r2 = 20 },
+	{ name = "Столовая", c1 = 9, r1 = 26, c2 = 19, r2 = 38 },
+	{ name = "Учительская", c1 = 24, r1 = 26, c2 = 28, r2 = 31 },
+	{ name = "Туалеты", c1 = 30, r1 = 26, c2 = 33, r2 = 31 },
+	{ name = "Кладовка", c1 = 35, r1 = 26, c2 = 39, r2 = 31 },
+	{ name = "Холл", c1 = 24, r1 = 33, c2 = 39, r2 = 38 },
+	{ name = "Мастерская", c1 = 44, r1 = 26, c2 = 54, r2 = 31 },
+	{ name = "Котельная", c1 = 44, r1 = 33, c2 = 54, r2 = 38 },
+}
+
+return MapData
+]]></ProtectedString>
+				</Properties>
+			</Item>
+			<Item class="ModuleScript" referent="RBXC">
+				<Properties>
+					<string name="Name">Match</string>
+					<ProtectedString name="Source"><![CDATA[--!nonstrict
+-- Матч одной комнаты: 20 секунд тишины -> ОН просыпается -> обыскать парты,
+-- найти 5 ключей -> открыть ворота -> убежать. Шкафчики, крик, падение и подъём.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -1021,19 +948,18 @@ local Util = require(Shared:WaitForChild("Util"))
 
 local MATCH = GameConfig.Match
 local NOISE = GameConfig.Noise
-local SANITY = GameConfig.Sanity
-local MOVEMENT = GameConfig.Movement
+local MOVE = GameConfig.Movement
+local MON = GameConfig.Monster
 
 local syncEvent = Remotes.get("MatchSync")
 local notifyEvent = Remotes.get("Notify")
-local scareEvent = Remotes.get("Scare")
+local effectEvent = Remotes.get("Effect")
 
-local MatchService = {}
-MatchService.__index = MatchService
+local Match = {}
+Match.__index = Match
 
-function MatchService.new(arena, monster, players, lobbyPosition: Vector3, onFinished)
-	local self = setmetatable({}, MatchService)
-
+function Match.new(arena, monster, players, lobbyPosition, onFinished)
+	local self = setmetatable({}, Match)
 	self.arena = arena
 	self.monster = monster
 	self.players = players
@@ -1043,23 +969,43 @@ function MatchService.new(arena, monster, players, lobbyPosition: Vector3, onFin
 	self.phase = "prep"
 	self.phaseEnds = os.clock() + MATCH.PrepTime
 	self.startedAt = os.clock()
-	self.fusesPlaced = 0
-	self.generatorOn = false
+	self.keysFound = 0
 	self.finished = false
 	self.state = {}
-	self.fuseParts = {}
 	self.connections = {}
-	self.noiseAccumulator = 0
+	self.sprintAccumulator = 0
 	self.syncAccumulator = 0
+	self.flickerAccumulator = 0
 
 	monster.onCatch = function(player)
 		self:onCaught(player)
+	end
+	monster.onScream = function(player)
+		self:_onMonsterScream(player)
+	end
+	monster.isPlayerHidden = function(player)
+		local s = self.state[player]
+		return s ~= nil and s.locker ~= nil
+	end
+	monster.isPlayerTargetable = function(player)
+		local s = self.state[player]
+		return s ~= nil and not s.downed and not s.escaped and not s.out
+	end
+	monster.hasFlashlight = function(player)
+		local s = self.state[player]
+		return s ~= nil and s.flashlight
+	end
+	monster.getLockerOf = function(player)
+		local s = self.state[player]
+		return s and s.locker or nil
 	end
 
 	return self
 end
 
-function MatchService:notify(text: string, color: string?)
+-- ---------------- сообщения ----------------
+
+function Match:notify(text, color)
 	for _, player in self.players do
 		if player.Parent then
 			notifyEvent:FireClient(player, text, color)
@@ -1067,160 +1013,222 @@ function MatchService:notify(text: string, color: string?)
 	end
 end
 
-function MatchService:_playerState(player: Player)
-	return self.state[player]
-end
-
-function MatchService:_spawnFuses()
-	local spots = Util.shuffle(self.arena.FuseSpots)
-	for index = 1, math.min(MATCH.FusesRequired, #spots) do
-		local position = spots[index]
-
-		local fuse = Util.makePart(
-			self.arena.Model,
-			"Fuse",
-			Vector3.new(2, 3, 2),
-			position,
-			Color3.fromRGB(255, 190, 70),
-			Enum.Material.Neon
-		)
-		fuse.CanCollide = false
-
-		local light = Instance.new("PointLight")
-		light.Color = fuse.Color
-		light.Range = 14
-		light.Brightness = 1.5
-		light.Parent = fuse
-
-		local prompt = Instance.new("ProximityPrompt")
-		prompt.ActionText = "Забрать предохранитель"
-		prompt.ObjectText = "Предохранитель"
-		prompt.HoldDuration = MATCH.FuseHoldTime
-		prompt.MaxActivationDistance = 9
-		prompt.RequiresLineOfSight = false
-		prompt.Parent = fuse
-
-		prompt.Triggered:Connect(function(player)
-			if not fuse.Parent or not self.state[player] then
-				return
-			end
-			fuse:Destroy()
-			self:_onFuseTaken(player, position)
-		end)
-
-		table.insert(self.fuseParts, fuse)
-	end
-end
-
-function MatchService:_onFuseTaken(player: Player, position: Vector3)
-	self.fusesPlaced += 1
-
-	-- вынул предохранитель - щиток взвыл, ОН услышал
-	local playerState = self.state[player]
-	if playerState then
-		playerState.heat = math.min(NOISE.MaxHeat, playerState.heat + NOISE.Fuse)
-	end
-
-	if self.fusesPlaced >= MATCH.FusesRequired then
-		self.generatorPrompt.Enabled = true
-		self:notify("Все предохранители у вас. Запускайте генератор в центре!", "good")
-	else
-		self:notify(string.format("Предохранитель %d/%d. ОН это слышал.", self.fusesPlaced, MATCH.FusesRequired), "info")
-	end
-end
-
-function MatchService:_setupGenerator()
-	local prompt = Instance.new("ProximityPrompt")
-	prompt.ActionText = "Запустить генератор"
-	prompt.ObjectText = "Генератор"
-	prompt.HoldDuration = 5
-	prompt.MaxActivationDistance = 10
-	prompt.RequiresLineOfSight = false
-	prompt.Enabled = false
-	prompt.Parent = self.arena.Generator
-	self.generatorPrompt = prompt
-
-	prompt.Triggered:Connect(function(player)
-		if self.generatorOn or not self.state[player] then
-			return
+function Match:effect(kind, data)
+	for _, player in self.players do
+		if player.Parent then
+			effectEvent:FireClient(player, kind, data)
 		end
-		self.generatorOn = true
-		prompt.Enabled = false
-
-		local playerState = self.state[player]
-		playerState.heat = NOISE.MaxHeat
-
-		self.arena.Gate:SetAttribute("Locked", false)
-		self.arena.Gate.CanCollide = false
-		self.arena.Gate.Transparency = 0.7
-		self.arena.Gate.Color = Color3.fromRGB(40, 180, 90)
-		self.arena.GeneratorLight.Color = Color3.fromRGB(60, 255, 120)
-
-		-- аварийный свет: видно чуть больше, но и вас видно
-		for _, lamp in self.arena.Lights do
-			lamp.Light.Enabled = true
-			lamp.Light.Brightness = 0.35
-			lamp.Light.Color = Color3.fromRGB(255, 80, 60)
-			lamp.Part.Color = Color3.fromRGB(120, 30, 30)
-		end
-
-		self:notify("ГЕНЕРАТОР ЗАПУЩЕН. Ворота на юге открыты. БЕГИТЕ.", "good")
-	end)
-end
-
-function MatchService:_setLights(enabled: boolean)
-	for _, lamp in self.arena.Lights do
-		lamp.Light.Enabled = enabled
-		lamp.Part.Color = enabled and Color3.fromRGB(255, 240, 210) or Color3.fromRGB(40, 40, 40)
-		lamp.Part.Material = enabled and Enum.Material.Neon or Enum.Material.SmoothPlastic
 	end
 end
 
-function MatchService:_teleportToArena(player: Player, index: number)
+-- ---------------- телепорты ----------------
+
+function Match:_teleportToArena(player, index)
 	local root = Util.getRoot(player.Character)
 	if not root then
 		return
 	end
 	local spawns = self.arena.SpawnPositions
-	local position = spawns[((index - 1) % #spawns) + 1]
-	root.CFrame = CFrame.new(position)
+	root.Anchored = false
+	root.CFrame = CFrame.new(spawns[((index - 1) % #spawns) + 1])
 end
 
-function MatchService:_teleportToLobby(player: Player)
+function Match:_teleportToLobby(player)
 	local root = Util.getRoot(player.Character)
 	if root then
+		root.Anchored = false
 		root.CFrame = CFrame.new(self.lobbyPosition + Vector3.new(math.random(-8, 8), 0, math.random(-8, 8)))
 	end
 end
 
-function MatchService:onCharacterAdded(player: Player, character)
-	local playerState = self.state[player]
-	if not playerState or self.finished then
+function Match:onCharacterAdded(player, character)
+	local s = self.state[player]
+	if not s or self.finished then
 		return
 	end
-	task.wait(0.2)
-	if playerState.out or playerState.escaped then
+	task.wait(0.3)
+	self:_leaveLocker(player)
+	s.downed = false
+	player:SetAttribute("Downed", false)
+	player:SetAttribute("Hidden", false)
+	if s.out or s.escaped then
 		self:_teleportToLobby(player)
-		return
+	else
+		self:_teleportToArena(player, table.find(self.players, player) or 1)
 	end
-	-- умер от чего-то ещё - возвращаем в дом целым
-	playerState.downed = false
-	playerState.bleed = 0
-	playerState.sanity = SANITY.Max * 0.5
-	local index = table.find(self.players, player) or 1
-	self:_teleportToArena(player, index)
 end
 
--- ОН достал игрока: не убивает сразу, роняет. Напарник может поднять.
-function MatchService:onCaught(player: Player)
-	local playerState = self.state[player]
-	if not playerState or playerState.downed or playerState.escaped or playerState.out then
+-- ---------------- свет ----------------
+
+function Match:_setLights(brightness)
+	for _, lamp in self.arena.Lights do
+		lamp.Light.Brightness = brightness
+		lamp.Part.Color = brightness > 0.6 and Color3.fromRGB(255, 240, 210) or Color3.fromRGB(120, 100, 80)
+	end
+end
+
+-- лампы рядом с монстром мигают: слышишь не только шаги, но и видишь
+function Match:_flicker()
+	local monsterPosition = self.monster.rig.Root.Position
+	for _, lamp in self.arena.Lights do
+		local distance = (lamp.Position - monsterPosition).Magnitude
+		if distance < 26 then
+			local on = math.random() > 0.35
+			lamp.Light.Brightness = on and MATCH.DimLights or 0
+			lamp.Part.Color = on and Color3.fromRGB(120, 100, 80) or Color3.fromRGB(40, 36, 34)
+		elseif lamp.Light.Brightness ~= MATCH.DimLights then
+			lamp.Light.Brightness = MATCH.DimLights
+			lamp.Part.Color = Color3.fromRGB(120, 100, 80)
+		end
+	end
+end
+
+-- ---------------- ключи и парты ----------------
+
+function Match:_setupSearchables()
+	local shuffled = Util.shuffle(self.arena.Searchables)
+	for index = 1, math.min(MATCH.KeysRequired, #shuffled) do
+		shuffled[index].HasKey = true
+	end
+
+	for _, item in self.arena.Searchables do
+		table.insert(self.connections, item.Prompt.Triggered:Connect(function(player)
+			self:_onSearch(player, item)
+		end))
+	end
+end
+
+function Match:_onSearch(player, item)
+	local s = self.state[player]
+	if not s or s.downed or s.out or s.escaped or s.locker then
+		return
+	end
+	if item.Searched then
+		notifyEvent:FireClient(player, "Тут уже смотрели. Пусто.", "info")
 		return
 	end
 
-	playerState.downed = true
-	playerState.bleed = MATCH.BleedOutTime
-	playerState.heat = 0
+	item.Searched = true
+	item.Prompt.ActionText = "Пусто"
+	item.Prompt.Enabled = false
+	item.Bag.Color = Color3.fromRGB(70, 70, 74)
+
+	-- шаришь по рюкзаку - шумно
+	self.monster:hear(item.Position, NOISE.Search)
+
+	if item.HasKey then
+		self.keysFound += 1
+		self:_onKeyFound(player)
+	else
+		notifyEvent:FireClient(player, "Пусто. Ищи дальше.", "info")
+	end
+end
+
+function Match:_onKeyFound(player)
+	local stats = player:FindFirstChild("leaderstats")
+	local keys = stats and stats:FindFirstChild("Ключи")
+	if keys then
+		keys.Value += 1
+	end
+
+	-- с каждым ключом он злее и быстрее
+	self.monster:addSpeed(MON.SpeedPerKey)
+	effectEvent:FireClient(player, "key")
+
+	if self.keysFound >= MATCH.KeysRequired then
+		self.arena.Gate:SetAttribute("Locked", false)
+		self.arena.Gate.CanCollide = false
+		self.arena.Gate.Transparency = 0.6
+		self.arena.Gate.Color = Color3.fromRGB(40, 180, 90)
+		self:notify("ВСЕ КЛЮЧИ НАЙДЕНЫ. Ворота во дворе открыты - через главный вход и на юг!", "good")
+	else
+		self:notify(string.format("%s нашёл ключ! %d/%d. ОН стал быстрее.", player.DisplayName, self.keysFound, MATCH.KeysRequired), "good")
+	end
+end
+
+-- ---------------- шкафчики ----------------
+
+function Match:_setupLockers()
+	for _, locker in self.arena.Lockers do
+		table.insert(self.connections, locker.Prompt.Triggered:Connect(function(player)
+			self:_onLocker(player, locker)
+		end))
+	end
+end
+
+function Match:_onLocker(player, locker)
+	local s = self.state[player]
+	if not s or s.downed or s.out or s.escaped then
+		return
+	end
+	local root = Util.getRoot(player.Character)
+	if not root then
+		return
+	end
+
+	if s.locker == locker then
+		-- выходим
+		s.locker = nil
+		locker.Occupant = nil
+		locker.Prompt.ActionText = "Спрятаться"
+		player:SetAttribute("Hidden", false)
+		root.Anchored = false
+		root.CFrame = CFrame.new(locker.Outside)
+		self.monster:hear(locker.Outside, NOISE.Locker)
+		return
+	end
+
+	if s.locker or locker.Occupant then
+		notifyEvent:FireClient(player, "Занято", "bad")
+		return
+	end
+
+	s.locker = locker
+	locker.Occupant = player
+	locker.Prompt.ActionText = "Выйти"
+	player:SetAttribute("Hidden", true)
+	root.CFrame = CFrame.new(locker.Inside, locker.Inside + (locker.Outside - locker.Inside))
+	root.Anchored = true
+	self.monster:hear(locker.Outside, NOISE.Locker)
+	notifyEvent:FireClient(player, "Ты спрятался. Не выходи, пока не стихнут шаги.", "info")
+end
+
+function Match:_leaveLocker(player)
+	local s = self.state[player]
+	if not s or not s.locker then
+		return
+	end
+	local locker = s.locker
+	s.locker = nil
+	locker.Occupant = nil
+	locker.Prompt.ActionText = "Спрятаться"
+	player:SetAttribute("Hidden", false)
+	local root = Util.getRoot(player.Character)
+	if root then
+		root.Anchored = false
+		root.CFrame = CFrame.new(locker.Outside)
+	end
+end
+
+-- ---------------- монстр орёт ----------------
+
+function Match:_onMonsterScream(player)
+	self:effect("scream", { position = self.monster.rig.Root.Position })
+	self:notify(string.format("ОН УВИДЕЛ %s!", string.upper(player.DisplayName)), "bad")
+end
+
+-- ---------------- падение / подъём / выбывание ----------------
+
+function Match:onCaught(player)
+	local s = self.state[player]
+	if not s or s.downed or s.escaped or s.out then
+		return
+	end
+
+	self:_leaveLocker(player)
+	s.downed = true
+	s.bleed = MATCH.BleedOutTime
+	player:SetAttribute("Downed", true)
 
 	local humanoid = Util.getHumanoid(player.Character)
 	if humanoid then
@@ -1228,8 +1236,8 @@ function MatchService:onCaught(player: Player)
 		humanoid.JumpPower = 0
 	end
 
-	scareEvent:FireClient(player, "down")
-	self:notify(string.format("%s упал! Поднимите его, пока не поздно.", player.DisplayName), "bad")
+	effectEvent:FireClient(player, "down")
+	self:notify(string.format("%s упал! Поднимите его (E), пока не поздно.", player.DisplayName), "bad")
 
 	local root = Util.getRoot(player.Character)
 	if root then
@@ -1241,79 +1249,93 @@ function MatchService:onCaught(player: Player)
 		prompt.MaxActivationDistance = 8
 		prompt.RequiresLineOfSight = false
 		prompt.Parent = root
-		playerState.revivePrompt = prompt
-
+		s.revivePrompt = prompt
 		prompt.Triggered:Connect(function(reviver)
-			local reviverState = self.state[reviver]
-			if not reviverState or reviverState.downed or reviverState.out then
-				return
+			local r = self.state[reviver]
+			if reviver ~= player and r and not r.downed and not r.out and not r.escaped then
+				self:_revive(player)
 			end
-			self:_revive(player)
+		end)
+	end
+
+	-- один в комнате - поднимать некому
+	local others = 0
+	for _, other in self.players do
+		local o = self.state[other]
+		if other ~= player and o and not o.downed and not o.out and not o.escaped then
+			others += 1
+		end
+	end
+	if others == 0 then
+		task.delay(2.5, function()
+			if s.downed then
+				self:_playerOut(player, "никто не пришёл на помощь")
+			end
 		end)
 	end
 end
 
-function MatchService:_revive(player: Player)
-	local playerState = self.state[player]
-	if not playerState or not playerState.downed then
+function Match:_revive(player)
+	local s = self.state[player]
+	if not s or not s.downed then
 		return
 	end
-	playerState.downed = false
-	playerState.bleed = 0
-	playerState.sanity = math.max(playerState.sanity, 50)
-
-	if playerState.revivePrompt then
-		playerState.revivePrompt:Destroy()
-		playerState.revivePrompt = nil
+	s.downed = false
+	s.bleed = 0
+	player:SetAttribute("Downed", false)
+	if s.revivePrompt then
+		s.revivePrompt:Destroy()
+		s.revivePrompt = nil
 	end
-
 	local humanoid = Util.getHumanoid(player.Character)
 	if humanoid then
-		humanoid.WalkSpeed = MOVEMENT.WalkSpeed
+		humanoid.WalkSpeed = MOVE.WalkSpeed
 		humanoid.JumpPower = 45
 	end
-
-	scareEvent:FireClient(player, "revived")
+	effectEvent:FireClient(player, "revived")
 	self:notify(string.format("%s снова на ногах.", player.DisplayName), "good")
 end
 
-function MatchService:_playerOut(player: Player, reason: string)
-	local playerState = self.state[player]
-	if not playerState or playerState.out then
+function Match:_playerOut(player, reason)
+	local s = self.state[player]
+	if not s or s.out then
 		return
 	end
-	playerState.out = true
-	playerState.downed = false
-
-	if playerState.revivePrompt then
-		playerState.revivePrompt:Destroy()
-		playerState.revivePrompt = nil
+	self:_leaveLocker(player)
+	s.out = true
+	s.downed = false
+	player:SetAttribute("Downed", false)
+	if s.revivePrompt then
+		s.revivePrompt:Destroy()
+		s.revivePrompt = nil
 	end
-
 	local humanoid = Util.getHumanoid(player.Character)
 	if humanoid then
-		humanoid.WalkSpeed = MOVEMENT.WalkSpeed
+		humanoid.WalkSpeed = MOVE.WalkSpeed
 		humanoid.JumpPower = 45
 	end
-
 	self:_teleportToLobby(player)
-	scareEvent:FireClient(player, "out")
+	effectEvent:FireClient(player, "out")
 	self:notify(string.format("%s: %s", player.DisplayName, reason), "bad")
+	s.syncStopped = true
+	syncEvent:FireClient(player, { inMatch = false })
 end
 
-function MatchService:_escape(player: Player)
-	local playerState = self.state[player]
-	if not playerState or playerState.escaped or playerState.downed or playerState.out then
+function Match:_escape(player)
+	local s = self.state[player]
+	if not s or s.escaped or s.downed or s.out then
 		return
 	end
 	if self.arena.Gate:GetAttribute("Locked") then
-		notifyEvent:FireClient(player, "Ворота заперты - нужен генератор", "bad")
+		notifyEvent:FireClient(player, "Ворота заперты. Нужны все ключи.", "bad")
 		return
 	end
-
-	playerState.escaped = true
+	s.escaped = true
 	self:_teleportToLobby(player)
+	effectEvent:FireClient(player, "escaped")
 	self:notify(string.format("%s выбрался!", player.DisplayName), "good")
+	s.syncStopped = true
+	syncEvent:FireClient(player, { inMatch = false })
 
 	local stats = player:FindFirstChild("leaderstats")
 	local escapes = stats and stats:FindFirstChild("Побеги")
@@ -1322,91 +1344,83 @@ function MatchService:_escape(player: Player)
 	end
 end
 
-function MatchService:_loudnessOf(player: Player): number
-	local playerState = self.state[player]
-	if not playerState or playerState.downed or playerState.escaped or playerState.out then
-		return 0
-	end
+-- ---------------- действия игрока ----------------
 
-	local humanoid = Util.getHumanoid(player.Character)
-	if not humanoid or humanoid.Health <= 0 then
-		return 0
+function Match:playerAction(player, action, value)
+	local s = self.state[player]
+	if not s or s.out or s.escaped then
+		return
 	end
+	local root = Util.getRoot(player.Character)
 
-	local loud = 0
-	if humanoid.MoveDirection.Magnitude > 0.1 then
-		if playerState.crouching then
-			loud += NOISE.Crouch
-		elseif humanoid.WalkSpeed >= MOVEMENT.SprintSpeed - 2 then
-			loud += NOISE.Sprint
-		else
-			loud += NOISE.Walk
+	if action == "crouch" then
+		s.crouching = value == true
+		player:SetAttribute("Crouching", s.crouching)
+	elseif action == "flashlight" then
+		s.flashlight = value == true
+		player:SetAttribute("Flashlight", s.flashlight)
+	elseif action == "slide" then
+		if root and not s.downed and not s.locker then
+			self.monster:hear(root.Position, NOISE.Slide)
+		end
+	elseif action == "shout" then
+		if s.downed or s.locker then
+			return
+		end
+		if os.clock() - (s.lastShout or -100) < NOISE.ShoutCooldown then
+			return
+		end
+		s.lastShout = os.clock()
+		if root then
+			self.monster:hear(root.Position, NOISE.Shout, true)
+			self:effect("shout", { name = player.DisplayName })
+			self:notify(string.format("%s кричит - ОН идёт к нему!", player.DisplayName), "info")
 		end
 	end
-	if playerState.flashlight then
-		loud += NOISE.Flashlight
-	end
-	return loud
 end
 
-function MatchService:_updateSanity(dt: number)
-	local now = os.clock()
-	local monsterRoot = self.monster.rig.Root
+-- ---------------- цикл ----------------
 
-	local gazing = {}
-	for _, player in self.monster.gazers do
-		gazing[player] = true
-	end
-
+function Match:_sprintNoise()
 	for _, player in self.players do
-		local playerState = self.state[player]
-		if not playerState or playerState.out or playerState.escaped then
+		local s = self.state[player]
+		if not s or s.downed or s.out or s.escaped or s.locker then
 			continue
 		end
-
+		local humanoid = Util.getHumanoid(player.Character)
 		local root = Util.getRoot(player.Character)
-		local distance = root and (root.Position - monsterRoot.Position).Magnitude or 999
-		playerState.gazing = gazing[player] == true
-		playerState.monsterDistance = distance
-
-		if self.phase ~= "hunt" then
+		if not humanoid or not root or humanoid.Health <= 0 then
 			continue
 		end
-
-		if gazing[player] then
-			playerState.sanity -= SANITY.GazeDrain * dt
-			playerState.lastDrain = now
-		elseif distance < SANITY.NearDistance then
-			playerState.sanity -= SANITY.NearDrain * dt
-			playerState.lastDrain = now
-		elseif now - (playerState.lastDrain or 0) > SANITY.RegenDelay then
-			playerState.sanity = math.min(SANITY.Max, playerState.sanity + SANITY.Regen * dt)
+		if humanoid.MoveDirection.Magnitude < 0.1 then
+			continue
 		end
-
-		if playerState.sanity <= 0 then
-			playerState.sanity = SANITY.PanicRefill
-			playerState.panicUntil = now + SANITY.PanicLockTime
-			playerState.heat = math.min(NOISE.MaxHeat, playerState.heat + NOISE.Scream)
-			scareEvent:FireClient(player, "panic")
-			self:notify(string.format("%s сорвался на крик!", player.DisplayName), "bad")
+		local radius
+		if s.crouching then
+			radius = NOISE.Crouch
+		elseif humanoid.WalkSpeed >= MOVE.SprintSpeed - 2 then
+			radius = NOISE.Sprint
+		else
+			radius = NOISE.Walk
+		end
+		if radius > 0 then
+			self.monster:hear(root.Position, radius)
 		end
 	end
 end
 
-function MatchService:_checkEnd()
-	local anyActive = false
-	local anyEscaped = false
+function Match:_checkEnd()
+	local anyActive, anyEscaped = false, false
 	for _, player in self.players do
-		local playerState = self.state[player]
-		if playerState then
-			if playerState.escaped then
+		local s = self.state[player]
+		if s then
+			if s.escaped then
 				anyEscaped = true
-			elseif not playerState.out and player.Parent then
+			elseif not s.out and player.Parent then
 				anyActive = true
 			end
 		end
 	end
-
 	if not anyActive then
 		self:finish(anyEscaped and "win" or "lose")
 	elseif os.clock() - self.startedAt > MATCH.MaxMatchTime then
@@ -1414,106 +1428,82 @@ function MatchService:_checkEnd()
 	end
 end
 
-function MatchService:_sync()
+function Match:_sync()
 	local teammates = {}
 	for _, player in self.players do
-		local playerState = self.state[player]
-		if playerState then
-			table.insert(teammates, {
-				name = player.DisplayName,
-				downed = playerState.downed,
-				escaped = playerState.escaped,
-				out = playerState.out,
-			})
+		local s = self.state[player]
+		if s then
+			table.insert(teammates, { name = player.DisplayName, downed = s.downed, escaped = s.escaped, out = s.out, hidden = s.locker ~= nil })
 		end
 	end
 
-	local timeLeft = math.max(0, self.phaseEnds - os.clock())
-
+	local monsterPosition = self.monster.rig.Root.Position
 	for _, player in self.players do
-		local playerState = self.state[player]
-		if not playerState or not player.Parent then
+		local s = self.state[player]
+		if not s or not player.Parent or s.syncStopped then
 			continue
 		end
+		local root = Util.getRoot(player.Character)
+		local distance = root and (root.Position - monsterPosition).Magnitude or 999
 		syncEvent:FireClient(player, {
 			inMatch = true,
 			phase = self.phase,
-			timeLeft = timeLeft,
-			fuses = self.fusesPlaced,
-			fusesRequired = MATCH.FusesRequired,
-			generatorOn = self.generatorOn,
+			timeLeft = math.max(0, self.phaseEnds - os.clock()),
+			keys = self.keysFound,
+			keysRequired = MATCH.KeysRequired,
 			gateOpen = not self.arena.Gate:GetAttribute("Locked"),
-			sanity = playerState.sanity,
-			sanityMax = SANITY.Max,
-			heat = playerState.heat,
-			heatMax = NOISE.MaxHeat,
-			downed = playerState.downed,
-			bleed = playerState.bleed,
+			downed = s.downed,
+			bleed = s.bleed,
 			bleedMax = MATCH.BleedOutTime,
-			escaped = playerState.escaped,
-			out = playerState.out,
-			gazing = playerState.gazing,
-			hunted = self.monster.targetPlayer == player,
-			distance = playerState.monsterDistance or 999,
-			panic = playerState.panicUntil and os.clock() < playerState.panicUntil,
+			hidden = s.locker ~= nil,
+			escaped = s.escaped,
+			out = s.out,
+			hunted = self.monster.target == player,
+			monsterState = self.monster.state,
+			distance = distance,
 			teammates = teammates,
 		})
 	end
 end
 
-function MatchService:_step(dt: number)
+function Match:_step(dt)
 	if self.finished then
 		return
 	end
 
-	-- фазы
 	if self.phase == "prep" and os.clock() >= self.phaseEnds then
 		self.phase = "hunt"
 		self.phaseEnds = os.clock() + MATCH.MaxMatchTime
-		self:_setLights(false)
-		self.monster:arrive()
-		self:notify("СВЕТ ПОГАС. ОН ПРИШЁЛ.", "bad")
-		for _, player in self.players do
-			scareEvent:FireClient(player, "arrival")
+		self:_setLights(MATCH.DimLights)
+		self.monster:wake()
+		self:effect("arrival")
+		self:notify("СВЕТ МИГНУЛ. ОН ПРОСНУЛСЯ.", "bad")
+	end
+
+	if self.phase == "hunt" then
+		self.sprintAccumulator += dt
+		if self.sprintAccumulator >= NOISE.SprintInterval then
+			self.sprintAccumulator = 0
+			self:_sprintNoise()
+		end
+
+		self.monster:step(self.players)
+
+		self.flickerAccumulator += dt
+		if self.flickerAccumulator >= 0.12 then
+			self.flickerAccumulator = 0
+			self:_flicker()
 		end
 	end
 
-	-- шум
-	self.noiseAccumulator += dt
-	if self.noiseAccumulator >= NOISE.TickInterval then
-		self.noiseAccumulator = 0
-		for _, player in self.players do
-			local playerState = self.state[player]
-			if playerState then
-				playerState.heat = math.min(NOISE.MaxHeat, playerState.heat + self:_loudnessOf(player))
-			end
-		end
-	end
-
-	local heat = {}
 	for _, player in self.players do
-		local playerState = self.state[player]
-		if playerState and not playerState.out and not playerState.escaped and not playerState.downed then
-			playerState.heat = math.max(0, playerState.heat - NOISE.Decay * dt)
-			heat[player] = playerState.heat
-		end
-	end
-
-	-- истекающий кровью
-	for _, player in self.players do
-		local playerState = self.state[player]
-		if playerState and playerState.downed then
-			playerState.bleed -= dt
-			if playerState.bleed <= 0 then
+		local s = self.state[player]
+		if s and s.downed then
+			s.bleed -= dt
+			if s.bleed <= 0 then
 				self:_playerOut(player, "не дождался помощи")
 			end
 		end
-	end
-
-	self:_updateSanity(dt)
-
-	if self.phase == "hunt" then
-		self.monster:step(dt, self.players, heat)
 	end
 
 	self.syncAccumulator += dt
@@ -1525,26 +1515,27 @@ function MatchService:_step(dt: number)
 	self:_checkEnd()
 end
 
-function MatchService:start()
+function Match:start()
 	for index, player in self.players do
 		self.state[player] = {
-			sanity = SANITY.Max,
-			heat = 0,
 			downed = false,
 			bleed = 0,
 			escaped = false,
 			out = false,
+			locker = nil,
 			crouching = false,
 			flashlight = false,
-			panicUntil = 0,
-			lastDrain = 0,
+			lastShout = -100,
 		}
+		player:SetAttribute("InMatch", true)
+		player:SetAttribute("Downed", false)
+		player:SetAttribute("Hidden", false)
 		self:_teleportToArena(player, index)
 	end
 
-	self:_setLights(true)
-	self:_spawnFuses()
-	self:_setupGenerator()
+	self:_setLights(1.1)
+	self:_setupSearchables()
+	self:_setupLockers()
 
 	table.insert(self.connections, self.arena.ExitPad.Touched:Connect(function(hit)
 		local character = hit:FindFirstAncestorOfClass("Model")
@@ -1563,45 +1554,36 @@ function MatchService:start()
 		end
 	end))
 
-	self:notify(string.format("У вас %d секунд тишины. Потом ОН придёт.", MATCH.PrepTime), "info")
+	self:notify(string.format("%d секунд тишины. Ищите ключи в рюкзаках на партах. Их %d.", MATCH.PrepTime, MATCH.KeysRequired), "info")
 end
 
-function MatchService:setCrouch(player: Player, value: boolean)
-	local playerState = self.state[player]
-	if playerState then
-		playerState.crouching = value == true
-	end
-end
-
-function MatchService:setFlashlight(player: Player, value: boolean)
-	local playerState = self.state[player]
-	if playerState then
-		playerState.flashlight = value == true
-	end
-end
-
-function MatchService:playerLeft(player: Player)
-	local playerState = self.state[player]
-	if not playerState then
+function Match:playerLeft(player)
+	local s = self.state[player]
+	if not s then
 		return
 	end
-	if playerState.revivePrompt then
-		playerState.revivePrompt:Destroy()
+	self:_leaveLocker(player)
+	if s.revivePrompt then
+		s.revivePrompt:Destroy()
 	end
-	playerState.out = true
 	self.state[player] = nil
+	player:SetAttribute("InMatch", false)
+	player:SetAttribute("Downed", false)
+	player:SetAttribute("Hidden", false)
+	if player.Parent then
+		syncEvent:FireClient(player, { inMatch = false })
+	end
 	local index = table.find(self.players, player)
 	if index then
 		table.remove(self.players, index)
 	end
 end
 
-function MatchService:finish(result: string)
+function Match:finish(result)
 	if self.finished then
 		return
 	end
 	self.finished = true
-
 	for _, connection in self.connections do
 		connection:Disconnect()
 	end
@@ -1611,17 +1593,28 @@ function MatchService:finish(result: string)
 	if result == "win" then
 		text = "Вы выбрались. На этот раз."
 	elseif result == "timeout" then
-		text = "Время вышло."
+		text = "Время вышло. Школа не отпустила."
 	end
 
 	for _, player in self.players do
-		local playerState = self.state[player]
-		if playerState and playerState.revivePrompt then
-			playerState.revivePrompt:Destroy()
+		local s = self.state[player]
+		if s then
+			self:_leaveLocker(player)
+			if s.revivePrompt then
+				s.revivePrompt:Destroy()
+			end
 		end
 		if player.Parent then
+			player:SetAttribute("InMatch", false)
+			player:SetAttribute("Downed", false)
+			player:SetAttribute("Hidden", false)
+			local humanoid = Util.getHumanoid(player.Character)
+			if humanoid then
+				humanoid.WalkSpeed = MOVE.WalkSpeed
+				humanoid.JumpPower = 45
+			end
 			notifyEvent:FireClient(player, text, result == "win" and "good" or "bad")
-			syncEvent:FireClient(player, { inMatch = false })
+			syncEvent:FireClient(player, { inMatch = false, result = result })
 			self:_teleportToLobby(player)
 		end
 	end
@@ -1631,16 +1624,454 @@ function MatchService:finish(result: string)
 	end
 end
 
-return MatchService
+return Match
+]]></ProtectedString>
+				</Properties>
+			</Item>
+			<Item class="ModuleScript" referent="RBXD">
+				<Properties>
+					<string name="Name">Monster</string>
+					<ProtectedString name="Source"><![CDATA[--!nonstrict
+-- ОН. Патрулирует школу, идёт на шум, видит в конусе обзора (фонарь выдаёт издалека),
+-- заметив - орёт на всю школу и БЕЖИТ. Потерял из виду - ищет, потом снова патруль.
+-- В шкафчик за тобой не полезет, если не видел, как ты в него прыгнул.
+
+local PathfindingService = game:GetService("PathfindingService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+
+local Shared = ReplicatedStorage:WaitForChild("HWCShared")
+local GameConfig = require(Shared:WaitForChild("GameConfig"))
+local Util = require(Shared:WaitForChild("Util"))
+
+local M = GameConfig.Monster
+
+local Monster = {}
+Monster.__index = Monster
+
+local BODY = Color3.fromRGB(34, 34, 40)
+local SKIN = Color3.fromRGB(200, 194, 182)
+
+local function limb(model, name, size, color, collide)
+	local part = Instance.new("Part")
+	part.Name = name
+	part.Size = size
+	part.Color = color
+	part.Material = Enum.Material.Fabric
+	part.CanCollide = collide
+	part.TopSurface = Enum.SurfaceType.Smooth
+	part.BottomSurface = Enum.SurfaceType.Smooth
+	part.Parent = model
+	return part
+end
+
+local function weld(a, b, offset)
+	b.CFrame = a.CFrame * CFrame.new(offset)
+	local joint = Instance.new("Weld")
+	joint.Part0 = a
+	joint.Part1 = b
+	joint.C0 = CFrame.new(offset)
+	joint.Parent = a
+end
+
+local ROOT_HEIGHT = 5.5
+
+local function buildRig(spawnPosition, collisionGroup)
+	local model = Instance.new("Model")
+	model.Name = "HE"
+
+	local root = limb(model, "HumanoidRootPart", Vector3.new(2, 2, 1), BODY, false)
+	root.Transparency = 1
+	root.CFrame = CFrame.new(spawnPosition + Vector3.new(0, ROOT_HEIGHT, 0))
+	model.PrimaryPart = root
+
+	local torso = limb(model, "Torso", Vector3.new(2.4, 4, 1.3), BODY, true)
+	weld(root, torso, Vector3.new(0, 0, 0))
+
+	local head = limb(model, "Head", Vector3.new(1.6, 1.9, 1.6), SKIN, true)
+	head.Material = Enum.Material.Sand
+	weld(torso, head, Vector3.new(0, 2.9, 0))
+
+	-- рот: тёмная щель, видно, когда орёт
+	local mouth = limb(model, "Mouth", Vector3.new(1.0, 0.25, 0.2), Color3.fromRGB(20, 5, 5), false)
+	mouth.Material = Enum.Material.Neon
+	weld(head, mouth, Vector3.new(0, -0.45, -0.85))
+
+	weld(torso, limb(model, "Right Arm", Vector3.new(1, 5.2, 1), BODY, false), Vector3.new(1.7, -0.7, 0))
+	weld(torso, limb(model, "Left Arm", Vector3.new(1, 5.2, 1), BODY, false), Vector3.new(-1.7, -0.7, 0))
+	weld(torso, limb(model, "Right Leg", Vector3.new(1.1, 4, 1.1), BODY, true), Vector3.new(0.65, -3.5, 0))
+	weld(torso, limb(model, "Left Leg", Vector3.new(1.1, 4, 1.1), BODY, true), Vector3.new(-0.65, -3.5, 0))
+
+	local glow = Instance.new("PointLight")
+	glow.Color = Color3.fromRGB(255, 70, 50)
+	glow.Range = 14
+	glow.Brightness = 0.8
+	glow.Parent = head
+
+	local humanoid = Instance.new("Humanoid")
+	humanoid.RigType = Enum.HumanoidRigType.R6
+	humanoid.MaxHealth = 100000
+	humanoid.Health = 100000
+	humanoid.BreakJointsOnDeath = false
+	humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+	humanoid.WalkSpeed = 0
+	humanoid.Parent = model
+
+	if collisionGroup then
+		for _, part in model:GetDescendants() do
+			if part:IsA("BasePart") then
+				part.CollisionGroup = collisionGroup
+			end
+		end
+	end
+
+	return { Model = model, Humanoid = humanoid, Root = root, Head = head, Mouth = mouth, Glow = glow }
+end
+
+function Monster.new(arena, collisionGroup)
+	local self = setmetatable({}, Monster)
+	self.arena = arena
+	self.rig = buildRig(arena.MonsterSpawn, collisionGroup)
+	self.rig.Model.Parent = Workspace
+
+	self.state = "Sleep"
+	self.target = nil
+	self.lastKnown = nil
+	self.lastSeenAt = 0
+	self.stateEnteredAt = os.clock()
+	self.investigatePoint = nil
+	self.nodeIndex = math.random(1, #arena.PatrolNodes)
+	self.speedBonus = 0
+	self.lastScream = -100
+	self.lastCatch = -100
+
+	self._waypoints = {}
+	self._waypointIndex = 1
+	self._pathGoal = Vector3.zero
+	self._lastPath = 0
+	self._path = PathfindingService:CreatePath({
+		AgentRadius = 2.5,
+		AgentHeight = 9,
+		AgentCanJump = false,
+	})
+
+	-- колбэки задаёт Match
+	self.onCatch = nil
+	self.onScream = nil
+	self.onStateChanged = nil
+	self.isPlayerHidden = function()
+		return false
+	end
+	self.isPlayerTargetable = function()
+		return true
+	end
+	self.hasFlashlight = function()
+		return false
+	end
+	self.getLockerOf = function()
+		return nil
+	end
+
+	return self
+end
+
+function Monster:destroy()
+	self.state = "Dead"
+	self.rig.Model:Destroy()
+end
+
+function Monster:_setState(state)
+	if self.state == state then
+		return
+	end
+	self.state = state
+	self.stateEnteredAt = os.clock()
+	self._waypoints = {}
+	if self.onStateChanged then
+		self.onStateChanged(state)
+	end
+end
+
+function Monster:_speed(base)
+	return base + self.speedBonus
+end
+
+function Monster:_computePath(destination)
+	self._lastPath = os.clock()
+	self._pathGoal = destination
+	local ok = pcall(function()
+		self._path:ComputeAsync(self.rig.Root.Position, destination)
+	end)
+	if ok and self._path.Status == Enum.PathStatus.Success then
+		self._waypoints = self._path:GetWaypoints()
+		self._waypointIndex = 2
+	else
+		self._waypoints = {}
+	end
+end
+
+function Monster:_moveTo(destination, speed)
+	self.rig.Humanoid.WalkSpeed = speed
+	local now = os.clock()
+	if #self._waypoints == 0 or now - self._lastPath > M.RepathInterval or (self._pathGoal - destination).Magnitude > 6 then
+		self:_computePath(destination)
+	end
+
+	local waypoint = self._waypoints[self._waypointIndex]
+	while waypoint do
+		local flat = Vector3.new(waypoint.Position.X, self.rig.Root.Position.Y, waypoint.Position.Z)
+		if (flat - self.rig.Root.Position).Magnitude < 3.5 then
+			self._waypointIndex += 1
+			waypoint = self._waypoints[self._waypointIndex]
+		else
+			break
+		end
+	end
+
+	if waypoint then
+		self.rig.Humanoid:MoveTo(waypoint.Position)
+	else
+		self.rig.Humanoid:MoveTo(destination)
+	end
+end
+
+function Monster:_canSee(player)
+	if not self.isPlayerTargetable(player) or self.isPlayerHidden(player) then
+		return false, nil
+	end
+	local root = Util.getRoot(player.Character)
+	if not root or not Util.isAlive(player) then
+		return false, nil
+	end
+
+	local origin = self.rig.Head.Position
+	local offset = root.Position - origin
+	local distance = offset.Magnitude
+	local range = self.hasFlashlight(player) and M.SightRangeFlashlight or M.SightRange
+	if distance > range then
+		return false, nil
+	end
+
+	local inFov = offset.Unit:Dot(self.rig.Root.CFrame.LookVector) >= math.cos(math.rad(M.FieldOfView / 2))
+	if not inFov and distance > M.CloseSense then
+		return false, nil
+	end
+
+	if not Util.hasLineOfSight(origin, root.Position, { self.rig.Model }) then
+		return false, nil
+	end
+	return true, root
+end
+
+function Monster:_findVisible(players)
+	local best, bestDistance = nil, math.huge
+	for _, player in players do
+		local visible, root = self:_canSee(player)
+		if visible then
+			local distance = (root.Position - self.rig.Root.Position).Magnitude
+			if distance < bestDistance then
+				best, bestDistance = player, distance
+			end
+		end
+	end
+	return best
+end
+
+-- Шум в точке. Если далеко - не слышит.
+function Monster:hear(position, radius, force)
+	if self.state == "Sleep" or self.state == "Dead" then
+		return
+	end
+	if not force and (position - self.rig.Root.Position).Magnitude > radius then
+		return
+	end
+	if self.state == "Chase" and not force then
+		return
+	end
+	self.investigatePoint = position
+	if self.state == "Chase" then
+		self.target = nil
+	end
+	self:_setState("Investigate")
+end
+
+function Monster:_scream(player)
+	if os.clock() - self.lastScream < M.ScreamCooldown then
+		return
+	end
+	self.lastScream = os.clock()
+	self.rig.Mouth.Size = Vector3.new(1.0, 0.9, 0.2)
+	task.delay(1.2, function()
+		if self.rig.Mouth.Parent then
+			self.rig.Mouth.Size = Vector3.new(1.0, 0.25, 0.2)
+		end
+	end)
+	if self.onScream then
+		self.onScream(player)
+	end
+end
+
+function Monster:_tryCatch(player)
+	local root = Util.getRoot(player.Character)
+	if not root then
+		return false
+	end
+	if (root.Position - self.rig.Root.Position).Magnitude > M.CatchDistance then
+		return false
+	end
+	if os.clock() - self.lastCatch < M.CatchCooldown then
+		return false
+	end
+	self.lastCatch = os.clock()
+	if self.onCatch then
+		self.onCatch(player)
+	end
+	return true
+end
+
+function Monster:_updatePatrol()
+	local nodes = self.arena.PatrolNodes
+	local node = nodes[self.nodeIndex]
+	self:_moveTo(node, self:_speed(M.PatrolSpeed))
+	if (Util.flat(node) - Util.flat(self.rig.Root.Position)).Magnitude < 6 then
+		self.nodeIndex = math.random(1, #nodes)
+	end
+end
+
+function Monster:_updateInvestigate()
+	local point = self.investigatePoint
+	if not point then
+		self:_setState("Patrol")
+		return
+	end
+	self:_moveTo(point, self:_speed(M.InvestigateSpeed))
+	if (Util.flat(point) - Util.flat(self.rig.Root.Position)).Magnitude < 6 then
+		self.lastKnown = point
+		self:_setState("Search")
+	end
+end
+
+function Monster:_updateChase()
+	local player = self.target
+	if not player or not player.Parent or not self.isPlayerTargetable(player) then
+		self.target = nil
+		self:_setState("Search")
+		return
+	end
+
+	local root = Util.getRoot(player.Character)
+	if not root or not Util.isAlive(player) then
+		self.target = nil
+		self:_setState("Search")
+		return
+	end
+
+	-- игрок прыгнул в шкаф у него на глазах - вытащит
+	if self.isPlayerHidden(player) then
+		if os.clock() - self.lastSeenAt < M.LockerPullGrace + 2 then
+			local locker = self.getLockerOf(player)
+			if locker then
+				self:_moveTo(locker.Outside, self:_speed(M.ChaseSpeed))
+				if (Util.flat(locker.Outside) - Util.flat(self.rig.Root.Position)).Magnitude < 4 then
+					self.lastCatch = os.clock()
+					if self.onCatch then
+						self.onCatch(player)
+					end
+					self.target = nil
+					self:_setState("Search")
+				end
+				return
+			end
+		end
+		self.target = nil
+		self:_setState("Search")
+		return
+	end
+
+	if self:_tryCatch(player) then
+		self.target = nil
+		self:_setState("Search")
+		return
+	end
+
+	local visible = self:_canSee(player)
+	if visible then
+		self.lastSeenAt = os.clock()
+		self.lastKnown = root.Position
+	elseif os.clock() - self.lastSeenAt > M.LoseSightGrace then
+		self.target = nil
+		self:_setState("Search")
+		return
+	end
+
+	self:_moveTo(self.lastKnown or root.Position, self:_speed(M.ChaseSpeed))
+end
+
+function Monster:_updateSearch()
+	if self.lastKnown then
+		self:_moveTo(self.lastKnown, self:_speed(M.InvestigateSpeed))
+		if (Util.flat(self.lastKnown) - Util.flat(self.rig.Root.Position)).Magnitude < 5 then
+			-- дошёл: потоптаться вокруг
+			self.lastKnown = self.lastKnown + Vector3.new(math.random(-12, 12), 0, math.random(-12, 12))
+		end
+	end
+	if os.clock() - self.stateEnteredAt > M.SearchTime then
+		self.lastKnown = nil
+		self:_setState("Patrol")
+	end
+end
+
+function Monster:step(players)
+	if self.state == "Sleep" or self.state == "Dead" then
+		return
+	end
+
+	local seen = self:_findVisible(players)
+	if seen then
+		if self.state ~= "Chase" then
+			self:_scream(seen)
+		end
+		self.target = seen
+		self.lastSeenAt = os.clock()
+		local root = Util.getRoot(seen.Character)
+		if root then
+			self.lastKnown = root.Position
+		end
+		self:_setState("Chase")
+	end
+
+	if self.state == "Patrol" then
+		self:_updatePatrol()
+	elseif self.state == "Investigate" then
+		self:_updateInvestigate()
+	elseif self.state == "Chase" then
+		self:_updateChase()
+	elseif self.state == "Search" then
+		self:_updateSearch()
+	end
+end
+
+function Monster:wake()
+	self.rig.Root.CFrame = CFrame.new(self.arena.MonsterSpawn + Vector3.new(0, ROOT_HEIGHT, 0))
+	self:_setState("Patrol")
+end
+
+function Monster:addSpeed(amount)
+	self.speedBonus += amount
+	self.rig.Glow.Brightness = 0.8 + self.speedBonus * 0.6
+	self.rig.Glow.Range = 14 + self.speedBonus * 4
+end
+
+return Monster
 ]]></ProtectedString>
 				</Properties>
 			</Item>
 			<Item class="ModuleScript" referent="RBXE">
 				<Properties>
-					<string name="Name">RoomService</string>
+					<string name="Name">Rooms</string>
 					<ProtectedString name="Source"><![CDATA[--!nonstrict
--- Комнаты: создать, войти, выйти, запустить. Максимум 4 человека в комнате.
--- Каждая запущенная комната получает свою арену далеко в стороне и своего ОНа.
+-- Комнаты лобби: создать / войти / выйти / старт. Не больше 4 человек.
+-- Каждая запущенная комната получает свою школу в стороне и своего монстра.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -1649,20 +2080,20 @@ local Shared = ReplicatedStorage:WaitForChild("HWCShared")
 local GameConfig = require(Shared:WaitForChild("GameConfig"))
 local Remotes = require(Shared:WaitForChild("Remotes"))
 
-local ArenaBuilder = require(script.Parent:WaitForChild("ArenaBuilder"))
-local HeMonster = require(script.Parent:WaitForChild("HeMonster"))
-local MatchService = require(script.Parent:WaitForChild("MatchService"))
+local MapBuilder = require(script.Parent:WaitForChild("MapBuilder"))
+local Monster = require(script.Parent:WaitForChild("Monster"))
+local Match = require(script.Parent:WaitForChild("Match"))
 
 local ROOMS = GameConfig.Rooms
 
 local roomListEvent = Remotes.get("RoomList")
 local notifyEvent = Remotes.get("Notify")
 
-local RoomService = {}
-RoomService.__index = RoomService
+local Rooms = {}
+Rooms.__index = Rooms
 
-function RoomService.new(lobby, monsterCollisionGroup: string?)
-	local self = setmetatable({}, RoomService)
+function Rooms.new(lobby, monsterCollisionGroup)
+	local self = setmetatable({}, Rooms)
 	self.lobby = lobby
 	self.monsterCollisionGroup = monsterCollisionGroup
 	self.rooms = {}
@@ -1674,11 +2105,11 @@ function RoomService.new(lobby, monsterCollisionGroup: string?)
 	return self
 end
 
-function RoomService:_notify(player: Player, text: string, color: string?)
+function Rooms:_notify(player, text, color)
 	notifyEvent:FireClient(player, text, color)
 end
 
-function RoomService:findRoomOf(player: Player)
+function Rooms:findRoomOf(player)
 	for _, room in self.rooms do
 		if table.find(room.players, player) then
 			return room
@@ -1687,12 +2118,12 @@ function RoomService:findRoomOf(player: Player)
 	return nil
 end
 
-function RoomService:getMatchOf(player: Player)
+function Rooms:getMatchOf(player)
 	local room = self:findRoomOf(player)
 	return room and room.match or nil
 end
 
-function RoomService:_freeSlot(): number?
+function Rooms:_freeSlot()
 	for index, busy in self.slots do
 		if not busy then
 			return index
@@ -1701,25 +2132,22 @@ function RoomService:_freeSlot(): number?
 	return nil
 end
 
-function RoomService:broadcast()
+function Rooms:broadcast()
 	local list = {}
 	for _, room in self.rooms do
+		local names = {}
+		for _, player in room.players do
+			table.insert(names, player.DisplayName)
+		end
 		table.insert(list, {
 			id = room.id,
 			host = room.host and room.host.DisplayName or "?",
 			count = #room.players,
 			max = ROOMS.MaxPlayers,
 			state = room.state,
-			players = (function()
-				local names = {}
-				for _, player in room.players do
-					table.insert(names, player.DisplayName)
-				end
-				return names
-			end)(),
+			players = names,
 		})
 	end
-
 	table.sort(list, function(a, b)
 		return a.id < b.id
 	end)
@@ -1728,55 +2156,42 @@ function RoomService:broadcast()
 		local room = self:findRoomOf(player)
 		roomListEvent:FireClient(player, {
 			rooms = list,
-			myRoom = room and room.id or nil,
+			myRoom = room and room.id or 0,
 			isHost = room ~= nil and room.host == player,
-			maxRooms = ROOMS.MaxRooms,
 			maxPlayers = ROOMS.MaxPlayers,
 		})
 	end
 end
 
-function RoomService:create(player: Player)
+function Rooms:create(player)
 	if self:findRoomOf(player) then
 		self:_notify(player, "Ты уже в комнате", "bad")
 		return
 	end
 	if #self.rooms >= ROOMS.MaxRooms then
-		self:_notify(player, "Все комнаты на этом сервере заняты", "bad")
+		self:_notify(player, "Все комнаты на сервере заняты", "bad")
 		return
 	end
-
-	local room = {
-		id = self.nextId,
-		host = player,
-		players = { player },
-		state = "waiting",
-		arena = nil,
-		monster = nil,
-		match = nil,
-		slot = nil,
-	}
+	local room = { id = self.nextId, host = player, players = { player }, state = "waiting" }
 	self.nextId += 1
 	table.insert(self.rooms, room)
-
-	self:_notify(player, string.format("Комната #%d создана. Максимум %d игрока(ов).", room.id, ROOMS.MaxPlayers), "good")
+	self:_notify(player, string.format("Комната #%d создана. Жми СТАРТ, когда все соберутся.", room.id), "good")
 	self:broadcast()
 end
 
-function RoomService:join(player: Player, roomId: number)
+function Rooms:join(player, roomId)
 	if self:findRoomOf(player) then
 		self:_notify(player, "Сначала выйди из своей комнаты", "bad")
 		return
 	end
-
 	for _, room in self.rooms do
 		if room.id == roomId then
 			if room.state ~= "waiting" then
-				self:_notify(player, "Комната уже в игре", "bad")
+				self:_notify(player, "Там уже идёт игра", "bad")
 				return
 			end
 			if #room.players >= ROOMS.MaxPlayers then
-				self:_notify(player, string.format("В комнате уже %d человека - больше нельзя", ROOMS.MaxPlayers), "bad")
+				self:_notify(player, string.format("В комнате уже %d - больше нельзя", ROOMS.MaxPlayers), "bad")
 				return
 			end
 			table.insert(room.players, player)
@@ -1785,39 +2200,39 @@ function RoomService:join(player: Player, roomId: number)
 			return
 		end
 	end
-
-	self:_notify(player, "Комната не найдена", "bad")
+	self:_notify(player, "Комнаты уже нет", "bad")
 end
 
-function RoomService:leave(player: Player)
+function Rooms:leave(player)
 	local room = self:findRoomOf(player)
 	if not room then
 		return
 	end
-
 	local index = table.find(room.players, player)
 	if index then
 		table.remove(room.players, index)
 	end
-
 	if room.match then
 		room.match:playerLeft(player)
+		local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+		if root then
+			root.Anchored = false
+			root.CFrame = CFrame.new(self.lobby.SpawnPosition)
+		end
 	end
-
 	if room.host == player then
 		room.host = room.players[1]
 	end
-
 	if #room.players == 0 then
 		self:_destroyRoom(room)
 	end
-
 	self:broadcast()
 end
 
-function RoomService:start(player: Player)
+function Rooms:start(player)
 	local room = self:findRoomOf(player)
 	if not room then
+		self:_notify(player, "Сначала создай комнату", "bad")
 		return
 	end
 	if room.host ~= player then
@@ -1827,7 +2242,6 @@ function RoomService:start(player: Player)
 	if room.state ~= "waiting" then
 		return
 	end
-
 	local slot = self:_freeSlot()
 	if not slot then
 		self:_notify(player, "Нет свободной арены, подожди", "bad")
@@ -1839,21 +2253,20 @@ function RoomService:start(player: Player)
 	room.state = "playing"
 
 	local origin = ROOMS.ArenaBaseOffset + Vector3.new(ROOMS.ArenaSpacing * (slot - 1), 0, 0)
-	room.arena = ArenaBuilder.build(origin, slot)
-	room.monster = HeMonster.new(room.arena, self.monsterCollisionGroup)
+	room.arena = MapBuilder.build(origin, slot)
+	room.monster = Monster.new(room.arena, self.monsterCollisionGroup)
 
 	local participants = table.clone(room.players)
-	room.match = MatchService.new(room.arena, room.monster, participants, self.lobby.SpawnPosition, function()
+	room.match = Match.new(room.arena, room.monster, participants, self.lobby.SpawnPosition, function()
 		task.delay(GameConfig.Match.EndScreenTime, function()
 			self:_endMatch(room)
 		end)
 	end)
-
 	room.match:start()
 	self:broadcast()
 end
 
-function RoomService:_endMatch(room)
+function Rooms:_endMatch(room)
 	if room.monster then
 		room.monster:destroy()
 		room.monster = nil
@@ -1868,25 +2281,27 @@ function RoomService:_endMatch(room)
 		room.slot = nil
 	end
 	room.state = "waiting"
-
 	if #room.players == 0 then
 		self:_destroyRoom(room)
 	end
 	self:broadcast()
 end
 
-function RoomService:_destroyRoom(room)
-	if room.match then
+function Rooms:_destroyRoom(room)
+	if room.match and not room.match.finished then
 		room.match:finish("lose")
 	end
 	if room.monster then
 		room.monster:destroy()
+		room.monster = nil
 	end
 	if room.arena and room.arena.Model then
 		room.arena.Model:Destroy()
+		room.arena = nil
 	end
 	if room.slot then
 		self.slots[room.slot] = false
+		room.slot = nil
 	end
 	local index = table.find(self.rooms, room)
 	if index then
@@ -1894,7 +2309,7 @@ function RoomService:_destroyRoom(room)
 	end
 end
 
-function RoomService:handleAction(player: Player, payload)
+function Rooms:handleAction(player, payload)
 	if typeof(payload) ~= "table" then
 		return
 	end
@@ -1914,19 +2329,16 @@ function RoomService:handleAction(player: Player, payload)
 	end
 end
 
-function RoomService:playerRemoving(player: Player)
-	self:leave(player)
-end
-
-return RoomService
+return Rooms
 ]]></ProtectedString>
 				</Properties>
 			</Item>
 		</Item>
 	</Item>
-	<Item class="StarterPlayer" referent="RBX18">
+	<Item class="StarterPlayer" referent="RBX17">
 		<Properties>
 			<string name="Name">StarterPlayer</string>
+			<token name="GameSettingsAvatar">1</token>
 		</Properties>
 		<Item class="StarterPlayerScripts" referent="RBX10">
 			<Properties>
@@ -1940,7 +2352,7 @@ return RoomService
 					<Properties>
 						<string name="Name">Effects</string>
 						<ProtectedString name="Source"><![CDATA[--!nonstrict
--- Тряска, размытие от потери рассудка и экраны испуга.
+-- Экраны испуга, тряска, сердцебиение-виньетка, темнота при приближении.
 
 local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
@@ -1952,14 +2364,9 @@ local player = Players.LocalPlayer
 
 local Effects = {}
 
-local blur = Instance.new("BlurEffect")
-blur.Name = "HWC_Blur"
-blur.Size = 0
-blur.Parent = Lighting
-
 local correction = Instance.new("ColorCorrectionEffect")
 correction.Name = "HWC_Correction"
-correction.Saturation = -0.2
+correction.Saturation = -0.25
 correction.Parent = Lighting
 
 local gui = Instance.new("ScreenGui")
@@ -1969,11 +2376,19 @@ gui.IgnoreGuiInset = true
 gui.DisplayOrder = 10
 gui.Parent = player:WaitForChild("PlayerGui")
 
+local vignette = Instance.new("Frame")
+vignette.Size = UDim2.fromScale(1, 1)
+vignette.BackgroundColor3 = Color3.fromRGB(110, 0, 0)
+vignette.BackgroundTransparency = 1
+vignette.BorderSizePixel = 0
+vignette.Parent = gui
+
 local overlay = Instance.new("Frame")
 overlay.Size = UDim2.fromScale(1, 1)
 overlay.BackgroundColor3 = Color3.new(0, 0, 0)
 overlay.BackgroundTransparency = 1
 overlay.BorderSizePixel = 0
+overlay.ZIndex = 2
 overlay.Parent = gui
 
 local overlayText = Instance.new("TextLabel")
@@ -1985,74 +2400,83 @@ overlayText.TextScaled = true
 overlayText.Font = Enum.Font.GothamBlack
 overlayText.TextColor3 = Color3.fromRGB(230, 230, 235)
 overlayText.TextTransparency = 1
+overlayText.ZIndex = 3
 overlayText.Parent = gui
 
 local shakeUntil = 0
 local shakeStrength = 0
+local pulse = 0
 
-function Effects.shake(duration: number, strength: number)
+function Effects.shake(duration, strength)
 	shakeUntil = os.clock() + duration
 	shakeStrength = strength
 end
 
-local function flash(color: Color3, text: string, holdTime: number)
+local function flash(color, str, holdTime, alpha)
 	overlay.BackgroundColor3 = color
-	overlay.BackgroundTransparency = 0.15
-	overlayText.Text = text
+	overlay.BackgroundTransparency = alpha or 0.15
+	overlayText.Text = str
 	overlayText.TextTransparency = 0
-
 	task.delay(holdTime, function()
 		TweenService:Create(overlay, TweenInfo.new(0.9), { BackgroundTransparency = 1 }):Play()
 		TweenService:Create(overlayText, TweenInfo.new(0.7), { TextTransparency = 1 }):Play()
 	end)
 end
 
-function Effects.scare(kind: string)
+function Effects.play(kind, data)
 	if kind == "arrival" then
-		flash(Color3.new(0, 0, 0), "ОН ПРИШЁЛ", 1.4)
-		Effects.shake(1.6, 1.6)
+		flash(Color3.new(0, 0, 0), "ОН ПРОСНУЛСЯ", 1.3)
+		Effects.shake(1.5, 1.4)
+	elseif kind == "scream" then
+		flash(Color3.fromRGB(70, 0, 0), "", 0.4, 0.55)
+		Effects.shake(1.2, 2.4)
 	elseif kind == "down" then
 		flash(Color3.fromRGB(80, 0, 0), "ОН ТЕБЯ ДОСТАЛ", 1.2)
-		Effects.shake(1.4, 2.6)
-	elseif kind == "panic" then
-		flash(Color3.fromRGB(40, 0, 40), "ТЫ СОРВАЛСЯ", 0.9)
-		Effects.shake(2.2, 2.2)
+		Effects.shake(1.4, 2.8)
 	elseif kind == "revived" then
 		flash(Color3.fromRGB(0, 60, 30), "ТЫ СНОВА НА НОГАХ", 0.7)
 	elseif kind == "out" then
 		flash(Color3.new(0, 0, 0), "ОН ЗАБРАЛ ТЕБЯ", 2)
+	elseif kind == "escaped" then
+		flash(Color3.fromRGB(0, 40, 20), "ТЫ ВЫБРАЛСЯ", 1.5)
+	elseif kind == "key" then
+		flash(Color3.fromRGB(60, 50, 0), "КЛЮЧ!", 0.4, 0.7)
+	elseif kind == "shout" then
+		Effects.shake(0.4, 0.8)
 	end
 end
 
--- Чем меньше рассудка, тем сильнее плывёт картинка.
-function Effects.setSanity(value: number, max: number)
-	local lost = 1 - math.clamp(value / max, 0, 1)
-	blur.Size = lost * 14
-	correction.Contrast = lost * 0.3
-	correction.TintColor = Color3.fromRGB(255, 255 - math.floor(40 * lost), 255 - math.floor(60 * lost))
-	if lost > 0.55 then
-		Effects.shake(0.2, lost * 0.6)
+-- чем ближе он, тем краснее края и сильнее "пульс"
+function Effects.setDistance(distance, hunted)
+	local danger = math.clamp(1 - distance / 50, 0, 1)
+	if hunted then
+		danger = math.max(danger, 0.6)
 	end
+	pulse = danger
+	correction.Contrast = danger * 0.2
+	correction.TintColor = Color3.fromRGB(255, 255 - math.floor(35 * danger), 255 - math.floor(45 * danger))
 end
 
 function Effects.reset()
-	blur.Size = 0
+	pulse = 0
 	correction.Contrast = 0
 	correction.TintColor = Color3.new(1, 1, 1)
+	vignette.BackgroundTransparency = 1
 end
 
 function Effects.start()
 	RunService:BindToRenderStep("HWC_Shake", Enum.RenderPriority.Camera.Value + 1, function()
 		local camera = Workspace.CurrentCamera
-		if not camera or os.clock() >= shakeUntil then
+		if not camera then
 			return
 		end
-		local offset = Vector3.new(
-			(math.random() - 0.5) * shakeStrength,
-			(math.random() - 0.5) * shakeStrength,
-			0
-		)
-		camera.CFrame = camera.CFrame * CFrame.new(offset)
+		if os.clock() < shakeUntil then
+			camera.CFrame = camera.CFrame * CFrame.new((math.random() - 0.5) * shakeStrength, (math.random() - 0.5) * shakeStrength, 0)
+		end
+		if pulse > 0 then
+			local beat = (math.sin(os.clock() * (4 + pulse * 6)) + 1) / 2
+			vignette.BackgroundTransparency = 1 - pulse * (0.25 + beat * 0.25)
+		end
 	end)
 end
 
@@ -2062,47 +2486,15 @@ return Effects
 				</Item>
 				<Item class="ModuleScript" referent="RBX13">
 					<Properties>
-						<string name="Name">Gaze</string>
-						<ProtectedString name="Source"><![CDATA[--!nonstrict
--- Раз в 0.2 секунды отправляем серверу, куда смотрит камера.
--- Именно по этому серверу понимает, держишь ли ты ЕГО взглядом.
-
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Workspace = game:GetService("Workspace")
-
-local Shared = ReplicatedStorage:WaitForChild("HWCShared")
-local Remotes = require(Shared:WaitForChild("Remotes"))
-
-local gazeEvent = Remotes.get("GazeReport")
-
-local Gaze = {}
-
-function Gaze.start()
-	task.spawn(function()
-		while true do
-			task.wait(0.2)
-			local camera = Workspace.CurrentCamera
-			if camera then
-				gazeEvent:FireServer(camera.CFrame.Position, camera.CFrame.LookVector)
-			end
-		end
-	end)
-end
-
-return Gaze
-]]></ProtectedString>
-					</Properties>
-				</Item>
-				<Item class="ModuleScript" referent="RBX14">
-					<Properties>
 						<string name="Name">Hud</string>
 						<ProtectedString name="Source"><![CDATA[--!nonstrict
--- HUD матча: фаза, предохранители, рассудок, шум, команда, статус "он идёт за тобой".
+-- HUD: ключи, стамина, команда, статус, экран "ты упал", всплывающие сообщения.
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 
 local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
 
 local Hud = {}
 
@@ -2111,13 +2503,6 @@ local COLORS = {
 	bad = Color3.fromRGB(255, 85, 85),
 	info = Color3.fromRGB(205, 210, 225),
 }
-
-local gui = Instance.new("ScreenGui")
-gui.Name = "HWC_Hud"
-gui.ResetOnSpawn = false
-gui.IgnoreGuiInset = true
-gui.Enabled = false
-gui.Parent = player:WaitForChild("PlayerGui")
 
 local function label(parent, text, size, position, textSize)
 	local element = Instance.new("TextLabel")
@@ -2142,64 +2527,69 @@ local function bar(parent, size, position, color)
 	back.BackgroundTransparency = 0.3
 	back.BorderSizePixel = 0
 	back.Parent = parent
-
 	local corner = Instance.new("UICorner")
 	corner.CornerRadius = UDim.new(0, 5)
 	corner.Parent = back
-
 	local fill = Instance.new("Frame")
 	fill.Size = UDim2.fromScale(1, 1)
 	fill.BackgroundColor3 = color
 	fill.BorderSizePixel = 0
 	fill.Parent = back
-
 	local fillCorner = Instance.new("UICorner")
 	fillCorner.CornerRadius = UDim.new(0, 5)
 	fillCorner.Parent = fill
-
 	return back, fill
 end
 
--- сверху слева: задача
-local objective = label(gui, "", UDim2.fromOffset(420, 28), UDim2.fromOffset(20, 16), 20)
-local phaseLabel = label(gui, "", UDim2.fromOffset(420, 22), UDim2.fromOffset(20, 44), 15)
+-- слой сообщений: работает и в лобби
+local toastGui = Instance.new("ScreenGui")
+toastGui.Name = "HWC_Toasts"
+toastGui.ResetOnSpawn = false
+toastGui.IgnoreGuiInset = true
+toastGui.DisplayOrder = 5
+toastGui.Parent = playerGui
+
+local toast = label(toastGui, "", UDim2.fromOffset(800, 30), UDim2.new(0.5, -400, 0.76, 0), 20)
+toast.TextXAlignment = Enum.TextXAlignment.Center
+toast.TextTransparency = 1
+
+-- HUD матча
+local gui = Instance.new("ScreenGui")
+gui.Name = "HWC_Hud"
+gui.ResetOnSpawn = false
+gui.IgnoreGuiInset = true
+gui.Enabled = false
+gui.Parent = playerGui
+
+local objective = label(gui, "", UDim2.fromOffset(460, 30), UDim2.fromOffset(20, 16), 22)
+local phaseLabel = label(gui, "", UDim2.fromOffset(460, 22), UDim2.fromOffset(20, 46), 15)
 phaseLabel.TextColor3 = Color3.fromRGB(180, 185, 200)
 
--- рассудок
-local sanityText = label(gui, "Рассудок", UDim2.fromOffset(240, 18), UDim2.new(0, 20, 1, -96), 13)
-local _, sanityFill = bar(gui, UDim2.fromOffset(240, 12), UDim2.new(0, 20, 1, -78), Color3.fromRGB(150, 120, 230))
+local staminaText = label(gui, "Выносливость", UDim2.fromOffset(260, 18), UDim2.new(0, 20, 1, -70), 13)
+local _, staminaFill = bar(gui, UDim2.fromOffset(260, 12), UDim2.new(0, 20, 1, -52), Color3.fromRGB(110, 190, 255))
+local moveState = label(gui, "", UDim2.fromOffset(400, 18), UDim2.new(0, 20, 1, -34), 13)
+moveState.TextColor3 = Color3.fromRGB(170, 175, 190)
 
--- шум
-local noiseText = label(gui, "Шум", UDim2.fromOffset(240, 18), UDim2.new(0, 20, 1, -58), 13)
-local _, noiseFill = bar(gui, UDim2.fromOffset(240, 12), UDim2.new(0, 20, 1, -40), Color3.fromRGB(230, 170, 60))
-
--- выносливость
-local _, staminaFill = bar(gui, UDim2.fromOffset(240, 8), UDim2.new(0, 20, 1, -22), Color3.fromRGB(110, 190, 255))
-
--- команда справа
-local teamTitle = label(gui, "Команда", UDim2.fromOffset(220, 20), UDim2.new(1, -240, 0, 16), 15)
+local teamTitle = label(gui, "Команда", UDim2.fromOffset(240, 20), UDim2.new(1, -260, 0, 16), 15)
 teamTitle.TextColor3 = Color3.fromRGB(180, 185, 200)
 local teamLabels = {}
 for index = 1, 4 do
-	local element = label(gui, "", UDim2.fromOffset(220, 20), UDim2.new(1, -240, 0, 16 + index * 22), 15)
-	teamLabels[index] = element
+	teamLabels[index] = label(gui, "", UDim2.fromOffset(240, 20), UDim2.new(1, -260, 0, 16 + index * 22), 15)
 end
 
--- статус по центру
-local statusLabel = label(gui, "", UDim2.fromOffset(600, 30), UDim2.new(0.5, -300, 0, 20), 22)
+local statusLabel = label(gui, "", UDim2.fromOffset(700, 34), UDim2.new(0.5, -350, 0, 18), 24)
 statusLabel.TextXAlignment = Enum.TextXAlignment.Center
 
-local hintLabel = label(
+local hint = label(
 	gui,
-	"Shift - бег (громко)   |   C - красться (тихо)   |   F - фонарь (он это чувствует)   |   E - взаимодействие",
-	UDim2.fromOffset(900, 20),
-	UDim2.new(0.5, -450, 1, -24),
+	"Shift бег  |  C красться  |  Shift+C подкат  |  F фонарь  |  E обыскать / спрятаться / поднять  |  T крикнуть (приманить его к себе)",
+	UDim2.fromOffset(1000, 20),
+	UDim2.new(0.5, -500, 1, -14),
 	13
 )
-hintLabel.TextXAlignment = Enum.TextXAlignment.Center
-hintLabel.TextColor3 = Color3.fromRGB(150, 155, 170)
+hint.TextXAlignment = Enum.TextXAlignment.Center
+hint.TextColor3 = Color3.fromRGB(150, 155, 170)
 
--- экран "ты упал"
 local downFrame = Instance.new("Frame")
 downFrame.Size = UDim2.fromScale(1, 1)
 downFrame.BackgroundColor3 = Color3.fromRGB(60, 0, 0)
@@ -2208,28 +2598,15 @@ downFrame.BorderSizePixel = 0
 downFrame.Visible = false
 downFrame.ZIndex = 20
 downFrame.Parent = gui
-
 local downText = label(downFrame, "ТЫ УПАЛ", UDim2.fromScale(1, 0.1), UDim2.fromScale(0, 0.4), 36)
 downText.TextXAlignment = Enum.TextXAlignment.Center
 downText.ZIndex = 21
 local _, bleedFill = bar(downFrame, UDim2.fromOffset(320, 14), UDim2.new(0.5, -160, 0.52, 0), Color3.fromRGB(220, 60, 60))
 bleedFill.ZIndex = 21
 
--- Отдельный слой для сообщений: он работает и в лобби, когда HUD выключен.
-local toastGui = Instance.new("ScreenGui")
-toastGui.Name = "HWC_Toasts"
-toastGui.ResetOnSpawn = false
-toastGui.IgnoreGuiInset = true
-toastGui.DisplayOrder = 5
-toastGui.Parent = player:WaitForChild("PlayerGui")
-
-local toast = label(toastGui, "", UDim2.fromOffset(760, 28), UDim2.new(0.5, -380, 0.74, 0), 19)
-toast.TextXAlignment = Enum.TextXAlignment.Center
-toast.TextTransparency = 1
-
 local toastToken = 0
 
-function Hud.toast(text: string, color: string?)
+function Hud.toast(text, color)
 	toastToken += 1
 	local token = toastToken
 	toast.Text = text
@@ -2242,46 +2619,57 @@ function Hud.toast(text: string, color: string?)
 	end)
 end
 
-function Hud.setVisible(visible: boolean)
+function Hud.setVisible(visible)
 	gui.Enabled = visible
 	if not visible then
 		downFrame.Visible = false
 	end
 end
 
-function Hud.setStamina(value: number, max: number)
+function Hud.setStamina(value, max)
 	staminaFill.Size = UDim2.fromScale(math.clamp(value / max, 0, 1), 1)
+	staminaFill.BackgroundColor3 = value < 20 and Color3.fromRGB(255, 120, 120) or Color3.fromRGB(110, 190, 255)
+end
+
+function Hud.setMoveState(crouching, sprinting, flashlight)
+	local parts = {}
+	if crouching then
+		table.insert(parts, "крадёшься (бесшумно)")
+	elseif sprinting then
+		table.insert(parts, "БЕЖИШЬ (громко)")
+	else
+		table.insert(parts, "идёшь")
+	end
+	if flashlight then
+		table.insert(parts, "фонарь ВКЛ (тебя видно издалека)")
+	end
+	moveState.Text = table.concat(parts, "  |  ")
 end
 
 function Hud.update(data)
-	objective.Text = data.generatorOn and "ВОРОТА ОТКРЫТЫ - НА ЮГ"
-		or string.format("Предохранители %d/%d", data.fuses, data.fusesRequired)
+	objective.Text = data.gateOpen and "ВОРОТА ОТКРЫТЫ - на юг через главный вход"
+		or string.format("Ключи %d/%d - обыскивай рюкзаки", data.keys, data.keysRequired)
 
 	if data.phase == "prep" then
-		phaseLabel.Text = string.format("Тишина. ОН придёт через %d сек.", math.ceil(data.timeLeft))
+		phaseLabel.Text = string.format("Тихо. ОН проснётся через %d сек.", math.ceil(data.timeLeft))
 		phaseLabel.TextColor3 = COLORS.good
 	else
-		phaseLabel.Text = data.generatorOn and "Бегите к воротам" or "ОН здесь. Ищите щитки."
+		phaseLabel.Text = "ОН ходит по школе"
 		phaseLabel.TextColor3 = COLORS.bad
 	end
 
-	sanityFill.Size = UDim2.fromScale(math.clamp(data.sanity / data.sanityMax, 0, 1), 1)
-	sanityText.Text = data.gazing and "Рассудок  (СМОТРИШЬ НА НЕГО)" or "Рассудок"
-	sanityText.TextColor3 = data.gazing and COLORS.bad or Color3.fromRGB(200, 200, 215)
-
-	noiseFill.Size = UDim2.fromScale(math.clamp(data.heat / data.heatMax, 0, 1), 1)
-	noiseText.Text = data.hunted and "Шум  (ОН ИДЁТ ЗА ТОБОЙ)" or "Шум"
-	noiseText.TextColor3 = data.hunted and COLORS.bad or Color3.fromRGB(200, 200, 215)
-
-	if data.panic then
-		statusLabel.Text = "ПАНИКА"
+	if data.hidden then
+		statusLabel.Text = "ТЫ В ШКАФУ. E - выйти"
+		statusLabel.TextColor3 = Color3.fromRGB(150, 200, 255)
+	elseif data.hunted then
+		statusLabel.Text = "ОН БЕЖИТ ЗА ТОБОЙ - ЛОМАЙ ЕМУ ОБЗОР, ПРЯЧЬСЯ"
 		statusLabel.TextColor3 = COLORS.bad
-	elseif data.gazing then
-		statusLabel.Text = "ДЕРЖИ ЕГО ВЗГЛЯДОМ"
-		statusLabel.TextColor3 = Color3.fromRGB(255, 200, 90)
-	elseif data.distance and data.distance < 25 then
+	elseif data.distance and data.distance < 22 then
 		statusLabel.Text = "ОН РЯДОМ"
 		statusLabel.TextColor3 = COLORS.bad
+	elseif data.distance and data.distance < 45 then
+		statusLabel.Text = "слышны шаги..."
+		statusLabel.TextColor3 = Color3.fromRGB(230, 170, 60)
 	else
 		statusLabel.Text = ""
 	end
@@ -2289,24 +2677,22 @@ function Hud.update(data)
 	downFrame.Visible = data.downed == true
 	if data.downed then
 		bleedFill.Size = UDim2.fromScale(math.clamp(data.bleed / data.bleedMax, 0, 1), 1)
-		downText.Text = string.format("ТЫ УПАЛ - %d сек", math.ceil(data.bleed))
+		downText.Text = string.format("ТЫ УПАЛ - %d сек. Кричи T, чтобы тебя нашли", math.ceil(data.bleed))
 	end
 
 	local teammates = data.teammates or {}
 	for index, element in teamLabels do
 		local mate = teammates[index]
 		if mate then
-			local status = "в игре"
-			local color = COLORS.good
+			local status, color = "в игре", COLORS.good
 			if mate.out then
-				status = "потерян"
-				color = Color3.fromRGB(120, 120, 130)
+				status, color = "потерян", Color3.fromRGB(120, 120, 130)
 			elseif mate.escaped then
-				status = "выбрался"
-				color = Color3.fromRGB(120, 200, 255)
+				status, color = "выбрался", Color3.fromRGB(120, 200, 255)
 			elseif mate.downed then
-				status = "УПАЛ"
-				color = COLORS.bad
+				status, color = "УПАЛ", COLORS.bad
+			elseif mate.hidden then
+				status, color = "прячется", Color3.fromRGB(150, 200, 255)
 			end
 			element.Text = string.format("%s - %s", mate.name, status)
 			element.TextColor3 = color
@@ -2320,11 +2706,232 @@ return Hud
 ]]></ProtectedString>
 					</Properties>
 				</Item>
+				<Item class="ModuleScript" referent="RBX14">
+					<Properties>
+						<string name="Name">Input</string>
+						<ProtectedString name="Source"><![CDATA[--!nonstrict
+-- Управление: Shift бег, C присесть, Shift+C подкат, F фонарь, T крик.
+-- Скорость ставится каждый кадр здесь, на клиенте, - это гарантирует, что бег работает.
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local Shared = ReplicatedStorage:WaitForChild("HWCShared")
+local GameConfig = require(Shared:WaitForChild("GameConfig"))
+local Remotes = require(Shared:WaitForChild("Remotes"))
+
+local MOVE = GameConfig.Movement
+
+local player = Players.LocalPlayer
+local actionEvent = Remotes.get("PlayerAction")
+
+local Input = {}
+
+local hud
+local stamina = MOVE.MaxStamina
+local sprintHeld = false
+local crouching = false
+local sliding = false
+local slideReadyAt = 0
+local lastDrainAt = 0
+local flashlightOn = false
+local flashlight = nil
+local lastShout = -100
+
+local function character()
+	local model = player.Character
+	if not model then
+		return nil, nil
+	end
+	return model:FindFirstChildOfClass("Humanoid"), model:FindFirstChild("HumanoidRootPart")
+end
+
+local function setHeight(humanoid, scale)
+	local value = humanoid:FindFirstChild("BodyHeightScale")
+	if value and value:IsA("NumberValue") then
+		value.Value = scale
+	end
+end
+
+local function attachFlashlight()
+	local model = player.Character
+	local head = model and model:FindFirstChild("Head")
+	if not head then
+		return
+	end
+	if flashlight and flashlight.Parent then
+		flashlight:Destroy()
+	end
+	local light = Instance.new("SpotLight")
+	light.Name = "Flashlight"
+	light.Angle = 60
+	light.Range = 60
+	light.Brightness = 3
+	light.Face = Enum.NormalId.Front
+	light.Enabled = flashlightOn
+	light.Parent = head
+	flashlight = light
+end
+
+local function toggleFlashlight()
+	flashlightOn = not flashlightOn
+	if flashlight and flashlight.Parent then
+		flashlight.Enabled = flashlightOn
+	else
+		attachFlashlight()
+	end
+	actionEvent:FireServer({ action = "flashlight", value = flashlightOn })
+end
+
+local function setCrouch(value)
+	crouching = value
+	local humanoid = character()
+	if humanoid then
+		setHeight(humanoid, crouching and 0.7 or 1)
+	end
+	actionEvent:FireServer({ action = "crouch", value = crouching })
+end
+
+local function slide()
+	local humanoid, root = character()
+	if not humanoid or not root or sliding or os.clock() < slideReadyAt then
+		return
+	end
+	if humanoid.MoveDirection.Magnitude < 0.1 or stamina < MOVE.SlideStamina then
+		return
+	end
+	sliding = true
+	stamina -= MOVE.SlideStamina
+	slideReadyAt = os.clock() + MOVE.SlideCooldown
+	actionEvent:FireServer({ action = "slide" })
+
+	local direction = Vector3.new(humanoid.MoveDirection.X, 0, humanoid.MoveDirection.Z).Unit
+	setHeight(humanoid, MOVE.SlideHeightScale)
+
+	local attachment = Instance.new("Attachment")
+	attachment.Parent = root
+	local velocity = Instance.new("LinearVelocity")
+	velocity.Attachment0 = attachment
+	velocity.RelativeTo = Enum.ActuatorRelativeTo.World
+	velocity.VelocityConstraintMode = Enum.VelocityConstraintMode.Line
+	velocity.LineDirection = direction
+	velocity.LineVelocity = MOVE.SlideSpeed
+	velocity.Parent = root
+
+	task.delay(MOVE.SlideDuration, function()
+		velocity:Destroy()
+		attachment:Destroy()
+		local currentHumanoid = character()
+		if currentHumanoid then
+			setHeight(currentHumanoid, crouching and 0.7 or 1)
+		end
+		sliding = false
+	end)
+end
+
+local function shout()
+	if os.clock() - lastShout < GameConfig.Noise.ShoutCooldown then
+		return
+	end
+	lastShout = os.clock()
+	actionEvent:FireServer({ action = "shout" })
+end
+
+function Input.isSprinting()
+	return sprintHeld
+end
+
+function Input.start(hudModule)
+	hud = hudModule
+
+	UserInputService.InputBegan:Connect(function(input, processed)
+		if processed then
+			return
+		end
+		local key = input.KeyCode
+		if key == Enum.KeyCode.LeftShift or key == Enum.KeyCode.RightShift then
+			sprintHeld = true
+		elseif key == Enum.KeyCode.C or key == Enum.KeyCode.LeftControl then
+			local humanoid = character()
+			if sprintHeld and humanoid and humanoid.WalkSpeed >= MOVE.SprintSpeed - 1 then
+				slide()
+			else
+				setCrouch(not crouching)
+			end
+		elseif key == Enum.KeyCode.F then
+			toggleFlashlight()
+		elseif key == Enum.KeyCode.T then
+			shout()
+		end
+	end)
+
+	UserInputService.InputEnded:Connect(function(input)
+		if input.KeyCode == Enum.KeyCode.LeftShift or input.KeyCode == Enum.KeyCode.RightShift then
+			sprintHeld = false
+		end
+	end)
+
+	player.CharacterAdded:Connect(function()
+		stamina = MOVE.MaxStamina
+		sprintHeld = false
+		sliding = false
+		crouching = false
+		task.wait(0.6)
+		attachFlashlight()
+		actionEvent:FireServer({ action = "crouch", value = false })
+		actionEvent:FireServer({ action = "flashlight", value = flashlightOn })
+	end)
+	attachFlashlight()
+
+	RunService.RenderStepped:Connect(function(dt)
+		local humanoid = character()
+		if not humanoid or humanoid.Health <= 0 then
+			return
+		end
+
+		-- лежишь или сидишь в шкафу - стоишь на месте
+		if player:GetAttribute("Downed") or player:GetAttribute("Hidden") then
+			humanoid.WalkSpeed = 0
+			hud.setStamina(stamina, MOVE.MaxStamina)
+			return
+		end
+
+		if sliding then
+			humanoid.WalkSpeed = 6
+			hud.setStamina(stamina, MOVE.MaxStamina)
+			return
+		end
+
+		local moving = humanoid.MoveDirection.Magnitude > 0.1
+		local canSprint = sprintHeld and moving and not crouching and stamina > MOVE.MinSprintStamina
+
+		if canSprint then
+			stamina = math.max(0, stamina - MOVE.SprintDrain * dt)
+			lastDrainAt = os.clock()
+			humanoid.WalkSpeed = MOVE.SprintSpeed
+		else
+			humanoid.WalkSpeed = crouching and MOVE.CrouchSpeed or MOVE.WalkSpeed
+			if os.clock() - lastDrainAt > MOVE.RegenDelay then
+				stamina = math.min(MOVE.MaxStamina, stamina + MOVE.StaminaRegen * dt)
+			end
+		end
+
+		hud.setStamina(stamina, MOVE.MaxStamina)
+		hud.setMoveState(crouching, canSprint, flashlightOn)
+	end)
+end
+
+return Input
+]]></ProtectedString>
+					</Properties>
+				</Item>
 				<Item class="ModuleScript" referent="RBX15">
 					<Properties>
 						<string name="Name">LobbyUI</string>
 						<ProtectedString name="Source"><![CDATA[--!nonstrict
--- Интерфейс лобби: список комнат, создать / войти / выйти / старт.
+-- Окно лобби: список комнат, создать / войти / выйти / старт.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -2344,96 +2951,81 @@ gui.IgnoreGuiInset = true
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local panel = Instance.new("Frame")
-panel.Size = UDim2.fromOffset(520, 420)
-panel.Position = UDim2.new(0.5, -260, 0.5, -210)
+panel.Size = UDim2.fromOffset(540, 440)
+panel.Position = UDim2.new(0.5, -270, 0.5, -220)
 panel.BackgroundColor3 = Color3.fromRGB(14, 14, 18)
-panel.BackgroundTransparency = 0.08
+panel.BackgroundTransparency = 0.06
 panel.BorderSizePixel = 0
 panel.Parent = gui
-
 local panelCorner = Instance.new("UICorner")
 panelCorner.CornerRadius = UDim.new(0, 12)
 panelCorner.Parent = panel
-
 local stroke = Instance.new("UIStroke")
-stroke.Color = Color3.fromRGB(120, 30, 30)
+stroke.Color = Color3.fromRGB(130, 30, 30)
 stroke.Thickness = 2
 stroke.Parent = panel
 
-local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, -24, 0, 42)
-title.Position = UDim2.fromOffset(12, 10)
-title.BackgroundTransparency = 1
-title.Text = "HE WILL COME"
-title.Font = Enum.Font.GothamBlack
-title.TextSize = 28
-title.TextColor3 = Color3.fromRGB(220, 50, 50)
-title.Parent = panel
+local function text(parent, str, size, position, textSize, color)
+	local element = Instance.new("TextLabel")
+	element.Size = size
+	element.Position = position
+	element.BackgroundTransparency = 1
+	element.Text = str
+	element.Font = Enum.Font.GothamBold
+	element.TextSize = textSize
+	element.TextColor3 = color or Color3.fromRGB(235, 235, 240)
+	element.TextXAlignment = Enum.TextXAlignment.Left
+	element.TextWrapped = true
+	element.Parent = parent
+	return element
+end
 
-local subtitle = Instance.new("TextLabel")
-subtitle.Size = UDim2.new(1, -24, 0, 20)
-subtitle.Position = UDim2.fromOffset(12, 50)
-subtitle.BackgroundTransparency = 1
-subtitle.Text = "Комнаты до 4 человек. Создай свою или зайди к другим."
-subtitle.Font = Enum.Font.Gotham
-subtitle.TextSize = 14
-subtitle.TextColor3 = Color3.fromRGB(170, 170, 185)
-subtitle.Parent = panel
+text(panel, "HE WILL COME", UDim2.new(1, -24, 0, 40), UDim2.fromOffset(14, 10), 28, Color3.fromRGB(220, 50, 50))
+local subtitle = text(panel, "", UDim2.new(1, -24, 0, 36), UDim2.fromOffset(14, 50), 14, Color3.fromRGB(170, 170, 185))
 
 local list = Instance.new("ScrollingFrame")
-list.Size = UDim2.new(1, -24, 0, 240)
-list.Position = UDim2.fromOffset(12, 78)
+list.Size = UDim2.new(1, -28, 0, 236)
+list.Position = UDim2.fromOffset(14, 92)
 list.BackgroundColor3 = Color3.fromRGB(22, 22, 28)
 list.BackgroundTransparency = 0.3
 list.BorderSizePixel = 0
-list.ScrollBarThickness = 5
+list.ScrollBarThickness = 6
 list.CanvasSize = UDim2.new()
 list.AutomaticCanvasSize = Enum.AutomaticSize.Y
 list.Parent = panel
-
 local layout = Instance.new("UIListLayout")
 layout.Padding = UDim.new(0, 6)
 layout.SortOrder = Enum.SortOrder.LayoutOrder
 layout.Parent = list
-
 local padding = Instance.new("UIPadding")
 padding.PaddingTop = UDim.new(0, 6)
 padding.PaddingLeft = UDim.new(0, 6)
 padding.PaddingRight = UDim.new(0, 6)
 padding.Parent = list
 
-local empty = Instance.new("TextLabel")
-empty.Size = UDim2.new(1, -12, 0, 40)
-empty.BackgroundTransparency = 1
-empty.Text = "Комнат пока нет. Создай первую."
-empty.Font = Enum.Font.Gotham
-empty.TextSize = 15
-empty.TextColor3 = Color3.fromRGB(140, 140, 155)
-empty.Parent = list
+local empty = text(list, "Комнат пока нет. Создай первую.", UDim2.new(1, -12, 0, 40), UDim2.new(), 15, Color3.fromRGB(140, 140, 155))
 
-local function makeButton(text: string, position: UDim2, size: UDim2, color: Color3): TextButton
-	local button = Instance.new("TextButton")
-	button.Size = size
-	button.Position = position
-	button.BackgroundColor3 = color
-	button.BorderSizePixel = 0
-	button.Text = text
-	button.Font = Enum.Font.GothamBold
-	button.TextSize = 16
-	button.TextColor3 = Color3.fromRGB(255, 255, 255)
-	button.AutoButtonColor = true
-	button.Parent = panel
-
+local function button(parent, str, size, position, color)
+	local element = Instance.new("TextButton")
+	element.Size = size
+	element.Position = position
+	element.BackgroundColor3 = color
+	element.BorderSizePixel = 0
+	element.Text = str
+	element.Font = Enum.Font.GothamBold
+	element.TextSize = 16
+	element.TextColor3 = Color3.fromRGB(255, 255, 255)
+	element.AutoButtonColor = true
+	element.Parent = parent
 	local corner = Instance.new("UICorner")
 	corner.CornerRadius = UDim.new(0, 8)
-	corner.Parent = button
-
-	return button
+	corner.Parent = element
+	return element
 end
 
-local createButton = makeButton("Создать комнату", UDim2.fromOffset(12, 330), UDim2.fromOffset(240, 38), Color3.fromRGB(50, 90, 60))
-local leaveButton = makeButton("Выйти из комнаты", UDim2.fromOffset(268, 330), UDim2.fromOffset(240, 38), Color3.fromRGB(70, 40, 40))
-local startButton = makeButton("НАЧАТЬ ИГРУ", UDim2.fromOffset(12, 374), UDim2.fromOffset(496, 36), Color3.fromRGB(150, 35, 35))
+local createButton = button(panel, "Создать комнату", UDim2.fromOffset(250, 40), UDim2.fromOffset(14, 340), Color3.fromRGB(50, 95, 60))
+local leaveButton = button(panel, "Выйти из комнаты", UDim2.fromOffset(250, 40), UDim2.fromOffset(276, 340), Color3.fromRGB(75, 40, 40))
+local startButton = button(panel, "НАЧАТЬ ИГРУ", UDim2.fromOffset(512, 40), UDim2.fromOffset(14, 388), Color3.fromRGB(160, 35, 35))
 
 createButton.Activated:Connect(function()
 	roomAction:FireServer({ action = "create" })
@@ -2447,82 +3039,51 @@ end)
 
 local rows = {}
 
-local function clearRows()
+function LobbyUI.update(data)
 	for _, row in rows do
 		row:Destroy()
 	end
 	table.clear(rows)
-end
-
-function LobbyUI.update(data)
-	clearRows()
 
 	local roomsData = data.rooms or {}
+	local myRoom = data.myRoom or 0
 	empty.Visible = #roomsData == 0
 
 	for index, room in roomsData do
 		local row = Instance.new("Frame")
-		row.Size = UDim2.new(1, -12, 0, 54)
-		row.BackgroundColor3 = room.id == data.myRoom and Color3.fromRGB(45, 60, 45) or Color3.fromRGB(30, 30, 38)
+		row.Size = UDim2.new(1, -12, 0, 56)
+		row.BackgroundColor3 = room.id == myRoom and Color3.fromRGB(45, 65, 45) or Color3.fromRGB(30, 30, 38)
 		row.BorderSizePixel = 0
 		row.LayoutOrder = index
 		row.Parent = list
-
 		local corner = Instance.new("UICorner")
 		corner.CornerRadius = UDim.new(0, 8)
 		corner.Parent = row
 
-		local label = Instance.new("TextLabel")
-		label.Size = UDim2.new(1, -110, 1, 0)
-		label.Position = UDim2.fromOffset(12, 0)
-		label.BackgroundTransparency = 1
-		label.TextXAlignment = Enum.TextXAlignment.Left
-		label.Font = Enum.Font.GothamBold
-		label.TextSize = 15
-		label.TextColor3 = Color3.fromRGB(235, 235, 240)
-		label.Text = string.format(
-			"Комната #%d  -  %d/%d\n%s%s",
-			room.id,
-			room.count,
-			room.max,
-			table.concat(room.players, ", "),
-			room.state == "playing" and "   [идёт игра]" or ""
-		)
-		label.Parent = row
+		local names = table.concat(room.players or {}, ", ")
+		local state = room.state == "playing" and "  [идёт игра]" or ""
+		text(row, string.format("Комната #%d  -  %d/%d%s\n%s", room.id, room.count, room.max, state, names), UDim2.new(1, -120, 1, 0), UDim2.fromOffset(12, 0), 15)
 
-		if room.id ~= data.myRoom and room.state == "waiting" and room.count < room.max and not data.myRoom then
-			local joinButton = Instance.new("TextButton")
-			joinButton.Size = UDim2.fromOffset(90, 34)
-			joinButton.Position = UDim2.new(1, -100, 0.5, -17)
-			joinButton.BackgroundColor3 = Color3.fromRGB(55, 75, 110)
-			joinButton.BorderSizePixel = 0
-			joinButton.Text = "Войти"
-			joinButton.Font = Enum.Font.GothamBold
-			joinButton.TextSize = 15
-			joinButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-			joinButton.Parent = row
-
-			local joinCorner = Instance.new("UICorner")
-			joinCorner.CornerRadius = UDim.new(0, 6)
-			joinCorner.Parent = joinButton
-
-			joinButton.Activated:Connect(function()
+		if myRoom == 0 and room.state == "waiting" and room.count < room.max then
+			local join = button(row, "Войти", UDim2.fromOffset(96, 36), UDim2.new(1, -106, 0.5, -18), Color3.fromRGB(55, 75, 115))
+			join.Activated:Connect(function()
 				roomAction:FireServer({ action = "join", roomId = room.id })
 			end)
 		end
-
 		table.insert(rows, row)
 	end
 
-	createButton.Visible = data.myRoom == nil
-	leaveButton.Visible = data.myRoom ~= nil
+	createButton.Visible = myRoom == 0
+	leaveButton.Visible = myRoom ~= 0
 	startButton.Visible = data.isHost == true
-	subtitle.Text = data.myRoom
-			and string.format("Ты в комнате #%d. Максимум %d игрока(ов).", data.myRoom, data.maxPlayers or 4)
-		or string.format("Комнаты до %d человек. Создай свою или зайди к другим.", data.maxPlayers or 4)
+	if myRoom ~= 0 then
+		subtitle.Text = string.format("Ты в комнате #%d. Максимум %d игрока. Хозяин жмёт СТАРТ.", myRoom, data.maxPlayers or 4)
+	else
+		subtitle.Text = string.format("Комнаты до %d человек. Создай свою или зайди к другим.", data.maxPlayers or 4)
+	end
 end
 
-function LobbyUI.setVisible(visible: boolean)
+function LobbyUI.setVisible(visible)
 	gui.Enabled = visible
 end
 
@@ -2534,217 +3095,89 @@ return LobbyUI
 					<Properties>
 						<string name="Name">Main</string>
 						<ProtectedString name="Source"><![CDATA[--!nonstrict
--- HE WILL COME - точка входа клиента.
+-- HE WILL COME v2 - точка входа клиента.
+-- Если что-то падает, ошибка показывается прямо на экране, а не прячется в Output.
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local Shared = ReplicatedStorage:WaitForChild("HWCShared")
-local Remotes = require(Shared:WaitForChild("Remotes"))
-
-local LobbyUI = require(script.Parent:WaitForChild("LobbyUI"))
-local Hud = require(script.Parent:WaitForChild("Hud"))
-local Movement = require(script.Parent:WaitForChild("Movement"))
-local Gaze = require(script.Parent:WaitForChild("Gaze"))
-local Effects = require(script.Parent:WaitForChild("Effects"))
-
-Movement.start(Hud)
-Gaze.start()
-Effects.start()
-
-local inMatch = false
-
-Remotes.get("RoomList").OnClientEvent:Connect(function(data)
-	LobbyUI.update(data)
-end)
-
-Remotes.get("MatchSync").OnClientEvent:Connect(function(data)
-	if not data.inMatch then
-		if inMatch then
-			inMatch = false
-			Hud.setVisible(false)
-			LobbyUI.setVisible(true)
-			Effects.reset()
-			Movement.setBlocked(false)
-		end
-		return
-	end
-
-	if not inMatch then
-		inMatch = true
-		Hud.setVisible(true)
-		LobbyUI.setVisible(false)
-	end
-
-	Hud.update(data)
-	Effects.setSanity(data.sanity, data.sanityMax)
-	Movement.setBlocked(data.panic == true or data.downed == true)
-end)
-
-Remotes.get("Notify").OnClientEvent:Connect(function(text: string, color: string?)
-	Hud.toast(text, color)
-end)
-
-Remotes.get("Scare").OnClientEvent:Connect(function(kind: string)
-	Effects.scare(kind)
-end)
-
--- просим сервер прислать список комнат сразу после входа
-Remotes.get("RoomAction"):FireServer({ action = "refresh" })
-]]></ProtectedString>
-					</Properties>
-				</Item>
-				<Item class="ModuleScript" referent="RBX17">
-					<Properties>
-						<string name="Name">Movement</string>
-						<ProtectedString name="Source"><![CDATA[--!nonstrict
--- Бег, приседание и фонарь. Всё это - про громкость.
-
-local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
-
-local Shared = ReplicatedStorage:WaitForChild("HWCShared")
-local GameConfig = require(Shared:WaitForChild("GameConfig"))
-local Remotes = require(Shared:WaitForChild("Remotes"))
-
-local MOVE = GameConfig.Movement
 
 local player = Players.LocalPlayer
-local crouchEvent = Remotes.get("Crouch")
-local flashlightEvent = Remotes.get("Flashlight")
 
-local Movement = {}
-
-local hud
-local stamina = MOVE.MaxStamina
-local sprinting = false
-local crouching = false
-local flashlightOn = false
-local flashlight: SpotLight? = nil
-local lastDrainAt = 0
-local blocked = false -- паника: бежать нельзя
-
-local function getHumanoid(): Humanoid?
-	local character = player.Character
-	return character and character:FindFirstChildOfClass("Humanoid")
+local function showFatal(message)
+	warn("[HE WILL COME] " .. message)
+	local gui = Instance.new("ScreenGui")
+	gui.Name = "HWC_Error"
+	gui.ResetOnSpawn = false
+	gui.DisplayOrder = 100
+	gui.Parent = player:WaitForChild("PlayerGui")
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(1, -40, 0, 120)
+	label.Position = UDim2.fromOffset(20, 20)
+	label.BackgroundColor3 = Color3.fromRGB(60, 0, 0)
+	label.BackgroundTransparency = 0.2
+	label.TextColor3 = Color3.fromRGB(255, 220, 220)
+	label.TextWrapped = true
+	label.TextSize = 16
+	label.Font = Enum.Font.Code
+	label.Text = "ОШИБКА КЛИЕНТА (скинь этот текст):\n" .. message
+	label.Parent = gui
 end
 
-local function setCrouchVisual(humanoid: Humanoid, value: boolean)
-	local scale = humanoid:FindFirstChild("BodyHeightScale")
-	if scale and scale:IsA("NumberValue") then
-		scale.Value = value and 0.65 or 1
+local ok, err = pcall(function()
+	local Shared = ReplicatedStorage:WaitForChild("HWCShared", 20)
+	if not Shared then
+		error("Нет папки HWCShared в ReplicatedStorage")
 	end
-end
+	local Remotes = require(Shared:WaitForChild("Remotes"))
 
-local function attachFlashlight()
-	local character = player.Character
-	local head = character and character:FindFirstChild("Head")
-	if not head then
-		return
-	end
-	if flashlight and flashlight.Parent then
-		flashlight:Destroy()
-	end
-	local light = Instance.new("SpotLight")
-	light.Name = "Flashlight"
-	light.Angle = 65
-	light.Range = 55
-	light.Brightness = 2.6
-	light.Face = Enum.NormalId.Front
-	light.Enabled = flashlightOn
-	light.Parent = head
-	flashlight = light
-end
+	local LobbyUI = require(script.Parent:WaitForChild("LobbyUI"))
+	local Hud = require(script.Parent:WaitForChild("Hud"))
+	local Input = require(script.Parent:WaitForChild("Input"))
+	local Effects = require(script.Parent:WaitForChild("Effects"))
 
-local function onSprint(_, state)
-	sprinting = state == Enum.UserInputState.Begin
-	return Enum.ContextActionResult.Pass
-end
+	Input.start(Hud)
+	Effects.start()
 
-local function onCrouch(_, state)
-	if state ~= Enum.UserInputState.Begin then
-		return Enum.ContextActionResult.Pass
-	end
-	crouching = not crouching
-	local humanoid = getHumanoid()
-	if humanoid then
-		setCrouchVisual(humanoid, crouching)
-	end
-	crouchEvent:FireServer(crouching)
-	return Enum.ContextActionResult.Pass
-end
+	local inMatch = false
 
-local function onFlashlight(_, state)
-	if state ~= Enum.UserInputState.Begin then
-		return Enum.ContextActionResult.Pass
-	end
-	flashlightOn = not flashlightOn
-	if flashlight and flashlight.Parent then
-		flashlight.Enabled = flashlightOn
-	else
-		attachFlashlight()
-	end
-	flashlightEvent:FireServer(flashlightOn)
-	return Enum.ContextActionResult.Pass
-end
-
-function Movement.setBlocked(value: boolean)
-	blocked = value
-end
-
-function Movement.start(hudModule)
-	hud = hudModule
-
-	ContextActionService:BindAction("HWCSprint", onSprint, true, Enum.KeyCode.LeftShift, Enum.KeyCode.RightShift)
-	ContextActionService:BindAction("HWCCrouch", onCrouch, true, Enum.KeyCode.C, Enum.KeyCode.LeftControl)
-	ContextActionService:BindAction("HWCLight", onFlashlight, true, Enum.KeyCode.F)
-	ContextActionService:SetTitle("HWCSprint", "Бег")
-	ContextActionService:SetTitle("HWCCrouch", "Красться")
-	ContextActionService:SetTitle("HWCLight", "Фонарь")
-
-	player.CharacterAdded:Connect(function()
-		stamina = MOVE.MaxStamina
-		crouching = false
-		sprinting = false
-		task.wait(0.6)
-		attachFlashlight()
-		crouchEvent:FireServer(false)
-		flashlightEvent:FireServer(flashlightOn)
+	Remotes.get("RoomList").OnClientEvent:Connect(function(data)
+		LobbyUI.update(data)
 	end)
-	attachFlashlight()
 
-	RunService.RenderStepped:Connect(function(dt)
-		local humanoid = getHumanoid()
-		if not humanoid or humanoid.Health <= 0 then
-			return
-		end
-
-		-- когда лежишь, сервер держит скорость в нуле - не мешаем
-		if humanoid.WalkSpeed == 0 then
-			hud.setStamina(stamina, MOVE.MaxStamina)
-			return
-		end
-
-		local moving = humanoid.MoveDirection.Magnitude > 0.1
-		local canSprint = sprinting and moving and not crouching and not blocked and stamina > MOVE.MinSprintStamina
-
-		if canSprint then
-			stamina = math.max(0, stamina - MOVE.SprintDrain * dt)
-			lastDrainAt = os.clock()
-			humanoid.WalkSpeed = MOVE.SprintSpeed
-		else
-			humanoid.WalkSpeed = crouching and MOVE.CrouchSpeed or MOVE.WalkSpeed
-			if os.clock() - lastDrainAt > MOVE.RegenDelay then
-				stamina = math.min(MOVE.MaxStamina, stamina + MOVE.StaminaRegen * dt)
+	Remotes.get("MatchSync").OnClientEvent:Connect(function(data)
+		if not data.inMatch then
+			if inMatch then
+				inMatch = false
+				Hud.setVisible(false)
+				LobbyUI.setVisible(true)
+				Effects.reset()
 			end
+			return
 		end
-
-		hud.setStamina(stamina, MOVE.MaxStamina)
+		if not inMatch then
+			inMatch = true
+			Hud.setVisible(true)
+			LobbyUI.setVisible(false)
+		end
+		Hud.update(data)
+		Effects.setDistance(data.distance or 999, data.hunted == true)
 	end)
-end
 
-return Movement
+	Remotes.get("Notify").OnClientEvent:Connect(function(str, color)
+		Hud.toast(str, color)
+	end)
+
+	Remotes.get("Effect").OnClientEvent:Connect(function(kind, data)
+		Effects.play(kind, data)
+	end)
+
+	Remotes.get("RoomAction"):FireServer({ action = "refresh" })
+	print("[HE WILL COME] клиент запущен")
+end)
+
+if not ok then
+	showFatal(tostring(err))
+end
 ]]></ProtectedString>
 					</Properties>
 				</Item>
