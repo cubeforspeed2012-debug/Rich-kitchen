@@ -148,44 +148,46 @@ function Match:_flicker()
 	end
 end
 
--- ---------------- ключи и парты ----------------
+-- ---------------- ключи ----------------
 
-function Match:_setupSearchables()
-	local shuffled = Util.shuffle(self.arena.Searchables)
-	for index = 1, math.min(MATCH.KeysRequired, #shuffled) do
-		shuffled[index].HasKey = true
-	end
+function Match:_setupKeys()
+	local spots = Util.shuffle(self.arena.KeySpots)
+	for index = 1, math.min(MATCH.KeysRequired, #spots) do
+		local spot = spots[index]
+		local key = Util.makePart(self.arena.Model, "Key", Vector3.new(1, 2.2, 0.5), spot.Position, Color3.fromRGB(255, 214, 90), Enum.Material.Neon)
+		key.CanCollide = false
+		local light = Instance.new("PointLight")
+		light.Color = key.Color
+		light.Range = 22
+		light.Brightness = 2
+		light.Parent = key
 
-	for _, item in self.arena.Searchables do
-		table.insert(self.connections, item.Prompt.Triggered:Connect(function(player)
-			self:_onSearch(player, item)
+		local prompt = Instance.new("ProximityPrompt")
+		prompt.ActionText = "Взять ключ"
+		prompt.ObjectText = "Ключ"
+		prompt.HoldDuration = MATCH.KeyHoldTime
+		prompt.MaxActivationDistance = 9
+		prompt.RequiresLineOfSight = false
+		prompt.Parent = key
+
+		table.insert(self.connections, prompt.Triggered:Connect(function(player)
+			local s = self.state[player]
+			if not key.Parent or not s or s.downed or s.out or s.escaped or s.locker then
+				return
+			end
+			key:Destroy()
+			self.keysFound += 1
+			self.monster:hear(spot.Position, NOISE.Key)
+			self:_onKeyFound(player)
 		end))
-	end
-end
 
-function Match:_onSearch(player, item)
-	local s = self.state[player]
-	if not s or s.downed or s.out or s.escaped or s.locker then
-		return
-	end
-	if item.Searched then
-		notifyEvent:FireClient(player, "Тут уже смотрели. Пусто.", "info")
-		return
-	end
-
-	item.Searched = true
-	item.Prompt.ActionText = "Пусто"
-	item.Prompt.Enabled = false
-	item.Bag.Color = Color3.fromRGB(70, 70, 74)
-
-	-- шаришь по рюкзаку - шумно
-	self.monster:hear(item.Position, NOISE.Search)
-
-	if item.HasKey then
-		self.keysFound += 1
-		self:_onKeyFound(player)
-	else
-		notifyEvent:FireClient(player, "Пусто. Ищи дальше.", "info")
+		-- ключ крутится, чтобы его было видно издалека
+		task.spawn(function()
+			while key.Parent do
+				key.CFrame = key.CFrame * CFrame.Angles(0, 0.05, 0)
+				task.wait(0.03)
+			end
+		end)
 	end
 end
 
@@ -201,13 +203,13 @@ function Match:_onKeyFound(player)
 	effectEvent:FireClient(player, "key")
 
 	if self.keysFound >= MATCH.KeysRequired then
-		self.arena.Gate:SetAttribute("Locked", false)
-		self.arena.Gate.CanCollide = false
-		self.arena.Gate.Transparency = 0.6
-		self.arena.Gate.Color = Color3.fromRGB(40, 180, 90)
-		self:notify("ВСЕ КЛЮЧИ НАЙДЕНЫ. Ворота во дворе открыты - через главный вход и на юг!", "good")
+		self.arena.ExitDoor:SetAttribute("Locked", false)
+		self.arena.ExitDoor.CanCollide = false
+		self.arena.ExitDoor.Transparency = 0.6
+		self.arena.ExitDoor.Color = Color3.fromRGB(40, 180, 90)
+		self:notify("ВСЕ КЛЮЧИ СОБРАНЫ. Дверь выхода открыта - вестибюль, южная стена!", "good")
 	else
-		self:notify(string.format("%s нашёл ключ! %d/%d. ОН стал быстрее.", player.DisplayName, self.keysFound, MATCH.KeysRequired), "good")
+		self:notify(string.format("%s взял ключ! %d/%d. ОН стал быстрее.", player.DisplayName, self.keysFound, MATCH.KeysRequired), "good")
 	end
 end
 
@@ -380,6 +382,7 @@ function Match:_playerOut(player, reason)
 		humanoid.JumpPower = 45
 	end
 	self:_teleportToLobby(player)
+	player.CameraMode = Enum.CameraMode.Classic
 	effectEvent:FireClient(player, "out")
 	self:notify(string.format("%s: %s", player.DisplayName, reason), "bad")
 	s.syncStopped = true
@@ -391,12 +394,13 @@ function Match:_escape(player)
 	if not s or s.escaped or s.downed or s.out then
 		return
 	end
-	if self.arena.Gate:GetAttribute("Locked") then
-		notifyEvent:FireClient(player, "Ворота заперты. Нужны все ключи.", "bad")
+	if self.arena.ExitDoor:GetAttribute("Locked") then
+		notifyEvent:FireClient(player, "Дверь заперта. Нужны все ключи.", "bad")
 		return
 	end
 	s.escaped = true
 	self:_teleportToLobby(player)
+	player.CameraMode = Enum.CameraMode.Classic
 	effectEvent:FireClient(player, "escaped")
 	self:notify(string.format("%s выбрался!", player.DisplayName), "good")
 	s.syncStopped = true
@@ -418,10 +422,7 @@ function Match:playerAction(player, action, value)
 	end
 	local root = Util.getRoot(player.Character)
 
-	if action == "crouch" then
-		s.crouching = value == true
-		player:SetAttribute("Crouching", s.crouching)
-	elseif action == "flashlight" then
+	if action == "flashlight" then
 		s.flashlight = value == true
 		player:SetAttribute("Flashlight", s.flashlight)
 	elseif action == "slide" then
@@ -460,14 +461,7 @@ function Match:_sprintNoise()
 		if humanoid.MoveDirection.Magnitude < 0.1 then
 			continue
 		end
-		local radius
-		if s.crouching then
-			radius = NOISE.Crouch
-		elseif humanoid.WalkSpeed >= MOVE.SprintSpeed - 2 then
-			radius = NOISE.Sprint
-		else
-			radius = NOISE.Walk
-		end
+		local radius = humanoid.WalkSpeed >= MOVE.SprintSpeed - 2 and NOISE.Sprint or NOISE.Walk
 		if radius > 0 then
 			self.monster:hear(root.Position, radius)
 		end
@@ -516,7 +510,7 @@ function Match:_sync()
 			timeLeft = math.max(0, self.phaseEnds - os.clock()),
 			keys = self.keysFound,
 			keysRequired = MATCH.KeysRequired,
-			gateOpen = not self.arena.Gate:GetAttribute("Locked"),
+			gateOpen = not self.arena.ExitDoor:GetAttribute("Locked"),
 			downed = s.downed,
 			bleed = s.bleed,
 			bleedMax = MATCH.BleedOutTime,
@@ -542,7 +536,7 @@ function Match:_step(dt)
 		self:_setLights(MATCH.DimLights)
 		self.monster:wake()
 		self:effect("arrival")
-		self:notify("СВЕТ МИГНУЛ. ОН ПРОСНУЛСЯ.", "bad")
+		self:notify("СВЕТ ПОГАС. ОН ПРОСНУЛСЯ В ХОЛЛЕ.", "bad")
 	end
 
 	if self.phase == "hunt" then
@@ -588,18 +582,18 @@ function Match:start()
 			escaped = false,
 			out = false,
 			locker = nil,
-			crouching = false,
 			flashlight = false,
 			lastShout = -100,
 		}
 		player:SetAttribute("InMatch", true)
 		player:SetAttribute("Downed", false)
 		player:SetAttribute("Hidden", false)
+		player.CameraMode = Enum.CameraMode.LockFirstPerson -- в доме - только от первого лица
 		self:_teleportToArena(player, index)
 	end
 
 	self:_setLights(1.1)
-	self:_setupSearchables()
+	self:_setupKeys()
 	self:_setupLockers()
 
 	table.insert(self.connections, self.arena.ExitPad.Touched:Connect(function(hit)
@@ -619,7 +613,7 @@ function Match:start()
 		end
 	end))
 
-	self:notify(string.format("%d секунд тишины. Ищите ключи в рюкзаках на партах. Их %d.", MATCH.PrepTime, MATCH.KeysRequired), "info")
+	self:notify(string.format("%d секунд тишины. Соберите %d светящихся ключа и бегите к двери в вестибюле.", MATCH.PrepTime, MATCH.KeysRequired), "info")
 end
 
 function Match:playerLeft(player)
@@ -636,6 +630,7 @@ function Match:playerLeft(player)
 	player:SetAttribute("Downed", false)
 	player:SetAttribute("Hidden", false)
 	if player.Parent then
+		player.CameraMode = Enum.CameraMode.Classic
 		syncEvent:FireClient(player, { inMatch = false })
 	end
 	local index = table.find(self.players, player)
@@ -678,6 +673,7 @@ function Match:finish(result)
 				humanoid.WalkSpeed = MOVE.WalkSpeed
 				humanoid.JumpPower = 45
 			end
+			player.CameraMode = Enum.CameraMode.Classic
 			notifyEvent:FireClient(player, text, result == "win" and "good" or "bad")
 			syncEvent:FireClient(player, { inMatch = false, result = result })
 			self:_teleportToLobby(player)

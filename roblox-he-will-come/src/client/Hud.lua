@@ -76,8 +76,8 @@ local objective = label(gui, "", UDim2.fromOffset(460, 30), UDim2.fromOffset(20,
 local phaseLabel = label(gui, "", UDim2.fromOffset(460, 22), UDim2.fromOffset(20, 46), 15)
 phaseLabel.TextColor3 = Color3.fromRGB(180, 185, 200)
 
-local staminaText = label(gui, "Выносливость", UDim2.fromOffset(260, 18), UDim2.new(0, 20, 1, -70), 13)
-local _, staminaFill = bar(gui, UDim2.fromOffset(260, 12), UDim2.new(0, 20, 1, -52), Color3.fromRGB(110, 190, 255))
+local slideText = label(gui, "Подкат (C)", UDim2.fromOffset(260, 18), UDim2.new(0, 20, 1, -70), 13)
+local _, slideFill = bar(gui, UDim2.fromOffset(260, 12), UDim2.new(0, 20, 1, -52), Color3.fromRGB(230, 180, 60))
 local moveState = label(gui, "", UDim2.fromOffset(400, 18), UDim2.new(0, 20, 1, -34), 13)
 moveState.TextColor3 = Color3.fromRGB(170, 175, 190)
 
@@ -93,7 +93,7 @@ statusLabel.TextXAlignment = Enum.TextXAlignment.Center
 
 local hint = label(
 	gui,
-	"Shift бег  |  C красться  |  Shift+C подкат  |  F фонарь  |  E обыскать / спрятаться / поднять  |  T крикнуть (приманить его к себе)",
+	"Shift бег (бесконечный)  |  C подкат - пролезть в жёлтую щель, ОН туда не пролезет  |  F фонарь  |  E ключ / шкаф / поднять  |  T крик",
 	UDim2.fromOffset(1000, 20),
 	UDim2.new(0.5, -500, 1, -14),
 	13
@@ -137,35 +137,26 @@ function Hud.setVisible(visible)
 	end
 end
 
-function Hud.setStamina(value, max)
-	staminaFill.Size = UDim2.fromScale(math.clamp(value / max, 0, 1), 1)
-	staminaFill.BackgroundColor3 = value < 20 and Color3.fromRGB(255, 120, 120) or Color3.fromRGB(110, 190, 255)
-end
-
-function Hud.setMoveState(crouching, sprinting, flashlight)
+function Hud.setMoveState(running, flashlight, slideReady)
+	slideFill.Size = UDim2.fromScale(slideReady, 1)
+	slideText.Text = slideReady >= 1 and "Подкат готов (C)" or "Подкат..."
 	local parts = {}
-	if crouching then
-		table.insert(parts, "крадёшься (бесшумно)")
-	elseif sprinting then
-		table.insert(parts, "БЕЖИШЬ (громко)")
-	else
-		table.insert(parts, "идёшь")
-	end
+	table.insert(parts, running and "БЕЖИШЬ (громко, слышно за 44 стада)" or "идёшь (тихо)")
 	if flashlight then
-		table.insert(parts, "фонарь ВКЛ (тебя видно издалека)")
+		table.insert(parts, "фонарь ВКЛ - тебя видно за 100 стадов")
 	end
 	moveState.Text = table.concat(parts, "  |  ")
 end
 
 function Hud.update(data)
-	objective.Text = data.gateOpen and "ВОРОТА ОТКРЫТЫ - на юг через главный вход"
-		or string.format("Ключи %d/%d - обыскивай рюкзаки", data.keys, data.keysRequired)
+	objective.Text = data.gateOpen and "ДВЕРЬ ОТКРЫТА - вестибюль, южная стена"
+		or string.format("Ключи %d/%d - светятся жёлтым на тумбах", data.keys, data.keysRequired)
 
 	if data.phase == "prep" then
 		phaseLabel.Text = string.format("Тихо. ОН проснётся через %d сек.", math.ceil(data.timeLeft))
 		phaseLabel.TextColor3 = COLORS.good
 	else
-		phaseLabel.Text = "ОН ходит по школе"
+		phaseLabel.Text = "ОН ходит по дому"
 		phaseLabel.TextColor3 = COLORS.bad
 	end
 
@@ -173,7 +164,7 @@ function Hud.update(data)
 		statusLabel.Text = "ТЫ В ШКАФУ. E - выйти"
 		statusLabel.TextColor3 = Color3.fromRGB(150, 200, 255)
 	elseif data.hunted then
-		statusLabel.Text = "ОН БЕЖИТ ЗА ТОБОЙ - ЛОМАЙ ЕМУ ОБЗОР, ПРЯЧЬСЯ"
+		statusLabel.Text = "ОН БЕЖИТ ЗА ТОБОЙ - ПОДКАТ В ЩЕЛЬ ИЛИ В ШКАФ"
 		statusLabel.TextColor3 = COLORS.bad
 	elseif data.distance and data.distance < 22 then
 		statusLabel.Text = "ОН РЯДОМ"

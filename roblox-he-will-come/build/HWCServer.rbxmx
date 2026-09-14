@@ -241,8 +241,8 @@ print("[HE WILL COME] сервер запущен")
 			<Properties>
 				<string name="Name">MapBuilder</string>
 				<ProtectedString name="Source"><![CDATA[--!nonstrict
--- Строит школу из текстовой схемы MapData.Grid. 1 символ = 4 стада.
--- Стены, окна, пол, потолок, лампы, шкафчики, парты, двор, забор, ворота.
+-- Строит огромный дом из текстовой схемы MapData.Grid. 1 символ = 6 стадов.
+-- Стены, потолки, щели для подката, шкафы, мебель, ключи, дверь выхода.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
@@ -255,25 +255,34 @@ local MapData = require(script.Parent:WaitForChild("MapData"))
 
 local T = MapData.TileSize
 local WALL_H = GameConfig.Map.WallHeight
+local SLIT_H = GameConfig.Map.SlitHeight
 
 local COLORS = {
-	Wall = Color3.fromRGB(168, 156, 132),
-	WallDark = Color3.fromRGB(96, 84, 70),
-	RoomFloor = Color3.fromRGB(150, 128, 96),
-	CorridorFloor = Color3.fromRGB(104, 110, 112),
-	Ceiling = Color3.fromRGB(52, 50, 48),
-	Grass = Color3.fromRGB(60, 92, 44),
-	Asphalt = Color3.fromRGB(58, 58, 60),
-	Fence = Color3.fromRGB(70, 74, 78),
-	Locker = Color3.fromRGB(58, 72, 66),
-	LockerDoor = Color3.fromRGB(78, 96, 88),
-	Desk = Color3.fromRGB(110, 78, 48),
-	Lintel = Color3.fromRGB(70, 48, 34),
-	Lamp = Color3.fromRGB(255, 240, 210),
+	Wall = Color3.fromRGB(122, 104, 86),
+	WallDark = Color3.fromRGB(64, 52, 44),
+	RoomFloor = Color3.fromRGB(118, 86, 58),
+	CorridorFloor = Color3.fromRGB(74, 70, 66),
+	HallFloor = Color3.fromRGB(150, 140, 126),
+	Ceiling = Color3.fromRGB(44, 38, 34),
+	Grass = Color3.fromRGB(52, 80, 40),
+	Locker = Color3.fromRGB(70, 58, 46),
+	LockerDoor = Color3.fromRGB(96, 78, 60),
+	Lintel = Color3.fromRGB(58, 40, 30),
+	Lamp = Color3.fromRGB(255, 225, 180),
+	SlitFrame = Color3.fromRGB(200, 170, 70),
+	Table = Color3.fromRGB(100, 70, 44),
+	Bed = Color3.fromRGB(150, 150, 165),
+	Shelf = Color3.fromRGB(84, 58, 38),
+	Crate = Color3.fromRGB(120, 92, 56),
+	Key = Color3.fromRGB(255, 214, 90),
 }
 
-local INTERIOR = { ["."] = true, [","] = true, ["D"] = true, ["P"] = true, ["M"] = true, ["B"] = true, ["L"] = true }
-local WALLISH = { ["#"] = true, ["W"] = true }
+-- по чему ходят (получают пол и потолок)
+local INTERIOR = {}
+for ch in string.gmatch(".,DVPMKLtbsc", ".") do
+	INTERIOR[ch] = true
+end
+local WALLISH = { ["#"] = true, ["V"] = true }
 
 local MapBuilder = {}
 
@@ -281,7 +290,6 @@ function MapBuilder.build(origin, index)
 	local model = Instance.new("Model")
 	model.Name = "HWC_Arena_" .. tostring(index)
 
-	-- ---------- разбор схемы ----------
 	local rows = {}
 	for _, line in string.split(MapData.Grid, "\n") do
 		if #line > 0 then
@@ -309,20 +317,10 @@ function MapBuilder.build(origin, index)
 		return origin + Vector3.new((c - W / 2 + 0.5) * T, y or 0, (r - H / 2 + 0.5) * T)
 	end
 
-	-- центр отрезка тайлов c1..c2 в строке r
 	local function runCenter(c1, c2, r, y)
 		return origin + Vector3.new(((c1 + c2) / 2 - W / 2 + 0.5) * T, y or 0, (r - H / 2 + 0.5) * T)
 	end
 
-	local function isInterior(ch)
-		return INTERIOR[ch] == true
-	end
-
-	local function isWallish(ch)
-		return WALLISH[ch] == true
-	end
-
-	-- обходим строки и вызываем callback на каждый непрерывный отрезок тайлов одного "класса"
 	local function forRuns(classify, callback)
 		for r = 0, H - 1 do
 			local c = 0
@@ -342,80 +340,105 @@ function MapBuilder.build(origin, index)
 		end
 	end
 
+	-- в какой комнате тайл (для цвета пола)
+	local function roomOf(c, r)
+		for _, room in MapData.Rooms do
+			if c >= room.c1 and c <= room.c2 and r >= room.r1 and r <= room.r2 then
+				return room
+			end
+		end
+		return nil
+	end
+
 	local result = {
 		Model = model,
 		Origin = origin,
 		Index = index,
 		Lights = {},
 		Lockers = {},
-		Searchables = {},
+		KeySpots = {},
 		SpawnPositions = {},
 		MonsterSpawn = origin,
 		PatrolNodes = {},
-		Gate = nil,
+		ExitDoor = nil,
 		ExitPad = nil,
 	}
 
 	-- ---------- земля ----------
-	local grass = Util.makePart(model, "Grass", Vector3.new(W * T + 40, 2, H * T + 40), origin + Vector3.new(0, -1, 0), COLORS.Grass, Enum.Material.Grass)
-	grass.Name = "Grass"
+	Util.makePart(model, "Grass", Vector3.new(W * T + 60, 2, H * T + 60), origin + Vector3.new(0, -1, 0), COLORS.Grass, Enum.Material.Grass)
 
-	-- ---------- асфальт ----------
-	forRuns(function(ch)
-		return ch == "=" and "asphalt" or nil
-	end, function(_, c1, c2, r)
-		Util.makePart(model, "Asphalt", Vector3.new((c2 - c1 + 1) * T, 0.3, T), runCenter(c1, c2, r, 0.05), COLORS.Asphalt, Enum.Material.Asphalt)
-	end)
-
-	-- ---------- пол и потолок ----------
-	forRuns(function(ch)
-		if not isInterior(ch) then
+	-- ---------- пол ----------
+	forRuns(function(ch, c, r)
+		if not INTERIOR[ch] then
 			return nil
 		end
-		return (ch == "," or ch == "D") and "corridor" or "room"
+		if ch == "," or ch == "D" or ch == "V" then
+			return "corridor"
+		end
+		local room = roomOf(c, r)
+		return room and room.name == "Холл" and "hall" or "room"
 	end, function(class, c1, c2, r)
-		local isCorridor = class == "corridor"
-		Util.makePart(
-			model,
-			"Floor",
-			Vector3.new((c2 - c1 + 1) * T, 1.4, T),
-			runCenter(c1, c2, r, -0.5),
-			isCorridor and COLORS.CorridorFloor or COLORS.RoomFloor,
-			isCorridor and Enum.Material.Concrete or Enum.Material.WoodPlanks
-		)
+		local color, material = COLORS.RoomFloor, Enum.Material.WoodPlanks
+		if class == "corridor" then
+			color, material = COLORS.CorridorFloor, Enum.Material.Cobblestone
+		elseif class == "hall" then
+			color, material = COLORS.HallFloor, Enum.Material.Marble
+		end
+		Util.makePart(model, "Floor", Vector3.new((c2 - c1 + 1) * T, 1.4, T), runCenter(c1, c2, r, -0.5), color, material)
 	end)
 
+	-- ---------- потолок ----------
 	forRuns(function(ch)
-		return isInterior(ch) and "ceil" or nil
+		return INTERIOR[ch] and "ceil" or nil
 	end, function(_, c1, c2, r)
-		Util.makePart(model, "Ceiling", Vector3.new((c2 - c1 + 1) * T, 1, T), runCenter(c1, c2, r, WALL_H + 0.5), COLORS.Ceiling, Enum.Material.Concrete)
+		Util.makePart(model, "Ceiling", Vector3.new((c2 - c1 + 1) * T, 1, T), runCenter(c1, c2, r, WALL_H + 0.5), COLORS.Ceiling, Enum.Material.Wood)
 	end)
 
 	-- ---------- стены ----------
 	forRuns(function(ch)
 		return ch == "#" and "wall" or nil
 	end, function(_, c1, c2, r)
-		local wall = Util.makePart(model, "Wall", Vector3.new((c2 - c1 + 1) * T, WALL_H, T), runCenter(c1, c2, r, WALL_H / 2), COLORS.Wall, Enum.Material.Brick)
-		wall.Name = "Wall"
+		Util.makePart(model, "Wall", Vector3.new((c2 - c1 + 1) * T, WALL_H, T), runCenter(c1, c2, r, WALL_H / 2), COLORS.Wall, Enum.Material.Concrete)
 	end)
 
-	-- окна: низ стены, стекло, верх стены
+	-- тёмный плинтус вдоль стен внутри - дешёвая "текстура", читается объём
+	forRuns(function(ch)
+		return ch == "#" and "skirt" or nil
+	end, function(_, c1, c2, r)
+		local skirt = Util.makePart(model, "Skirt", Vector3.new((c2 - c1 + 1) * T + 0.4, 1.2, T + 0.4), runCenter(c1, c2, r, 0.6), COLORS.WallDark, Enum.Material.Wood)
+		skirt.CanCollide = false
+	end)
+
+	-- ---------- щели: снизу дыра, сверху стена, для киллера - запрет пути ----------
 	for r = 0, H - 1 do
 		for c = 0, W - 1 do
-			if tile(c, r) == "W" then
-				Util.makePart(model, "WallLow", Vector3.new(T, 4, T), center(c, r, 2), COLORS.Wall, Enum.Material.Brick)
-				local glass = Util.makePart(model, "Glass", Vector3.new(T, 5, T), center(c, r, 6.5), Color3.fromRGB(150, 190, 210), Enum.Material.Glass)
-				glass.Transparency = 0.55
-				Util.makePart(model, "WallHigh", Vector3.new(T, 3, T), center(c, r, 10.5), COLORS.Wall, Enum.Material.Brick)
+			if tile(c, r) == "V" then
+				local topHeight = WALL_H - SLIT_H
+				Util.makePart(model, "SlitTop", Vector3.new(T, topHeight, T), center(c, r, SLIT_H + topHeight / 2), COLORS.Wall, Enum.Material.Concrete)
+				local frame = Util.makePart(model, "SlitFrame", Vector3.new(T + 0.3, 0.35, T + 0.3), center(c, r, SLIT_H), COLORS.SlitFrame, Enum.Material.Neon)
+				frame.CanCollide = false
+				local glow = Instance.new("PointLight")
+				glow.Color = COLORS.SlitFrame
+				glow.Range = 10
+				glow.Brightness = 0.8
+				glow.Parent = frame
+
+				local blocker = Util.makePart(model, "SlitBlock", Vector3.new(T + 1, SLIT_H, T + 1), center(c, r, SLIT_H / 2), Color3.new(1, 1, 1), Enum.Material.SmoothPlastic)
+				blocker.Transparency = 1
+				blocker.CanCollide = false
+				blocker.CanQuery = false
+				local modifier = Instance.new("PathfindingModifier")
+				modifier.Label = "Slit"
+				modifier.Parent = blocker
 			end
 		end
 	end
 
-	-- перемычки над дверными проёмами (тайлы D)
+	-- ---------- перемычки над дверями ----------
 	for r = 0, H - 1 do
 		for c = 0, W - 1 do
 			if tile(c, r) == "D" then
-				Util.makePart(model, "Lintel", Vector3.new(T, 3, T), center(c, r, WALL_H - 1.5), COLORS.Lintel, Enum.Material.Wood)
+				Util.makePart(model, "Lintel", Vector3.new(T, 4, T), center(c, r, WALL_H - 2), COLORS.Lintel, Enum.Material.Wood)
 			end
 		end
 	end
@@ -423,12 +446,12 @@ function MapBuilder.build(origin, index)
 	-- ---------- лампы ----------
 	for r = 0, H - 1 do
 		for c = 0, W - 1 do
-			if isInterior(tile(c, r)) and c % 4 == 2 and r % 4 == 2 then
-				local lamp = Util.makePart(model, "Lamp", Vector3.new(2.6, 0.3, 2.6), center(c, r, WALL_H - 0.4), COLORS.Lamp, Enum.Material.Neon)
+			if INTERIOR[tile(c, r)] and c % 4 == 2 and r % 4 == 2 then
+				local lamp = Util.makePart(model, "Lamp", Vector3.new(3, 0.4, 3), center(c, r, WALL_H - 0.5), COLORS.Lamp, Enum.Material.Neon)
 				local light = Instance.new("PointLight")
-				light.Range = 30
-				light.Brightness = 1.1
-				light.Color = Color3.fromRGB(255, 236, 200)
+				light.Range = 40
+				light.Brightness = 1
+				light.Color = Color3.fromRGB(255, 220, 170)
 				light.Shadows = false
 				light.Parent = lamp
 				table.insert(result.Lights, { Part = lamp, Light = light, Position = lamp.Position })
@@ -436,98 +459,64 @@ function MapBuilder.build(origin, index)
 		end
 	end
 
-	-- ---------- забор и ворота ----------
-	for r = 0, H - 1 do
-		for c = 0, W - 1 do
-			local ch = tile(c, r)
-			if ch == "F" then
-				local left, right = tile(c - 1, r), tile(c + 1, r)
-				local up, down = tile(c, r - 1), tile(c, r + 1)
-				local horizontal = left == "F" or right == "F" or left == "X" or right == "X"
-				local vertical = up == "F" or down == "F"
-				if horizontal then
-					local panel = Util.makePart(model, "Fence", Vector3.new(T, 9, 0.5), center(c, r, 4.5), COLORS.Fence, Enum.Material.Metal)
-					panel.Transparency = 0.3
-				end
-				if vertical then
-					local panel = Util.makePart(model, "Fence", Vector3.new(0.5, 9, T), center(c, r, 4.5), COLORS.Fence, Enum.Material.Metal)
-					panel.Transparency = 0.3
-				end
-				Util.makePart(model, "FencePost", Vector3.new(1, 9.5, 1), center(c, r, 4.75), COLORS.WallDark, Enum.Material.Metal)
-			end
-		end
-	end
-
+	-- ---------- дверь выхода ----------
 	forRuns(function(ch)
-		return ch == "X" and "gate" or nil
+		return ch == "X" and "exit" or nil
 	end, function(_, c1, c2, r)
 		local width = (c2 - c1 + 1) * T
-		local gate = Util.makePart(model, "ExitGate", Vector3.new(width, 9, 0.8), runCenter(c1, c2, r, 4.5), Color3.fromRGB(130, 32, 32), Enum.Material.Metal)
-		gate:SetAttribute("Locked", true)
+		Util.makePart(model, "ExitTop", Vector3.new(width, WALL_H - 14, T), runCenter(c1, c2, r, 14 + (WALL_H - 14) / 2), COLORS.Wall, Enum.Material.Concrete)
+		local door = Util.makePart(model, "ExitDoor", Vector3.new(width, 14, T), runCenter(c1, c2, r, 7), Color3.fromRGB(130, 32, 32), Enum.Material.Metal)
+		door:SetAttribute("Locked", true)
 		local light = Instance.new("PointLight")
 		light.Color = Color3.fromRGB(255, 60, 60)
-		light.Range = 20
+		light.Range = 26
 		light.Brightness = 2
-		light.Parent = gate
-		result.Gate = gate
+		light.Parent = door
+		result.ExitDoor = door
 
-		local padCenter = runCenter(c1, c2, r + 1, 0.3)
-		local pad = Util.makePart(model, "ExitPad", Vector3.new(width + 4, 0.5, T * 1.5), padCenter, Color3.fromRGB(60, 210, 130), Enum.Material.Neon)
+		Util.makePart(model, "ExitFloor", Vector3.new(width + 12, 1.4, T), runCenter(c1, c2, r, -0.5), COLORS.CorridorFloor, Enum.Material.Cobblestone)
+		local pad = Util.makePart(model, "ExitPad", Vector3.new(width + 8, 0.5, T * 1.5), runCenter(c1, c2, r + 1, 0.3), Color3.fromRGB(60, 210, 130), Enum.Material.Neon)
 		pad.Transparency = 0.4
 		result.ExitPad = pad
 	end)
 
-	-- ---------- деревья ----------
-	for r = 0, H - 1 do
-		for c = 0, W - 1 do
-			if tile(c, r) == "T" then
-				Util.makePart(model, "Trunk", Vector3.new(1.8, 9, 1.8), center(c, r, 4.5), Color3.fromRGB(70, 50, 34), Enum.Material.Wood)
-				local crown = Util.makePart(model, "Crown", Vector3.new(10, 9, 10), center(c, r, 11), Color3.fromRGB(44, 78, 38), Enum.Material.LeafyGrass)
-				crown.Shape = Enum.PartType.Ball
-				crown.CanCollide = false
-			end
-		end
-	end
-
-	-- ---------- шкафчики ----------
+	-- ---------- шкафы ----------
 	local function buildLocker(c, r)
 		local base = center(c, r, 0)
-		-- лицом от стены
 		local facing = Vector3.new(0, 0, 1)
-		if isWallish(tile(c, r - 1)) then
+		if WALLISH[tile(c, r - 1)] then
 			facing = Vector3.new(0, 0, 1)
-		elseif isWallish(tile(c, r + 1)) then
+		elseif WALLISH[tile(c, r + 1)] then
 			facing = Vector3.new(0, 0, -1)
-		elseif isWallish(tile(c - 1, r)) then
+		elseif WALLISH[tile(c - 1, r)] then
 			facing = Vector3.new(1, 0, 0)
-		elseif isWallish(tile(c + 1, r)) then
+		elseif WALLISH[tile(c + 1, r)] then
 			facing = Vector3.new(-1, 0, 0)
 		end
-		local side = Vector3.new(facing.Z, 0, facing.X) -- перпендикуляр
+		local side = Vector3.new(facing.Z, 0, facing.X)
 		local lockerModel = Instance.new("Model")
 		lockerModel.Name = "Locker"
 		lockerModel.Parent = model
 
-		local width, height, depth = 3.6, 8, 3.2
+		local width, height, depth = 4.4, 9, 3.6
+		local function oriented(w, d, h)
+			return Vector3.new(math.abs(side.X) * w + math.abs(facing.X) * d, h, math.abs(side.Z) * w + math.abs(facing.Z) * d)
+		end
 		local function panel(name, size, offset, color)
-			return Util.makePart(lockerModel, name, size, base + offset, color, Enum.Material.Metal)
+			return Util.makePart(lockerModel, name, size, base + offset, color, Enum.Material.Wood)
 		end
-		-- ориентация: ширина вдоль side, глубина вдоль facing
-		local function oriented(w, d)
-			return Vector3.new(math.abs(side.X) * w + math.abs(facing.X) * d, height, math.abs(side.Z) * w + math.abs(facing.Z) * d)
-		end
-		panel("Back", oriented(width, 0.3), Vector3.new(0, height / 2, 0) - facing * (depth / 2), COLORS.Locker)
-		panel("SideA", oriented(0.3, depth), Vector3.new(0, height / 2, 0) + side * (width / 2), COLORS.Locker)
-		panel("SideB", oriented(0.3, depth), Vector3.new(0, height / 2, 0) - side * (width / 2), COLORS.Locker)
-		panel("Top", Vector3.new(math.abs(side.X) * width + math.abs(facing.X) * depth, 0.3, math.abs(side.Z) * width + math.abs(facing.Z) * depth), Vector3.new(0, height, 0), COLORS.Locker)
-		local door = panel("Door", oriented(width, 0.3), Vector3.new(0, height / 2, 0) + facing * (depth / 2), COLORS.LockerDoor)
-		door.Transparency = 0.35
+		panel("Back", oriented(width, 0.4, height), Vector3.new(0, height / 2, 0) - facing * (depth / 2), COLORS.Locker)
+		panel("SideA", oriented(0.4, depth, height), Vector3.new(0, height / 2, 0) + side * (width / 2), COLORS.Locker)
+		panel("SideB", oriented(0.4, depth, height), Vector3.new(0, height / 2, 0) - side * (width / 2), COLORS.Locker)
+		panel("Top", oriented(width + 0.4, depth + 0.4, 0.4), Vector3.new(0, height, 0), COLORS.Locker)
+		local door = panel("Door", oriented(width, 0.4, height), Vector3.new(0, height / 2, 0) + facing * (depth / 2), COLORS.LockerDoor)
+		door.Transparency = 0.3
 
 		local prompt = Instance.new("ProximityPrompt")
 		prompt.ActionText = "Спрятаться"
-		prompt.ObjectText = "Шкафчик"
-		prompt.HoldDuration = 0.4
-		prompt.MaxActivationDistance = 7
+		prompt.ObjectText = "Шкаф"
+		prompt.HoldDuration = 0.3
+		prompt.MaxActivationDistance = 8
 		prompt.RequiresLineOfSight = false
 		prompt.Parent = door
 
@@ -536,42 +525,43 @@ function MapBuilder.build(origin, index)
 			Door = door,
 			Prompt = prompt,
 			Inside = base + Vector3.new(0, 3.2, 0),
-			Outside = base + facing * (T * 0.95) + Vector3.new(0, 3.2, 0),
+			Outside = base + facing * (T * 0.8) + Vector3.new(0, 3.2, 0),
 			Occupant = nil,
 		})
 	end
 
-	-- ---------- парты с рюкзаками ----------
-	local backpackColors = {
-		Color3.fromRGB(160, 40, 40), Color3.fromRGB(40, 70, 150), Color3.fromRGB(40, 120, 60),
-		Color3.fromRGB(150, 110, 30), Color3.fromRGB(90, 40, 120),
-	}
-	local function buildSearchable(c, r)
+	-- ---------- мебель ----------
+	local function buildFurniture(ch, c, r)
 		local base = center(c, r, 0)
-		local deskModel = Instance.new("Model")
-		deskModel.Name = "Desk"
-		deskModel.Parent = model
-		Util.makePart(deskModel, "Top", Vector3.new(3.6, 0.3, 2.2), base + Vector3.new(0, 2.6, 0), COLORS.Desk, Enum.Material.Wood)
-		Util.makePart(deskModel, "LegA", Vector3.new(0.3, 2.5, 2.0), base + Vector3.new(-1.6, 1.25, 0), COLORS.WallDark, Enum.Material.Metal)
-		Util.makePart(deskModel, "LegB", Vector3.new(0.3, 2.5, 2.0), base + Vector3.new(1.6, 1.25, 0), COLORS.WallDark, Enum.Material.Metal)
-		local bag = Util.makePart(deskModel, "Backpack", Vector3.new(1.3, 1.1, 0.8), base + Vector3.new(0.4, 3.3, 0.2), backpackColors[math.random(1, #backpackColors)], Enum.Material.Fabric)
+		local group = Instance.new("Model")
+		group.Name = "Furniture"
+		group.Parent = model
+		if ch == "t" then
+			Util.makePart(group, "TableTop", Vector3.new(5.5, 0.4, 3.2), base + Vector3.new(0, 2.8, 0), COLORS.Table, Enum.Material.Wood)
+			for _, offset in { Vector3.new(-2.4, 1.4, -1.3), Vector3.new(2.4, 1.4, -1.3), Vector3.new(-2.4, 1.4, 1.3), Vector3.new(2.4, 1.4, 1.3) } do
+				Util.makePart(group, "Leg", Vector3.new(0.4, 2.8, 0.4), base + offset, COLORS.WallDark, Enum.Material.Wood)
+			end
+		elseif ch == "b" then
+			Util.makePart(group, "BedFrame", Vector3.new(4.2, 1.2, 7), base + Vector3.new(0, 0.6, 0), COLORS.WallDark, Enum.Material.Wood)
+			Util.makePart(group, "Mattress", Vector3.new(4, 0.8, 6.6), base + Vector3.new(0, 1.6, 0), COLORS.Bed, Enum.Material.Fabric)
+			Util.makePart(group, "Pillow", Vector3.new(3, 0.6, 1.4), base + Vector3.new(0, 2.3, -2.4), Color3.fromRGB(200, 200, 210), Enum.Material.Fabric)
+		elseif ch == "s" then
+			Util.makePart(group, "Shelf", Vector3.new(5, 9, 1.6), base + Vector3.new(0, 4.5, 0), COLORS.Shelf, Enum.Material.Wood)
+			for i = 1, 3 do
+				local books = Util.makePart(group, "Books", Vector3.new(4.4, 1.4, 0.6), base + Vector3.new(0, i * 2.4, 0.9), Color3.fromRGB(60 + i * 40, 40, 30 + i * 20), Enum.Material.Fabric)
+				books.CanCollide = false
+			end
+		elseif ch == "c" then
+			local crate = Util.makePart(group, "Crate", Vector3.new(3.6, 3.6, 3.6), base + Vector3.new(0, 1.8, 0), COLORS.Crate, Enum.Material.WoodPlanks)
+			crate.Orientation = Vector3.new(0, math.random(0, 90), 0)
+		end
+	end
 
-		local prompt = Instance.new("ProximityPrompt")
-		prompt.ActionText = "Обыскать"
-		prompt.ObjectText = "Рюкзак"
-		prompt.HoldDuration = GameConfig.Match.SearchHoldTime
-		prompt.MaxActivationDistance = 7
-		prompt.RequiresLineOfSight = false
-		prompt.Parent = bag
-
-		table.insert(result.Searchables, {
-			Model = deskModel,
-			Bag = bag,
-			Prompt = prompt,
-			Position = base + Vector3.new(0, 3, 0),
-			Searched = false,
-			HasKey = false,
-		})
+	-- ---------- места под ключи ----------
+	local function buildKeySpot(c, r)
+		local base = center(c, r, 0)
+		local pedestal = Util.makePart(model, "Pedestal", Vector3.new(2.6, 3.4, 2.6), base + Vector3.new(0, 1.7, 0), COLORS.WallDark, Enum.Material.Slate)
+		table.insert(result.KeySpots, { Position = base + Vector3.new(0, 4.6, 0), Pedestal = pedestal })
 	end
 
 	for r = 0, H - 1 do
@@ -579,8 +569,10 @@ function MapBuilder.build(origin, index)
 			local ch = tile(c, r)
 			if ch == "L" then
 				buildLocker(c, r)
-			elseif ch == "B" then
-				buildSearchable(c, r)
+			elseif ch == "K" then
+				buildKeySpot(c, r)
+			elseif ch == "t" or ch == "b" or ch == "s" or ch == "c" then
+				buildFurniture(ch, c, r)
 			elseif ch == "P" then
 				table.insert(result.SpawnPositions, center(c, r, 3.5))
 			elseif ch == "M" then
@@ -595,7 +587,7 @@ function MapBuilder.build(origin, index)
 	end
 	for r = 0, H - 1 do
 		for c = 0, W - 1 do
-			if tile(c, r) == "," and c % 5 == 0 and r % 5 == 0 then
+			if tile(c, r) == "," and c % 6 == 1 and r % 6 == 3 then
 				table.insert(result.PatrolNodes, center(c, r, 0))
 			end
 		end
@@ -613,78 +605,80 @@ return MapBuilder
 			<Properties>
 				<string name="Name">MapData</string>
 				<ProtectedString name="Source"><![CDATA[--!nonstrict
--- Сгенерировано tools/gen_school_map.py - правь генератор, не этот файл.
--- 1 символ = 4 стада. Легенда в MapBuilder.lua.
+-- Сгенерировано tools/gen_house_map.py - правь генератор, не этот файл.
+-- 1 символ = 6 стадов. Легенда в MapBuilder.lua.
 
 local MapData = {}
 
-MapData.TileSize = 4
+MapData.TileSize = 6
 
 MapData.Grid = [[
+################################################################
+#L........#L.......#,,,#L...............#,,,#L........#L.......#
+#.........#........#,,,#...b.bPPPP......#,,,#.........#...t....#
+#.....ts..#....t...#L,,D...b..........s.#L,,#...b.....V........#
+#.........V...b....#,,,D.......s........#,,,D...tt....#........#
+#......t..#........#,,,#...........bs.s.#,,,D.........#....s.b.#
+#....Kc...#....Kb..D,,,#...............L#,,,#...K..s..#...K....#
+#...c...b.#........D,,,#######DD#########,,,#..b..c...#......s.#
+#....tb...#...sc...#,,,#L...............#,,,#.....b...D..b.....#
+#...s.....#.s...t..#,,,#.t........t.....#,,,#....c....D...s....#
+#.........#........#,,L#.cc.b..c........#,,LV..t......#..c..s..#
+#.........#......c.#,,,#................#,,,#.........#........#
+#........L#.......L#,,,#...............L#,,,#........L#.......L#
+####DD#######V######,,,####V#######DD####,,,####DD########DD####
+#L,,,,,,,,,,,,,,,,,,,,,,,,,,,,L,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,L#
+#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#
+#,,,,,,,,,,,L,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,L,,,,,,,,,,,,#
+##V#####DD##########,,,###V###DDDD#######,,,####################
+#L................L#,,,#L......L.......L#,,,#L.................#
+#..................#,,,V................#,,,D...ss.........c...#
+#...c.........b....#L,,#.........s..t...#L,,D...s...bKc.....t..#
+#.b....t.K.........#,,,#...K..c..t......#,,,V..................#
+#..b......s........#,,,D..t..b....cs....D,,,#.................L#
+#........L..c......D,,,D.......M........D,,,###V####DD##########
+#..c...............D,,,D.............c..D,,,#L.................#
+#...c.bs...........#,,,D..c..b...t......D,,,#...............c..#
+#.b...t.t....c.....#,,,#..........s.....#,,,#....t.b........t..#
+#....Kb.........t..#,,L#..t........cK...#,,LD...tKbbs...t......#
+#.....c............#,,,#.c..............V,,,D..................#
+#L................L#,,,#L......L.......L#,,,#.................L#
+##########DD#####V##,,,#######DDDD###V###,,,##############DD####
+#L,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,L,,,,,,,,,,,,#
+#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#
+#,,,,,,,,,,,L,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,L#
+####DD#V######DD####,,,###V###DDDD#######,,,####DD########DD####
+#L........#L.......#,,,#L..............L#,,,#L........#L.......#
+#.........#........#,,,#................#,,,#.........V........#
+#.s.cs....#........#L,,#.s..............#L,,#.........#........#
+#....c....#...t....D,,,#...s...t........#,,,#.c.t.....D...t....#
+#.t.......#..s..t..D,,,#..........s.c...#,,,#.....b...D......t.#
+#....K....V..t.K...#,,,D................D,,,#.b.bK....#...K....#
+#.c....t..#...t....#,,,D....bs.t.b......D,,,#.........#..t.....#
+#.........#........V,,,#..s......s.c....#,,,#..tt.....#......b.#
+#.........#...b....#,,L#....t...........#,,LV.........#...bt...#
+#........L#.......L#,,,#L..............L#,,,#........L#.......L#
+###############################XX###############################
                                                                 
- FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF 
- F                                                            F 
- F T        T            T              T           T         F 
- F                                                          T F 
- F                                                            F 
- F     ==================================================     F 
- F     ==================================================     F 
- F      ##W##W##W##W##W##W##W##W##W##W########W##W##W###      F 
- F      #...........#,,#L.......#L......#,,#L.........L#      F 
- F   T  W...........#,,#.B.B.B..#.B.B.B.#,,#...........W      F 
- F      #..B..B.....#,,D........#.......D,,#...........#      F 
- F      #L..........#,,D.B.B.B..#.B.B.B.D,,#...B...B...#   T  F 
- F      W...........#,,#........#.......#,,#...........W      F 
- F      #...........D,,#........#.......#,,D...........#      F 
- F      #..B..B.....D,,##################,,D...........#      F 
- F      W...........#,,#.......L#......L#,,#...........W      F 
- F      #L..........#,,#.B.B.B..#.B.B.B.#,,#...B...B...#      F 
- F      #........B..#,,#........D.......#,,#...........#      F 
- F      W...........#,,#.B.B.B..D.B.B.B.#,,#...........W      F 
- F T    #...........#,,#........#.......#,,#L..........#      F 
- F      ####DD#######,,####DD######DD####,,#####DD######      F 
- F      W,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,W    T F 
- F      #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#      F 
- F      #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#      F 
- F      #####DD######,,##DD####DD####DD##,,#############      F 
- F      #...........#,,#....L#....#.....#,,#L..........#      F 
- F      #...........#,,#.....#....#.....#,,#...........#      F 
- F      WL.........L#,,#.B.B.#....#.B.B.#,,D..B..B..B..W      F 
- F      #...........#,,#.....#....#.....#,,D...........#      F 
- F  T   #..B..B.....D,,#.....#....#.....#,,#...........#      F 
- F      W...........D,,#.....#....#L....#,,#..........LW      F 
- F      #........B..#,,##################,,#############      F 
- F      #...........#,,#L..............L#,,#...........#   T  F 
- F      W..B..B.....#,,#......B..B......#,,#...........W      F 
- F      #...........#,,D................D,,D...........#      F 
- F      #L..........#,,D..PP........PP..D,,D......M....#      F 
- F      W...........#,,#................#,,#...........W      F 
- F      #...........#,,#................#,,#L..........#      F 
- F      ##W##W##W##W##W##W##W##DD#W##W########W##W##W###      F 
- F T   ==================================================     F 
- F     ==================================================     F 
- F                             ==                             F 
- F                T            ==               T           T F 
- F          T         T        ==            T         T      F 
- F                             ==                             F 
- FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFXXFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF 
                                                                 
 ]]
 
 MapData.Rooms = {
-	{ name = "Библиотека", c1 = 9, r1 = 9, c2 = 19, r2 = 20 },
-	{ name = "Класс A", c1 = 24, r1 = 9, c2 = 31, r2 = 14 },
-	{ name = "Класс B", c1 = 24, r1 = 16, c2 = 31, r2 = 20 },
-	{ name = "Класс C", c1 = 33, r1 = 9, c2 = 39, r2 = 14 },
-	{ name = "Класс D", c1 = 33, r1 = 16, c2 = 39, r2 = 20 },
-	{ name = "Спортзал", c1 = 44, r1 = 9, c2 = 54, r2 = 20 },
-	{ name = "Столовая", c1 = 9, r1 = 26, c2 = 19, r2 = 38 },
-	{ name = "Учительская", c1 = 24, r1 = 26, c2 = 28, r2 = 31 },
-	{ name = "Туалеты", c1 = 30, r1 = 26, c2 = 33, r2 = 31 },
-	{ name = "Кладовка", c1 = 35, r1 = 26, c2 = 39, r2 = 31 },
-	{ name = "Холл", c1 = 24, r1 = 33, c2 = 39, r2 = 38 },
-	{ name = "Мастерская", c1 = 44, r1 = 26, c2 = 54, r2 = 31 },
-	{ name = "Котельная", c1 = 44, r1 = 33, c2 = 54, r2 = 38 },
+	{ name = "Холл", c1 = 24, r1 = 18, c2 = 39, r2 = 29 },
+	{ name = "Гостиная", c1 = 1, r1 = 1, c2 = 9, r2 = 12 },
+	{ name = "Кабинет", c1 = 11, r1 = 1, c2 = 18, r2 = 12 },
+	{ name = "Детская", c1 = 24, r1 = 1, c2 = 39, r2 = 6 },
+	{ name = "Спальня", c1 = 24, r1 = 8, c2 = 39, r2 = 12 },
+	{ name = "Кухня", c1 = 45, r1 = 1, c2 = 53, r2 = 12 },
+	{ name = "Кладовая", c1 = 55, r1 = 1, c2 = 62, r2 = 12 },
+	{ name = "Бальный зал", c1 = 1, r1 = 18, c2 = 18, r2 = 29 },
+	{ name = "Библиотека", c1 = 45, r1 = 18, c2 = 62, r2 = 22 },
+	{ name = "Оранжерея", c1 = 45, r1 = 24, c2 = 62, r2 = 29 },
+	{ name = "Прачечная", c1 = 1, r1 = 35, c2 = 9, r2 = 44 },
+	{ name = "Подвал", c1 = 11, r1 = 35, c2 = 18, r2 = 44 },
+	{ name = "Вестибюль", c1 = 24, r1 = 35, c2 = 39, r2 = 44 },
+	{ name = "Гараж", c1 = 45, r1 = 35, c2 = 53, r2 = 44 },
+	{ name = "Мастерская", c1 = 55, r1 = 35, c2 = 62, r2 = 44 },
 }
 
 return MapData
@@ -844,44 +838,46 @@ function Match:_flicker()
 	end
 end
 
--- ---------------- ключи и парты ----------------
+-- ---------------- ключи ----------------
 
-function Match:_setupSearchables()
-	local shuffled = Util.shuffle(self.arena.Searchables)
-	for index = 1, math.min(MATCH.KeysRequired, #shuffled) do
-		shuffled[index].HasKey = true
-	end
+function Match:_setupKeys()
+	local spots = Util.shuffle(self.arena.KeySpots)
+	for index = 1, math.min(MATCH.KeysRequired, #spots) do
+		local spot = spots[index]
+		local key = Util.makePart(self.arena.Model, "Key", Vector3.new(1, 2.2, 0.5), spot.Position, Color3.fromRGB(255, 214, 90), Enum.Material.Neon)
+		key.CanCollide = false
+		local light = Instance.new("PointLight")
+		light.Color = key.Color
+		light.Range = 22
+		light.Brightness = 2
+		light.Parent = key
 
-	for _, item in self.arena.Searchables do
-		table.insert(self.connections, item.Prompt.Triggered:Connect(function(player)
-			self:_onSearch(player, item)
+		local prompt = Instance.new("ProximityPrompt")
+		prompt.ActionText = "Взять ключ"
+		prompt.ObjectText = "Ключ"
+		prompt.HoldDuration = MATCH.KeyHoldTime
+		prompt.MaxActivationDistance = 9
+		prompt.RequiresLineOfSight = false
+		prompt.Parent = key
+
+		table.insert(self.connections, prompt.Triggered:Connect(function(player)
+			local s = self.state[player]
+			if not key.Parent or not s or s.downed or s.out or s.escaped or s.locker then
+				return
+			end
+			key:Destroy()
+			self.keysFound += 1
+			self.monster:hear(spot.Position, NOISE.Key)
+			self:_onKeyFound(player)
 		end))
-	end
-end
 
-function Match:_onSearch(player, item)
-	local s = self.state[player]
-	if not s or s.downed or s.out or s.escaped or s.locker then
-		return
-	end
-	if item.Searched then
-		notifyEvent:FireClient(player, "Тут уже смотрели. Пусто.", "info")
-		return
-	end
-
-	item.Searched = true
-	item.Prompt.ActionText = "Пусто"
-	item.Prompt.Enabled = false
-	item.Bag.Color = Color3.fromRGB(70, 70, 74)
-
-	-- шаришь по рюкзаку - шумно
-	self.monster:hear(item.Position, NOISE.Search)
-
-	if item.HasKey then
-		self.keysFound += 1
-		self:_onKeyFound(player)
-	else
-		notifyEvent:FireClient(player, "Пусто. Ищи дальше.", "info")
+		-- ключ крутится, чтобы его было видно издалека
+		task.spawn(function()
+			while key.Parent do
+				key.CFrame = key.CFrame * CFrame.Angles(0, 0.05, 0)
+				task.wait(0.03)
+			end
+		end)
 	end
 end
 
@@ -897,13 +893,13 @@ function Match:_onKeyFound(player)
 	effectEvent:FireClient(player, "key")
 
 	if self.keysFound >= MATCH.KeysRequired then
-		self.arena.Gate:SetAttribute("Locked", false)
-		self.arena.Gate.CanCollide = false
-		self.arena.Gate.Transparency = 0.6
-		self.arena.Gate.Color = Color3.fromRGB(40, 180, 90)
-		self:notify("ВСЕ КЛЮЧИ НАЙДЕНЫ. Ворота во дворе открыты - через главный вход и на юг!", "good")
+		self.arena.ExitDoor:SetAttribute("Locked", false)
+		self.arena.ExitDoor.CanCollide = false
+		self.arena.ExitDoor.Transparency = 0.6
+		self.arena.ExitDoor.Color = Color3.fromRGB(40, 180, 90)
+		self:notify("ВСЕ КЛЮЧИ СОБРАНЫ. Дверь выхода открыта - вестибюль, южная стена!", "good")
 	else
-		self:notify(string.format("%s нашёл ключ! %d/%d. ОН стал быстрее.", player.DisplayName, self.keysFound, MATCH.KeysRequired), "good")
+		self:notify(string.format("%s взял ключ! %d/%d. ОН стал быстрее.", player.DisplayName, self.keysFound, MATCH.KeysRequired), "good")
 	end
 end
 
@@ -1076,6 +1072,7 @@ function Match:_playerOut(player, reason)
 		humanoid.JumpPower = 45
 	end
 	self:_teleportToLobby(player)
+	player.CameraMode = Enum.CameraMode.Classic
 	effectEvent:FireClient(player, "out")
 	self:notify(string.format("%s: %s", player.DisplayName, reason), "bad")
 	s.syncStopped = true
@@ -1087,12 +1084,13 @@ function Match:_escape(player)
 	if not s or s.escaped or s.downed or s.out then
 		return
 	end
-	if self.arena.Gate:GetAttribute("Locked") then
-		notifyEvent:FireClient(player, "Ворота заперты. Нужны все ключи.", "bad")
+	if self.arena.ExitDoor:GetAttribute("Locked") then
+		notifyEvent:FireClient(player, "Дверь заперта. Нужны все ключи.", "bad")
 		return
 	end
 	s.escaped = true
 	self:_teleportToLobby(player)
+	player.CameraMode = Enum.CameraMode.Classic
 	effectEvent:FireClient(player, "escaped")
 	self:notify(string.format("%s выбрался!", player.DisplayName), "good")
 	s.syncStopped = true
@@ -1114,10 +1112,7 @@ function Match:playerAction(player, action, value)
 	end
 	local root = Util.getRoot(player.Character)
 
-	if action == "crouch" then
-		s.crouching = value == true
-		player:SetAttribute("Crouching", s.crouching)
-	elseif action == "flashlight" then
+	if action == "flashlight" then
 		s.flashlight = value == true
 		player:SetAttribute("Flashlight", s.flashlight)
 	elseif action == "slide" then
@@ -1156,14 +1151,7 @@ function Match:_sprintNoise()
 		if humanoid.MoveDirection.Magnitude < 0.1 then
 			continue
 		end
-		local radius
-		if s.crouching then
-			radius = NOISE.Crouch
-		elseif humanoid.WalkSpeed >= MOVE.SprintSpeed - 2 then
-			radius = NOISE.Sprint
-		else
-			radius = NOISE.Walk
-		end
+		local radius = humanoid.WalkSpeed >= MOVE.SprintSpeed - 2 and NOISE.Sprint or NOISE.Walk
 		if radius > 0 then
 			self.monster:hear(root.Position, radius)
 		end
@@ -1212,7 +1200,7 @@ function Match:_sync()
 			timeLeft = math.max(0, self.phaseEnds - os.clock()),
 			keys = self.keysFound,
 			keysRequired = MATCH.KeysRequired,
-			gateOpen = not self.arena.Gate:GetAttribute("Locked"),
+			gateOpen = not self.arena.ExitDoor:GetAttribute("Locked"),
 			downed = s.downed,
 			bleed = s.bleed,
 			bleedMax = MATCH.BleedOutTime,
@@ -1238,7 +1226,7 @@ function Match:_step(dt)
 		self:_setLights(MATCH.DimLights)
 		self.monster:wake()
 		self:effect("arrival")
-		self:notify("СВЕТ МИГНУЛ. ОН ПРОСНУЛСЯ.", "bad")
+		self:notify("СВЕТ ПОГАС. ОН ПРОСНУЛСЯ В ХОЛЛЕ.", "bad")
 	end
 
 	if self.phase == "hunt" then
@@ -1284,18 +1272,18 @@ function Match:start()
 			escaped = false,
 			out = false,
 			locker = nil,
-			crouching = false,
 			flashlight = false,
 			lastShout = -100,
 		}
 		player:SetAttribute("InMatch", true)
 		player:SetAttribute("Downed", false)
 		player:SetAttribute("Hidden", false)
+		player.CameraMode = Enum.CameraMode.LockFirstPerson -- в доме - только от первого лица
 		self:_teleportToArena(player, index)
 	end
 
 	self:_setLights(1.1)
-	self:_setupSearchables()
+	self:_setupKeys()
 	self:_setupLockers()
 
 	table.insert(self.connections, self.arena.ExitPad.Touched:Connect(function(hit)
@@ -1315,7 +1303,7 @@ function Match:start()
 		end
 	end))
 
-	self:notify(string.format("%d секунд тишины. Ищите ключи в рюкзаках на партах. Их %d.", MATCH.PrepTime, MATCH.KeysRequired), "info")
+	self:notify(string.format("%d секунд тишины. Соберите %d светящихся ключа и бегите к двери в вестибюле.", MATCH.PrepTime, MATCH.KeysRequired), "info")
 end
 
 function Match:playerLeft(player)
@@ -1332,6 +1320,7 @@ function Match:playerLeft(player)
 	player:SetAttribute("Downed", false)
 	player:SetAttribute("Hidden", false)
 	if player.Parent then
+		player.CameraMode = Enum.CameraMode.Classic
 		syncEvent:FireClient(player, { inMatch = false })
 	end
 	local index = table.find(self.players, player)
@@ -1374,6 +1363,7 @@ function Match:finish(result)
 				humanoid.WalkSpeed = MOVE.WalkSpeed
 				humanoid.JumpPower = 45
 			end
+			player.CameraMode = Enum.CameraMode.Classic
 			notifyEvent:FireClient(player, text, result == "win" and "good" or "bad")
 			syncEvent:FireClient(player, { inMatch = false, result = result })
 			self:_teleportToLobby(player)
@@ -1406,6 +1396,7 @@ local GameConfig = require(Shared:WaitForChild("GameConfig"))
 local Util = require(Shared:WaitForChild("Util"))
 
 local M = GameConfig.Monster
+local SCALE = M.Scale
 
 local Monster = {}
 Monster.__index = Monster
@@ -1416,7 +1407,7 @@ local SKIN = Color3.fromRGB(200, 194, 182)
 local function limb(model, name, size, color, collide)
 	local part = Instance.new("Part")
 	part.Name = name
-	part.Size = size
+	part.Size = size * SCALE
 	part.Color = color
 	part.Material = Enum.Material.Fabric
 	part.CanCollide = collide
@@ -1427,15 +1418,15 @@ local function limb(model, name, size, color, collide)
 end
 
 local function weld(a, b, offset)
-	b.CFrame = a.CFrame * CFrame.new(offset)
+	b.CFrame = a.CFrame * CFrame.new(offset * SCALE)
 	local joint = Instance.new("Weld")
 	joint.Part0 = a
 	joint.Part1 = b
-	joint.C0 = CFrame.new(offset)
+	joint.C0 = CFrame.new(offset * SCALE)
 	joint.Parent = a
 end
 
-local ROOT_HEIGHT = 5.5
+local ROOT_HEIGHT = 5.5 * SCALE
 
 local function buildRig(spawnPosition, collisionGroup)
 	local model = Instance.new("Model")
@@ -1465,7 +1456,7 @@ local function buildRig(spawnPosition, collisionGroup)
 
 	local glow = Instance.new("PointLight")
 	glow.Color = Color3.fromRGB(255, 70, 50)
-	glow.Range = 14
+	glow.Range = 14 * SCALE
 	glow.Brightness = 0.8
 	glow.Parent = head
 
@@ -1511,9 +1502,12 @@ function Monster.new(arena, collisionGroup)
 	self._pathGoal = Vector3.zero
 	self._lastPath = 0
 	self._path = PathfindingService:CreatePath({
-		AgentRadius = 2.5,
-		AgentHeight = 9,
+		AgentRadius = 3.5,
+		AgentHeight = 9 * SCALE,
 		AgentCanJump = false,
+		Costs = {
+			Slit = math.huge, -- в щель он не пролезет: идёт в обход через двери
+		},
 	})
 
 	-- колбэки задаёт Match
@@ -1581,7 +1575,7 @@ function Monster:_moveTo(destination, speed)
 	local waypoint = self._waypoints[self._waypointIndex]
 	while waypoint do
 		local flat = Vector3.new(waypoint.Position.X, self.rig.Root.Position.Y, waypoint.Position.Z)
-		if (flat - self.rig.Root.Position).Magnitude < 3.5 then
+		if (flat - self.rig.Root.Position).Magnitude < 5 then
 			self._waypointIndex += 1
 			waypoint = self._waypoints[self._waypointIndex]
 		else

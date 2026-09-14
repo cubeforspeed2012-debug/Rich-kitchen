@@ -12,6 +12,7 @@ local GameConfig = require(Shared:WaitForChild("GameConfig"))
 local Util = require(Shared:WaitForChild("Util"))
 
 local M = GameConfig.Monster
+local SCALE = M.Scale
 
 local Monster = {}
 Monster.__index = Monster
@@ -22,7 +23,7 @@ local SKIN = Color3.fromRGB(200, 194, 182)
 local function limb(model, name, size, color, collide)
 	local part = Instance.new("Part")
 	part.Name = name
-	part.Size = size
+	part.Size = size * SCALE
 	part.Color = color
 	part.Material = Enum.Material.Fabric
 	part.CanCollide = collide
@@ -33,15 +34,15 @@ local function limb(model, name, size, color, collide)
 end
 
 local function weld(a, b, offset)
-	b.CFrame = a.CFrame * CFrame.new(offset)
+	b.CFrame = a.CFrame * CFrame.new(offset * SCALE)
 	local joint = Instance.new("Weld")
 	joint.Part0 = a
 	joint.Part1 = b
-	joint.C0 = CFrame.new(offset)
+	joint.C0 = CFrame.new(offset * SCALE)
 	joint.Parent = a
 end
 
-local ROOT_HEIGHT = 5.5
+local ROOT_HEIGHT = 5.5 * SCALE
 
 local function buildRig(spawnPosition, collisionGroup)
 	local model = Instance.new("Model")
@@ -71,7 +72,7 @@ local function buildRig(spawnPosition, collisionGroup)
 
 	local glow = Instance.new("PointLight")
 	glow.Color = Color3.fromRGB(255, 70, 50)
-	glow.Range = 14
+	glow.Range = 14 * SCALE
 	glow.Brightness = 0.8
 	glow.Parent = head
 
@@ -117,9 +118,12 @@ function Monster.new(arena, collisionGroup)
 	self._pathGoal = Vector3.zero
 	self._lastPath = 0
 	self._path = PathfindingService:CreatePath({
-		AgentRadius = 2.5,
-		AgentHeight = 9,
+		AgentRadius = 3.5,
+		AgentHeight = 9 * SCALE,
 		AgentCanJump = false,
+		Costs = {
+			Slit = math.huge, -- в щель он не пролезет: идёт в обход через двери
+		},
 	})
 
 	-- колбэки задаёт Match
@@ -187,7 +191,7 @@ function Monster:_moveTo(destination, speed)
 	local waypoint = self._waypoints[self._waypointIndex]
 	while waypoint do
 		local flat = Vector3.new(waypoint.Position.X, self.rig.Root.Position.Y, waypoint.Position.Z)
-		if (flat - self.rig.Root.Position).Magnitude < 3.5 then
+		if (flat - self.rig.Root.Position).Magnitude < 5 then
 			self._waypointIndex += 1
 			waypoint = self._waypoints[self._waypointIndex]
 		else

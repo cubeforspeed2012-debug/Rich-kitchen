@@ -10,7 +10,7 @@ local EVENT_NAMES = {
 	"RoomAction",   -- клиент -> сервер: { action = "create" | "join" | "leave" | "start" | "refresh", roomId = n }
 	"RoomList",     -- сервер -> клиент: список комнат
 	"MatchSync",    -- сервер -> клиент: состояние матча
-	"PlayerAction", -- клиент -> сервер: { action = "slide" | "shout" | "flashlight" | "crouch", value = ... }
+	"PlayerAction", -- клиент -> сервер: { action = "slide" | "shout" | "flashlight", value = ... }
 	"Notify",       -- сервер -> клиент: текст на экран
 	"Effect",       -- сервер -> клиент: "arrival" | "scream" | "down" | "revived" | "out" | "escaped" | "key"
 }

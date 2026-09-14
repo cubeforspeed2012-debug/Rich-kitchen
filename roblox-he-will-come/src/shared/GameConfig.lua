@@ -1,78 +1,71 @@
 --!nonstrict
--- HE WILL COME v2 - все настройки игры. Комментарии на русском, числа в стадах/секундах.
+-- HE WILL COME v3 - все настройки. Стады / секунды.
 
 local GameConfig = {}
 
 GameConfig.Rooms = {
-	MaxPlayers = 4,            -- больше 4 в комнату не пустит
-	MaxRooms = 4,              -- комнат одновременно на одном сервере
-	ArenaSpacing = 1200,       -- расстояние между аренами разных комнат
-	ArenaBaseOffset = Vector3.new(1500, 0, 0),
+	MaxPlayers = 4,
+	MaxRooms = 4,
+	ArenaSpacing = 1600,
+	ArenaBaseOffset = Vector3.new(2000, 0, 0),
 	LobbyCenter = Vector3.new(0, 0, 0),
 }
 
+-- Бег бесконечный. Подкат - главный инструмент: ужимает персонажа, чтобы пролезть в щель.
 GameConfig.Movement = {
 	WalkSpeed = 14,
 	SprintSpeed = 24,
-	CrouchSpeed = 7,
-	MaxStamina = 100,
-	SprintDrain = 14,          -- полной шкалы хватает на ~7 секунд бега
-	StaminaRegen = 9,
-	RegenDelay = 1.5,
-	MinSprintStamina = 5,
-	SlideSpeed = 42,
-	SlideDuration = 0.55,
-	SlideCooldown = 3,
-	SlideStamina = 20,
-	SlideHeightScale = 0.5,
+	SlideSpeed = 46,
+	SlideDuration = 0.7,
+	SlideCooldown = 1.2,
+	SlideHeightScale = 0.42,   -- рост в подкате ~2.8 стада; щель 4 стада, стоя (5+) не пролезть
 }
 
--- радиус, с которого монстр слышит действие
 GameConfig.Noise = {
-	Sprint = 42,
+	Sprint = 44,
 	SprintInterval = 0.4,
 	Walk = 12,
-	Crouch = 0,                -- крадёшься - не слышно вообще
-	Slide = 30,
-	Search = 36,               -- шаришь по парте - шумно
+	Slide = 28,
+	Key = 32,
 	Locker = 22,
-	Shout = 1000,              -- крик слышно по всей школе
+	Shout = 2000,
 	ShoutCooldown = 8,
 }
 
 GameConfig.Monster = {
-	PatrolSpeed = 12,
-	InvestigateSpeed = 17,
-	ChaseSpeed = 25.5,         -- чуть быстрее спринта: убегать надо умно, а не по прямой
-	SpeedPerKey = 0.9,         -- за каждый найденный ключ он становится быстрее
-	SightRange = 55,
-	SightRangeFlashlight = 95, -- с включённым фонарём тебя видно издалека
+	Scale = 2.2,               -- киллер большой: ~20 стадов ростом
+	PatrolSpeed = 13,
+	InvestigateSpeed = 18,
+	ChaseSpeed = 27,           -- быстрее твоего бега: спасают только щели, углы и шкафы
+	SpeedPerKey = 0.8,
+	SightRange = 60,
+	SightRangeFlashlight = 100,
 	FieldOfView = 100,
-	CloseSense = 9,            -- вплотную чует без обзора
-	CatchDistance = 4,
-	LoseSightGrace = 3,        -- столько секунд помнит тебя без прямой видимости
+	CloseSense = 12,
+	CatchDistance = 6.5,
+	LoseSightGrace = 3,
 	SearchTime = 6,
 	RepathInterval = 0.4,
-	ScreamCooldown = 12,       -- заметив игрока, орёт на всю школу
+	ScreamCooldown = 12,
 	CatchCooldown = 3,
-	LockerPullGrace = 1.5,     -- видел, как ты прыгнул в шкаф - вытащит
+	LockerPullGrace = 1.5,
 }
 
 GameConfig.Match = {
-	PrepTime = 20,             -- свет горит, монстр ещё спит
+	PrepTime = 20,
 	KeysRequired = 5,
-	SearchHoldTime = 2.5,
-	SearchCooldown = 1,
+	KeyHoldTime = 1,
 	ReviveTime = 4,
 	BleedOutTime = 40,
 	EndScreenTime = 7,
-	MaxMatchTime = 720,
-	DimLights = 0.28,          -- яркость ламп после прихода монстра
+	MaxMatchTime = 900,
+	DimLights = 0.3,
 }
 
 GameConfig.Map = {
-	WallHeight = 12,
-	TileSize = 4,
+	TileSize = 6,
+	WallHeight = 20,
+	SlitHeight = 4,
 }
 
 return GameConfig

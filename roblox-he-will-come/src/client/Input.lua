@@ -1,6 +1,7 @@
 --!nonstrict
--- Управление: Shift бег, C присесть, Shift+C подкат, F фонарь, T крик.
--- Скорость ставится каждый кадр здесь, на клиенте, - это гарантирует, что бег работает.
+-- Управление. ПК: Shift бег, C подкат, F фонарь, T крик.
+-- Телефон: кнопки БЕГ / ПОДКАТ / ФОНАРЬ / КРИК справа внизу.
+-- Бег бесконечный. Скорость ставится каждый кадр здесь, на клиенте.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -19,12 +20,9 @@ local actionEvent = Remotes.get("PlayerAction")
 local Input = {}
 
 local hud
-local stamina = MOVE.MaxStamina
-local sprintHeld = false
-local crouching = false
+local running = false          -- ПК: пока зажат Shift; телефон: тумблер
 local sliding = false
 local slideReadyAt = 0
-local lastDrainAt = 0
 local flashlightOn = false
 local flashlight = nil
 local lastShout = -100
@@ -55,8 +53,8 @@ local function attachFlashlight()
 	end
 	local light = Instance.new("SpotLight")
 	light.Name = "Flashlight"
-	light.Angle = 60
-	light.Range = 60
+	light.Angle = 62
+	light.Range = 70
 	light.Brightness = 3
 	light.Face = Enum.NormalId.Front
 	light.Enabled = flashlightOn
@@ -74,29 +72,28 @@ local function toggleFlashlight()
 	actionEvent:FireServer({ action = "flashlight", value = flashlightOn })
 end
 
-local function setCrouch(value)
-	crouching = value
-	local humanoid = character()
-	if humanoid then
-		setHeight(humanoid, crouching and 0.7 or 1)
-	end
-	actionEvent:FireServer({ action = "crouch", value = crouching })
-end
-
+-- Подкат: рывок вперёд + персонаж ужимается, чтобы пролезть в щель
 local function slide()
 	local humanoid, root = character()
 	if not humanoid or not root or sliding or os.clock() < slideReadyAt then
 		return
 	end
-	if humanoid.MoveDirection.Magnitude < 0.1 or stamina < MOVE.SlideStamina then
+	if player:GetAttribute("Downed") or player:GetAttribute("Hidden") then
 		return
 	end
+	local direction = humanoid.MoveDirection
+	if direction.Magnitude < 0.1 then
+		direction = root.CFrame.LookVector
+	end
+	direction = Vector3.new(direction.X, 0, direction.Z)
+	if direction.Magnitude < 0.05 then
+		return
+	end
+	direction = direction.Unit
+
 	sliding = true
-	stamina -= MOVE.SlideStamina
 	slideReadyAt = os.clock() + MOVE.SlideCooldown
 	actionEvent:FireServer({ action = "slide" })
-
-	local direction = Vector3.new(humanoid.MoveDirection.X, 0, humanoid.MoveDirection.Z).Unit
 	setHeight(humanoid, MOVE.SlideHeightScale)
 
 	local attachment = Instance.new("Attachment")
@@ -112,11 +109,25 @@ local function slide()
 	task.delay(MOVE.SlideDuration, function()
 		velocity:Destroy()
 		attachment:Destroy()
-		local currentHumanoid = character()
-		if currentHumanoid then
-			setHeight(currentHumanoid, crouching and 0.7 or 1)
-		end
 		sliding = false
+		-- пока над головой потолок щели - остаёмся маленькими, иначе застрянем в стене
+		task.spawn(function()
+			local params = RaycastParams.new()
+			params.FilterType = Enum.RaycastFilterType.Exclude
+			for _ = 1, 20 do
+				local currentHumanoid, currentRoot = character()
+				if not currentHumanoid or not currentRoot or sliding then
+					return
+				end
+				params.FilterDescendantsInstances = { player.Character }
+				local blocked = workspace:Raycast(currentRoot.Position, Vector3.new(0, 4.5, 0), params)
+				if not blocked then
+					setHeight(currentHumanoid, 1)
+					return
+				end
+				task.wait(0.2)
+			end
+		end)
 	end)
 end
 
@@ -128,8 +139,45 @@ local function shout()
 	actionEvent:FireServer({ action = "shout" })
 end
 
-function Input.isSprinting()
-	return sprintHeld
+-- ---------- кнопки для телефона ----------
+local function buildTouchButtons()
+	local gui = Instance.new("ScreenGui")
+	gui.Name = "HWC_Touch"
+	gui.ResetOnSpawn = false
+	gui.DisplayOrder = 8
+	gui.Parent = player:WaitForChild("PlayerGui")
+
+	local function button(text, position, color)
+		local element = Instance.new("TextButton")
+		element.Size = UDim2.fromOffset(84, 84)
+		element.Position = position
+		element.AnchorPoint = Vector2.new(1, 1)
+		element.BackgroundColor3 = color
+		element.BackgroundTransparency = 0.25
+		element.BorderSizePixel = 0
+		element.Text = text
+		element.Font = Enum.Font.GothamBlack
+		element.TextSize = 16
+		element.TextColor3 = Color3.fromRGB(255, 255, 255)
+		element.Parent = gui
+		local corner = Instance.new("UICorner")
+		corner.CornerRadius = UDim.new(1, 0)
+		corner.Parent = element
+		return element
+	end
+
+	local runButton = button("БЕГ", UDim2.new(1, -30, 1, -150), Color3.fromRGB(50, 90, 140))
+	local slideButton = button("ПОД-\nКАТ", UDim2.new(1, -130, 1, -110), Color3.fromRGB(150, 110, 30))
+	local lightButton = button("ФО-\nНАРЬ", UDim2.new(1, -30, 1, -250), Color3.fromRGB(80, 80, 90))
+	local shoutButton = button("КРИК", UDim2.new(1, -130, 1, -210), Color3.fromRGB(140, 40, 40))
+
+	runButton.Activated:Connect(function()
+		running = not running
+		runButton.BackgroundTransparency = running and 0 or 0.25
+	end)
+	slideButton.Activated:Connect(slide)
+	lightButton.Activated:Connect(toggleFlashlight)
+	shoutButton.Activated:Connect(shout)
 end
 
 function Input.start(hudModule)
@@ -141,74 +189,53 @@ function Input.start(hudModule)
 		end
 		local key = input.KeyCode
 		if key == Enum.KeyCode.LeftShift or key == Enum.KeyCode.RightShift then
-			sprintHeld = true
-		elseif key == Enum.KeyCode.C or key == Enum.KeyCode.LeftControl then
-			local humanoid = character()
-			if sprintHeld and humanoid and humanoid.WalkSpeed >= MOVE.SprintSpeed - 1 then
-				slide()
-			else
-				setCrouch(not crouching)
-			end
-		elseif key == Enum.KeyCode.F then
+			running = true
+		elseif key == Enum.KeyCode.C or key == Enum.KeyCode.LeftControl or key == Enum.KeyCode.ButtonB then
+			slide()
+		elseif key == Enum.KeyCode.F or key == Enum.KeyCode.ButtonY then
 			toggleFlashlight()
-		elseif key == Enum.KeyCode.T then
+		elseif key == Enum.KeyCode.T or key == Enum.KeyCode.ButtonX then
 			shout()
 		end
 	end)
 
 	UserInputService.InputEnded:Connect(function(input)
 		if input.KeyCode == Enum.KeyCode.LeftShift or input.KeyCode == Enum.KeyCode.RightShift then
-			sprintHeld = false
+			running = false
 		end
 	end)
 
+	if UserInputService.TouchEnabled then
+		buildTouchButtons()
+	end
+
 	player.CharacterAdded:Connect(function()
-		stamina = MOVE.MaxStamina
-		sprintHeld = false
 		sliding = false
-		crouching = false
 		task.wait(0.6)
 		attachFlashlight()
-		actionEvent:FireServer({ action = "crouch", value = false })
 		actionEvent:FireServer({ action = "flashlight", value = flashlightOn })
 	end)
 	attachFlashlight()
 
-	RunService.RenderStepped:Connect(function(dt)
+	RunService.RenderStepped:Connect(function()
 		local humanoid = character()
 		if not humanoid or humanoid.Health <= 0 then
 			return
 		end
 
-		-- лежишь или сидишь в шкафу - стоишь на месте
 		if player:GetAttribute("Downed") or player:GetAttribute("Hidden") then
 			humanoid.WalkSpeed = 0
-			hud.setStamina(stamina, MOVE.MaxStamina)
 			return
 		end
 
 		if sliding then
-			humanoid.WalkSpeed = 6
-			hud.setStamina(stamina, MOVE.MaxStamina)
-			return
-		end
-
-		local moving = humanoid.MoveDirection.Magnitude > 0.1
-		local canSprint = sprintHeld and moving and not crouching and stamina > MOVE.MinSprintStamina
-
-		if canSprint then
-			stamina = math.max(0, stamina - MOVE.SprintDrain * dt)
-			lastDrainAt = os.clock()
-			humanoid.WalkSpeed = MOVE.SprintSpeed
+			humanoid.WalkSpeed = 8
 		else
-			humanoid.WalkSpeed = crouching and MOVE.CrouchSpeed or MOVE.WalkSpeed
-			if os.clock() - lastDrainAt > MOVE.RegenDelay then
-				stamina = math.min(MOVE.MaxStamina, stamina + MOVE.StaminaRegen * dt)
-			end
+			humanoid.WalkSpeed = running and MOVE.SprintSpeed or MOVE.WalkSpeed
 		end
 
-		hud.setStamina(stamina, MOVE.MaxStamina)
-		hud.setMoveState(crouching, canSprint, flashlightOn)
+		local slideReady = math.clamp(1 - (slideReadyAt - os.clock()) / MOVE.SlideCooldown, 0, 1)
+		hud.setMoveState(running and not sliding, flashlightOn, slideReady)
 	end)
 end
 
