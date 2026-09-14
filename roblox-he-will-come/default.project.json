@@ -1,0 +1,26 @@
+{
+  "name": "HeWillCome",
+  "tree": {
+    "$className": "DataModel",
+
+    "ReplicatedStorage": {
+      "HWCShared": {
+        "$path": "src/shared"
+      }
+    },
+
+    "ServerScriptService": {
+      "HWCServer": {
+        "$path": "src/server"
+      }
+    },
+
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "HWCClient": {
+          "$path": "src/client"
+        }
+      }
+    }
+  }
+}
