@@ -1,0 +1,222 @@
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+	<Item class="Folder" referent="RBX0">
+		<Properties>
+			<string name="Name">HWCShared</string>
+		</Properties>
+		<Item class="ModuleScript" referent="RBX1">
+			<Properties>
+				<string name="Name">GameConfig</string>
+				<ProtectedString name="Source"><![CDATA[--!nonstrict
+-- HE WILL COME - все настройки в одном месте.
+
+local GameConfig = {}
+
+GameConfig.Rooms = {
+	MaxPlayers = 4,          -- больше 4 в комнату нельзя
+	MaxRooms = 4,            -- сколько комнат живёт на одном сервере
+	ArenaSpacing = 3000,     -- комнаты стоят далеко друг от друга, чтобы не мешать
+	ArenaBaseOffset = Vector3.new(3000, 0, 0),
+	LobbyCenter = Vector3.new(0, 0, 0),
+}
+
+GameConfig.Movement = {
+	WalkSpeed = 15,
+	SprintSpeed = 24,
+	CrouchSpeed = 7,
+	MaxStamina = 100,
+	SprintDrain = 15,
+	StaminaRegen = 10,
+	RegenDelay = 1.2,
+	MinSprintStamina = 6,
+}
+
+-- Громкость действий. ОН слепой и охотится только на звук и свет.
+GameConfig.Noise = {
+	TickInterval = 0.5,
+	Crouch = 0,              -- присел и крадёшься - ты для него не существуешь
+	Walk = 14,
+	Sprint = 34,
+	Flashlight = 16,         -- включённый фонарь он тоже "чувствует"
+	Fuse = 70,               -- вставил предохранитель - шум на весь дом
+	Scream = 140,            -- паника при нуле рассудка
+	Decay = 12,              -- сколько "тепла" спадает в секунду
+	MaxHeat = 200,
+	SenseRadius = 9,         -- вплотную чувствует даже молчащего
+}
+
+-- ОН
+GameConfig.He = {
+	BaseSpeed = 11,
+	MaxSpeed = 27,
+	Momentum = 0.45,         -- прибавка скорости в секунду, пока на него не смотрят
+	MomentumLossOnGaze = 6,  -- сколько скорости теряет за секунду под взглядом
+	GazeSpeedFactor = 0.18,  -- под взглядом почти стоит
+	GazeRange = 70,
+	GazeAngle = 22,          -- насколько точно надо смотреть, в градусах
+	CatchDistance = 4.2,
+	CatchCooldown = 6,
+	RepathInterval = 0.5,
+	WanderRadius = 45,
+}
+
+GameConfig.Sanity = {
+	Max = 100,
+	GazeDrain = 9,           -- смотреть на него страшно и дорого
+	Regen = 4.5,
+	RegenDelay = 2,
+	PanicRefill = 30,
+	PanicLockTime = 5,       -- после паники нельзя бежать
+	NearDrain = 3,           -- он рядом - рассудок тоже капает
+	NearDistance = 18,
+}
+
+GameConfig.Match = {
+	PrepTime = 30,           -- тихая фаза до его прихода
+	FusesRequired = 3,
+	FuseHoldTime = 4,
+	ReviveTime = 4,
+	BleedOutTime = 45,
+	EndScreenTime = 8,
+	MaxMatchTime = 600,
+}
+
+GameConfig.Arena = {
+	WallHeight = 16,
+	WallThickness = 2,
+	HalfX = 90,
+	HalfZ = 70,
+}
+
+return GameConfig
+]]></ProtectedString>
+			</Properties>
+		</Item>
+		<Item class="ModuleScript" referent="RBX2">
+			<Properties>
+				<string name="Name">Remotes</string>
+				<ProtectedString name="Source"><![CDATA[--!nonstrict
+-- Общий список Remote-событий лобби и матча.
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+
+local EVENT_NAMES = {
+	-- лобби
+	"RoomAction",   -- клиент -> сервер: {action = "create"/"join"/"leave"/"start", roomId = n}
+	"RoomList",     -- сервер -> клиент: список комнат
+	-- матч
+	"MatchSync",    -- сервер -> клиент: состояние матча и игрока
+	"GazeReport",   -- клиент -> сервер: куда смотрит камера
+	"Notify",       -- сервер -> клиент: текст
+	"Scare",        -- сервер -> клиент: он тебя достал
+	"Crouch",       -- клиент -> сервер: приседание (влияет на шум)
+	"Flashlight",   -- клиент -> сервер: фонарь включён/выключен
+}
+
+local Remotes = {}
+
+local folder: Folder
+if RunService:IsServer() then
+	local existing = ReplicatedStorage:FindFirstChild("HWCRemotes")
+	if existing then
+		folder = existing
+	else
+		folder = Instance.new("Folder")
+		folder.Name = "HWCRemotes"
+		folder.Parent = ReplicatedStorage
+	end
+	for _, name in EVENT_NAMES do
+		if not folder:FindFirstChild(name) then
+			local event = Instance.new("RemoteEvent")
+			event.Name = name
+			event.Parent = folder
+		end
+	end
+else
+	folder = ReplicatedStorage:WaitForChild("HWCRemotes")
+end
+
+function Remotes.get(name: string): RemoteEvent
+	return folder:WaitForChild(name)
+end
+
+return Remotes
+]]></ProtectedString>
+			</Properties>
+		</Item>
+		<Item class="ModuleScript" referent="RBX3">
+			<Properties>
+				<string name="Name">Util</string>
+				<ProtectedString name="Source"><![CDATA[--!nonstrict
+-- Общие помощники.
+
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+
+local Util = {}
+
+function Util.getRoot(character): BasePart?
+	if not character then
+		return nil
+	end
+	return character:FindFirstChild("HumanoidRootPart")
+end
+
+function Util.getHumanoid(character): Humanoid?
+	if not character then
+		return nil
+	end
+	return character:FindFirstChildOfClass("Humanoid")
+end
+
+function Util.isAlive(player: Player): boolean
+	local humanoid = Util.getHumanoid(player.Character)
+	return humanoid ~= nil and humanoid.Health > 0
+end
+
+function Util.hasLineOfSight(fromPos: Vector3, toPos: Vector3, ignore): boolean
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = ignore
+	params.IgnoreWater = true
+
+	local result = Workspace:Raycast(fromPos, toPos - fromPos, params)
+	if not result then
+		return true
+	end
+	local model = result.Instance:FindFirstAncestorOfClass("Model")
+	if model and Players:GetPlayerFromCharacter(model) then
+		return true
+	end
+	return false
+end
+
+function Util.makePart(parent: Instance, name: string, size: Vector3, position: Vector3, color: Color3, material: Enum.Material): Part
+	local part = Instance.new("Part")
+	part.Name = name
+	part.Size = size
+	part.Position = position
+	part.Anchored = true
+	part.Color = color
+	part.Material = material
+	part.TopSurface = Enum.SurfaceType.Smooth
+	part.BottomSurface = Enum.SurfaceType.Smooth
+	part.Parent = parent
+	return part
+end
+
+function Util.shuffle(list)
+	local copy = table.clone(list)
+	for i = #copy, 2, -1 do
+		local j = math.random(1, i)
+		copy[i], copy[j] = copy[j], copy[i]
+	end
+	return copy
+end
+
+return Util
+]]></ProtectedString>
+			</Properties>
+		</Item>
+	</Item>
+</roblox>

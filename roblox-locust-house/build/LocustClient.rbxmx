@@ -1,0 +1,589 @@
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+	<Item class="Folder" referent="RBX0">
+		<Properties>
+			<string name="Name">LocustClient</string>
+		</Properties>
+		<Item class="ModuleScript" referent="RBX1">
+			<Properties>
+				<string name="Name">ActionController</string>
+				<ProtectedString name="Source"><![CDATA[--!nonstrict
+-- Подколка (T), приманка (Q) и фонарик (F).
+
+local ContextActionService = game:GetService("ContextActionService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+
+local Shared = ReplicatedStorage:WaitForChild("LocustShared")
+local GameConfig = require(Shared:WaitForChild("GameConfig"))
+local Remotes = require(Shared:WaitForChild("Remotes"))
+
+local RAGE = GameConfig.Rage
+local BAIT = GameConfig.Bait
+
+local player = Players.LocalPlayer
+local tauntEvent = Remotes.get("Taunt")
+local baitEvent = Remotes.get("ThrowBait")
+
+local ActionController = {}
+
+local nextTaunt = 0
+local nextBait = 0
+local flashlightOn = false
+local flashlight: SpotLight? = nil
+
+local function attachFlashlight()
+	local character = player.Character
+	local head = character and character:FindFirstChild("Head")
+	if not head then
+		return
+	end
+	if flashlight and flashlight.Parent then
+		flashlight:Destroy()
+	end
+	local light = Instance.new("SpotLight")
+	light.Name = "Flashlight"
+	light.Angle = 70
+	light.Range = 48
+	light.Brightness = 2.5
+	light.Face = Enum.NormalId.Front
+	light.Enabled = flashlightOn
+	light.Parent = head
+	flashlight = light
+end
+
+local function onTaunt(_, state: Enum.UserInputState)
+	if state ~= Enum.UserInputState.Begin then
+		return Enum.ContextActionResult.Pass
+	end
+	if os.clock() < nextTaunt then
+		return Enum.ContextActionResult.Pass
+	end
+	nextTaunt = os.clock() + RAGE.TauntCooldown
+	tauntEvent:FireServer()
+	return Enum.ContextActionResult.Pass
+end
+
+local function onBait(_, state: Enum.UserInputState)
+	if state ~= Enum.UserInputState.Begin then
+		return Enum.ContextActionResult.Pass
+	end
+	if os.clock() < nextBait then
+		return Enum.ContextActionResult.Pass
+	end
+	nextBait = os.clock() + BAIT.Cooldown
+	local camera = Workspace.CurrentCamera
+	local direction = camera and camera.CFrame.LookVector or Vector3.new(0, 0, -1)
+	baitEvent:FireServer(direction)
+	return Enum.ContextActionResult.Pass
+end
+
+local function onFlashlight(_, state: Enum.UserInputState)
+	if state ~= Enum.UserInputState.Begin then
+		return Enum.ContextActionResult.Pass
+	end
+	flashlightOn = not flashlightOn
+	if flashlight and flashlight.Parent then
+		flashlight.Enabled = flashlightOn
+	else
+		attachFlashlight()
+	end
+	return Enum.ContextActionResult.Pass
+end
+
+function ActionController.start()
+	ContextActionService:BindAction("LocustTaunt", onTaunt, true, Enum.KeyCode.T)
+	ContextActionService:BindAction("LocustBait", onBait, true, Enum.KeyCode.Q)
+	ContextActionService:BindAction("LocustLight", onFlashlight, true, Enum.KeyCode.F)
+	ContextActionService:SetTitle("LocustTaunt", "Дразнить")
+	ContextActionService:SetTitle("LocustBait", "Приманка")
+	ContextActionService:SetTitle("LocustLight", "Фонарь")
+
+	player.CharacterAdded:Connect(function()
+		task.wait(0.5)
+		attachFlashlight()
+	end)
+	attachFlashlight()
+end
+
+return ActionController
+]]></ProtectedString>
+			</Properties>
+		</Item>
+		<Item class="ModuleScript" referent="RBX2">
+			<Properties>
+				<string name="Name">Effects</string>
+				<ProtectedString name="Source"><![CDATA[--!nonstrict
+-- Скример, тряска камеры и цветокоррекция при ярости.
+
+local Lighting = game:GetService("Lighting")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local Workspace = game:GetService("Workspace")
+
+local Effects = {}
+
+local player = Players.LocalPlayer
+
+local correction = Instance.new("ColorCorrectionEffect")
+correction.Name = "LocustCorrection"
+correction.TintColor = Color3.fromRGB(255, 255, 255)
+correction.Saturation = -0.15
+correction.Parent = Lighting
+
+local shakeUntil = 0
+local shakeStrength = 0
+
+function Effects.setRage(rage: number)
+	local intensity = math.clamp(rage / 100, 0, 1)
+	correction.TintColor = Color3.fromRGB(255, 255 - math.floor(70 * intensity), 255 - math.floor(90 * intensity))
+	correction.Contrast = intensity * 0.25
+end
+
+function Effects.shake(duration: number, strength: number)
+	shakeUntil = os.clock() + duration
+	shakeStrength = strength
+end
+
+function Effects.jumpscare(gui: ScreenGui)
+	local frame = Instance.new("Frame")
+	frame.Size = UDim2.fromScale(1, 1)
+	frame.BackgroundColor3 = Color3.fromRGB(90, 0, 0)
+	frame.BackgroundTransparency = 0.15
+	frame.ZIndex = 50
+	frame.Parent = gui
+
+	local text = Instance.new("TextLabel")
+	text.Size = UDim2.fromScale(1, 0.3)
+	text.Position = UDim2.fromScale(0, 0.35)
+	text.BackgroundTransparency = 1
+	text.Text = "ПОПАЛСЯ"
+	text.TextScaled = true
+	text.Font = Enum.Font.GothamBlack
+	text.TextColor3 = Color3.fromRGB(255, 240, 240)
+	text.ZIndex = 51
+	text.Parent = frame
+
+	Effects.shake(1.2, 2.5)
+
+	task.delay(1.1, function()
+		TweenService:Create(frame, TweenInfo.new(0.8), { BackgroundTransparency = 1 }):Play()
+		TweenService:Create(text, TweenInfo.new(0.5), { TextTransparency = 1 }):Play()
+		task.wait(0.9)
+		frame:Destroy()
+	end)
+end
+
+function Effects.start()
+	-- Приоритет выше камеры, иначе стандартный скрипт камеры затрёт тряску.
+	RunService:BindToRenderStep("LocustShake", Enum.RenderPriority.Camera.Value + 1, function()
+		local camera = Workspace.CurrentCamera
+		if not camera then
+			return
+		end
+		if os.clock() < shakeUntil then
+			local offset = Vector3.new(
+				(math.random() - 0.5) * shakeStrength,
+				(math.random() - 0.5) * shakeStrength,
+				0
+			)
+			camera.CFrame = camera.CFrame * CFrame.new(offset)
+		end
+	end)
+
+	player.CharacterAdded:Connect(function()
+		correction.TintColor = Color3.fromRGB(255, 255, 255)
+	end)
+end
+
+return Effects
+]]></ProtectedString>
+			</Properties>
+		</Item>
+		<Item class="ModuleScript" referent="RBX3">
+			<Properties>
+				<string name="Name">Hud</string>
+				<ProtectedString name="Source"><![CDATA[--!nonstrict
+-- Весь интерфейс рисуется кодом: полоски стамины и ярости, множитель,
+-- ключи, приманки и всплывающие подсказки.
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+
+local player = Players.LocalPlayer
+
+local Hud = {}
+
+local COLORS = {
+	good = Color3.fromRGB(90, 220, 140),
+	bad = Color3.fromRGB(255, 90, 90),
+	info = Color3.fromRGB(200, 210, 230),
+	rage = Color3.fromRGB(255, 170, 60),
+}
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "LocustHud"
+gui.ResetOnSpawn = false
+gui.IgnoreGuiInset = true
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local function label(parent: Instance, text: string, size: UDim2, position: UDim2, textSize: number): TextLabel
+	local element = Instance.new("TextLabel")
+	element.BackgroundTransparency = 1
+	element.Size = size
+	element.Position = position
+	element.Text = text
+	element.TextSize = textSize
+	element.Font = Enum.Font.GothamBold
+	element.TextColor3 = Color3.fromRGB(240, 240, 245)
+	element.TextStrokeTransparency = 0.4
+	element.TextXAlignment = Enum.TextXAlignment.Left
+	element.Parent = parent
+	return element
+end
+
+local function bar(parent: Instance, size: UDim2, position: UDim2, color: Color3): (Frame, Frame)
+	local back = Instance.new("Frame")
+	back.Size = size
+	back.Position = position
+	back.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
+	back.BackgroundTransparency = 0.35
+	back.BorderSizePixel = 0
+	back.Parent = parent
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 6)
+	corner.Parent = back
+
+	local fill = Instance.new("Frame")
+	fill.Size = UDim2.fromScale(1, 1)
+	fill.BackgroundColor3 = color
+	fill.BorderSizePixel = 0
+	fill.Parent = back
+
+	local fillCorner = Instance.new("UICorner")
+	fillCorner.CornerRadius = UDim.new(0, 6)
+	fillCorner.Parent = fill
+
+	return back, fill
+end
+
+-- Задача раунда
+local objective = label(gui, "Ключи 0/4", UDim2.fromOffset(360, 30), UDim2.fromOffset(20, 18), 22)
+local hint = label(gui, "Найди ключи и беги к красной двери на севере", UDim2.fromOffset(460, 24), UDim2.fromOffset(20, 46), 15)
+hint.TextColor3 = Color3.fromRGB(180, 185, 200)
+
+-- Ярость монстра (главная механика)
+local rageTitle = label(gui, "ЯРОСТЬ САРАНЧИ", UDim2.fromOffset(300, 22), UDim2.new(0.5, -150, 0, 16), 16)
+rageTitle.TextXAlignment = Enum.TextXAlignment.Center
+local _, rageFill = bar(gui, UDim2.fromOffset(300, 14), UDim2.new(0.5, -150, 0, 40), COLORS.rage)
+local multiplierLabel = label(gui, "x1.00", UDim2.fromOffset(300, 26), UDim2.new(0.5, -150, 0, 58), 20)
+multiplierLabel.TextXAlignment = Enum.TextXAlignment.Center
+multiplierLabel.TextColor3 = COLORS.rage
+
+-- Стамина
+local _, staminaFill = bar(gui, UDim2.fromOffset(260, 12), UDim2.new(0, 20, 1, -54), Color3.fromRGB(120, 200, 255))
+local staminaLabel = label(gui, "Выносливость", UDim2.fromOffset(260, 20), UDim2.new(0, 20, 1, -76), 14)
+staminaLabel.TextColor3 = Color3.fromRGB(170, 200, 230)
+
+-- Приманки и управление
+local baitLabel = label(gui, "Приманки: 3", UDim2.fromOffset(300, 24), UDim2.new(0, 20, 1, -100), 17)
+local keysHint = label(
+	gui,
+	"Shift - бег   |   C - подкат (пролезть в лаз)   |   Q - приманка   |   T - ПОДРАЗНИТЬ   |   F - фонарь",
+	UDim2.fromOffset(900, 22),
+	UDim2.new(0, 20, 1, -26),
+	14
+)
+keysHint.TextColor3 = Color3.fromRGB(150, 155, 170)
+
+-- Индикатор близости монстра
+local dangerLabel = label(gui, "", UDim2.fromOffset(300, 26), UDim2.new(0.5, -150, 0, 88), 18)
+dangerLabel.TextXAlignment = Enum.TextXAlignment.Center
+
+-- Тосты
+local toast = label(gui, "", UDim2.fromOffset(700, 30), UDim2.new(0.5, -350, 0.72, 0), 20)
+toast.TextXAlignment = Enum.TextXAlignment.Center
+toast.TextTransparency = 1
+
+-- Красная рамка опасности
+local vignette = Instance.new("Frame")
+vignette.Size = UDim2.fromScale(1, 1)
+vignette.BackgroundColor3 = Color3.fromRGB(120, 0, 0)
+vignette.BackgroundTransparency = 1
+vignette.BorderSizePixel = 0
+vignette.ZIndex = 0
+vignette.Parent = gui
+
+local toastToken = 0
+
+function Hud.toast(text: string, color: string?)
+	toastToken += 1
+	local token = toastToken
+	toast.Text = text
+	toast.TextColor3 = COLORS[color or "info"] or COLORS.info
+	toast.TextTransparency = 0
+	task.delay(3, function()
+		if token == toastToken then
+			TweenService:Create(toast, TweenInfo.new(0.6), { TextTransparency = 1 }):Play()
+		end
+	end)
+end
+
+function Hud.setStamina(value: number, max: number)
+	staminaFill.Size = UDim2.fromScale(math.clamp(value / max, 0, 1), 1)
+	staminaFill.BackgroundColor3 = value < 20 and Color3.fromRGB(255, 120, 120) or Color3.fromRGB(120, 200, 255)
+end
+
+function Hud.setState(data)
+	objective.Text = string.format("Ключи %d/%d", data.keys, data.keysTotal)
+	hint.Text = data.locked and "Найди все ключи, потом красная дверь на севере"
+		or "ВЫХОД ОТКРЫТ! Беги на север!"
+
+	rageFill.Size = UDim2.fromScale(math.clamp(data.rage / 100, 0, 1), 1)
+	if data.rage >= 80 then
+		rageTitle.Text = "!!! ЯРОСТЬ !!!"
+		rageTitle.TextColor3 = Color3.fromRGB(255, 90, 60)
+		rageFill.BackgroundColor3 = Color3.fromRGB(255, 70, 50)
+	elseif data.rage >= 40 then
+		rageTitle.Text = "САРАНЧА ЗЛИТСЯ"
+		rageTitle.TextColor3 = COLORS.rage
+		rageFill.BackgroundColor3 = COLORS.rage
+	else
+		rageTitle.Text = "ЯРОСТЬ САРАНЧИ"
+		rageTitle.TextColor3 = Color3.fromRGB(210, 210, 220)
+		rageFill.BackgroundColor3 = Color3.fromRGB(160, 160, 170)
+	end
+
+	multiplierLabel.Text = string.format("x%.2f   банк: %d", data.multiplier, data.bank)
+	baitLabel.Text = string.format("Приманки: %d", data.baits)
+
+	local distance = data.distance or 999
+	if distance < 18 then
+		dangerLabel.Text = "ОН ПРЯМО ЗДЕСЬ"
+		dangerLabel.TextColor3 = COLORS.bad
+	elseif distance < 40 then
+		dangerLabel.Text = "он рядом..."
+		dangerLabel.TextColor3 = COLORS.rage
+	elseif distance < 70 then
+		dangerLabel.Text = "слышны шаги"
+		dangerLabel.TextColor3 = Color3.fromRGB(180, 180, 190)
+	else
+		dangerLabel.Text = ""
+	end
+
+	local danger = math.clamp(1 - distance / 40, 0, 1) * 0.45
+	vignette.BackgroundTransparency = 1 - danger
+end
+
+function Hud.getGui(): ScreenGui
+	return gui
+end
+
+return Hud
+]]></ProtectedString>
+			</Properties>
+		</Item>
+		<Item class="LocalScript" referent="RBX4">
+			<Properties>
+				<string name="Name">Main</string>
+				<ProtectedString name="Source"><![CDATA[--!nonstrict
+-- Точка входа клиента.
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Shared = ReplicatedStorage:WaitForChild("LocustShared")
+local Remotes = require(Shared:WaitForChild("Remotes"))
+
+local Hud = require(script.Parent:WaitForChild("Hud"))
+local MovementController = require(script.Parent:WaitForChild("MovementController"))
+local ActionController = require(script.Parent:WaitForChild("ActionController"))
+local Effects = require(script.Parent:WaitForChild("Effects"))
+
+MovementController.start(Hud)
+ActionController.start()
+Effects.start()
+
+Remotes.get("StateSync").OnClientEvent:Connect(function(data)
+	Hud.setState(data)
+	Effects.setRage(data.rage)
+end)
+
+Remotes.get("Notify").OnClientEvent:Connect(function(text: string, color: string?)
+	Hud.toast(text, color)
+end)
+
+Remotes.get("Jumpscare").OnClientEvent:Connect(function()
+	Effects.jumpscare(Hud.getGui())
+end)
+
+Hud.toast("Найди ключи, не попадись. Дразнить монстра - кнопка T.", "info")
+]]></ProtectedString>
+			</Properties>
+		</Item>
+		<Item class="ModuleScript" referent="RBX5">
+			<Properties>
+				<string name="Name">MovementController</string>
+				<ProtectedString name="Source"><![CDATA[--!nonstrict
+-- Бег с выносливостью и ПОДКАТ: персонаж ужимается и проскальзывает
+-- в низкий лаз, куда монстр не пролезет (ему придётся бежать в обход).
+
+local ContextActionService = game:GetService("ContextActionService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+
+local Shared = ReplicatedStorage:WaitForChild("LocustShared")
+local GameConfig = require(Shared:WaitForChild("GameConfig"))
+local Remotes = require(Shared:WaitForChild("Remotes"))
+
+local MOVE = GameConfig.Movement
+local SLIDE = GameConfig.Slide
+
+local player = Players.LocalPlayer
+local slideEvent = Remotes.get("Slide")
+
+local MovementController = {}
+
+local hud
+local stamina = MOVE.MaxStamina
+local sprinting = false
+local sliding = false
+local lastDrainAt = 0
+local slideReadyAt = 0
+
+local function getCharacter(): (Model?, Humanoid?, BasePart?)
+	local character = player.Character
+	if not character then
+		return nil, nil, nil
+	end
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	local root = character:FindFirstChild("HumanoidRootPart") :: BasePart?
+	return character, humanoid, root
+end
+
+local function setHeightScale(humanoid: Humanoid, value: number)
+	local scale = humanoid:FindFirstChild("BodyHeightScale")
+	if scale and scale:IsA("NumberValue") then
+		scale.Value = value
+	end
+end
+
+local function doSlide()
+	if sliding or os.clock() < slideReadyAt then
+		return
+	end
+	local character, humanoid, root = getCharacter()
+	if not character or not humanoid or not root then
+		return
+	end
+	if humanoid.Health <= 0 or stamina < SLIDE.StaminaCost then
+		return
+	end
+	if humanoid:GetState() == Enum.HumanoidStateType.Freefall then
+		return
+	end
+
+	sliding = true
+	stamina -= SLIDE.StaminaCost
+	slideReadyAt = os.clock() + SLIDE.Cooldown
+	slideEvent:FireServer()
+
+	local direction = humanoid.MoveDirection
+	if direction.Magnitude < 0.1 then
+		direction = root.CFrame.LookVector
+	end
+	direction = Vector3.new(direction.X, 0, direction.Z).Unit
+
+	local originalScale = 1
+	local scaleValue = humanoid:FindFirstChild("BodyHeightScale")
+	if scaleValue and scaleValue:IsA("NumberValue") then
+		originalScale = scaleValue.Value
+	end
+	setHeightScale(humanoid, SLIDE.HeightScale)
+
+	local originalSpeed = humanoid.WalkSpeed
+	humanoid.WalkSpeed = 4
+
+	local attachment = Instance.new("Attachment")
+	attachment.Name = "SlideAttachment"
+	attachment.Parent = root
+
+	local velocity = Instance.new("LinearVelocity")
+	velocity.Attachment0 = attachment
+	velocity.RelativeTo = Enum.ActuatorRelativeTo.World
+	velocity.VelocityConstraintMode = Enum.VelocityConstraintMode.Line
+	velocity.LineDirection = direction
+	velocity.LineVelocity = SLIDE.Speed
+	velocity.Parent = root
+
+	task.delay(SLIDE.Duration, function()
+		velocity:Destroy()
+		attachment:Destroy()
+		local _, currentHumanoid = getCharacter()
+		if currentHumanoid then
+			setHeightScale(currentHumanoid, originalScale)
+			currentHumanoid.WalkSpeed = sprinting and MOVE.SprintSpeed or originalSpeed
+		end
+		sliding = false
+	end)
+end
+
+local function onSprintAction(_, state: Enum.UserInputState)
+	sprinting = state == Enum.UserInputState.Begin
+	return Enum.ContextActionResult.Pass
+end
+
+local function onSlideAction(_, state: Enum.UserInputState)
+	if state == Enum.UserInputState.Begin then
+		doSlide()
+	end
+	return Enum.ContextActionResult.Pass
+end
+
+function MovementController.start(hudModule)
+	hud = hudModule
+
+	ContextActionService:BindAction("LocustSprint", onSprintAction, true, Enum.KeyCode.LeftShift, Enum.KeyCode.RightShift)
+	ContextActionService:BindAction("LocustSlide", onSlideAction, true, Enum.KeyCode.C, Enum.KeyCode.LeftControl)
+	ContextActionService:SetTitle("LocustSprint", "Бег")
+	ContextActionService:SetTitle("LocustSlide", "Подкат")
+
+	player.CharacterAdded:Connect(function()
+		stamina = MOVE.MaxStamina
+		sliding = false
+		sprinting = false
+	end)
+
+	RunService.RenderStepped:Connect(function(dt)
+		local _, humanoid = getCharacter()
+		if not humanoid or humanoid.Health <= 0 then
+			return
+		end
+
+		local moving = humanoid.MoveDirection.Magnitude > 0.1
+		local wantsSprint = sprinting and moving and not sliding and stamina > MOVE.MinSprintStamina
+
+		if wantsSprint then
+			stamina = math.max(0, stamina - MOVE.SprintDrain * dt)
+			lastDrainAt = os.clock()
+			humanoid.WalkSpeed = MOVE.SprintSpeed
+		elseif not sliding then
+			humanoid.WalkSpeed = MOVE.WalkSpeed
+			if os.clock() - lastDrainAt > MOVE.RegenDelay then
+				stamina = math.min(MOVE.MaxStamina, stamina + MOVE.StaminaRegen * dt)
+			end
+		end
+
+		hud.setStamina(stamina, MOVE.MaxStamina)
+	end)
+end
+
+return MovementController
+]]></ProtectedString>
+			</Properties>
+		</Item>
+	</Item>
+</roblox>

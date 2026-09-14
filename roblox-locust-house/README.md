@@ -16,6 +16,26 @@
 
 ---
 
+## ⚡ Самый быстрый способ: готовый файл места
+
+В папке `build/` уже лежит собранное место со всеми скриптами на своих местах:
+
+1. Скачай **`build/DomSaranchi.rbxlx`** (на странице файла в GitHub - кнопка `Download raw file`).
+2. Roblox Studio → `File` → `Open from File...` → выбери скачанный `.rbxlx`.
+3. Жми **Play**. Всё.
+
+Не хочешь открывать целое место — вставь три модели в свой проект:
+правый клик по нужному объекту → `Insert from File...`
+
+| Файл из `build/` | Куда вставлять |
+|---|---|
+| `LocustShared.rbxmx` | `ReplicatedStorage` |
+| `LocustServer.rbxmx` | `ServerScriptService` |
+| `LocustClient.rbxmx` | `StarterPlayer → StarterPlayerScripts` |
+
+После правок в `src/` пересобери файлы: `python3 tools/build_roblox_files.py` из корня репозитория.
+
+---
 ## 🚀 Как запустить
 
 ### Вариант А — быстро, руками (10 минут, без доп. программ)

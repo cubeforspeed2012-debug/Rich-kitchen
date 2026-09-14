@@ -1,0 +1,228 @@
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+	<Item class="Folder" referent="RBX0">
+		<Properties>
+			<string name="Name">LocustShared</string>
+		</Properties>
+		<Item class="ModuleScript" referent="RBX1">
+			<Properties>
+				<string name="Name">GameConfig</string>
+				<ProtectedString name="Source"><![CDATA[--!nonstrict
+-- GameConfig: все числа игры в одном месте. Меняй тут, ничего больше трогать не надо.
+
+local GameConfig = {}
+
+GameConfig.Movement = {
+	WalkSpeed = 16,
+	SprintSpeed = 25,
+	MaxStamina = 100,
+	SprintDrain = 16,      -- стамины в секунду при беге
+	StaminaRegen = 11,     -- стамины в секунду при восстановлении
+	RegenDelay = 1.0,      -- пауза перед восстановлением
+	MinSprintStamina = 8,  -- ниже этого бежать нельзя
+}
+
+GameConfig.Slide = {
+	Duration = 0.75,       -- сколько длится подкат
+	Cooldown = 1.4,
+	Speed = 58,            -- импульс подката
+	HeightScale = 0.42,    -- во сколько раз ужимается персонаж (чтобы пролезть в лаз)
+	StaminaCost = 18,
+	Noise = 40,            -- радиус шума от подката
+}
+
+GameConfig.Noise = {
+	SprintRadius = 26,
+	SprintInterval = 0.45,
+	DoorRadius = 35,
+	BaitRadius = 70,
+	BaitInterval = 0.6,
+}
+
+-- ГЛАВНАЯ ФИШКА: дерзость. Дразнишь монстра -> он злее и быстрее,
+-- но твой множитель очков растёт. Поймал - теряешь всё.
+GameConfig.Rage = {
+	TauntRadius = 40,        -- с какой дистанции монстр слышит и видит подколку
+	TauntCooldown = 2.5,
+	TauntRageGain = 18,
+	TauntNoise = 220,        -- дразнилку слышно почти через весь дом
+	DecayDelay = 4.0,        -- через сколько секунд без подколок ярость падает
+	DecayRate = 2.2,         -- ярости в секунду
+	AngryThreshold = 40,
+	FuryThreshold = 80,
+	SpeedBonus = 0.45,       -- при 100 ярости монстр на 45% быстрее
+	MultiplierStep = 0.35,   -- +0.35 к множителю за каждую подколку подряд
+	MaxMultiplier = 5,
+	StreakTimeout = 25,      -- не дразнишь 25 сек - серия сгорает
+}
+
+GameConfig.Bait = {
+	MaxCharges = 3,
+	RechargeTime = 18,
+	ThrowSpeed = 90,
+	LifeTime = 12,
+	ConfuseTime = 4.5,       -- сколько монстр тупит возле приманки
+	Cooldown = 1.0,
+}
+
+GameConfig.Monster = {
+	PatrolSpeed = 9,
+	InvestigateSpeed = 13,
+	ChaseSpeed = 20,         -- меньше спринта игрока: убежать можно, но стамина кончится
+	SightRange = 60,
+	FurySightRange = 95,
+	FieldOfView = 110,       -- градусов
+	CatchDistance = 4.5,
+	SearchTime = 7,          -- сколько ищет на последней известной точке
+	LoseSightGrace = 2.5,    -- сколько секунд помнит игрока без прямой видимости
+	RepathInterval = 0.45,
+	StunOnBait = 4.5,
+}
+
+GameConfig.Round = {
+	KeysToEscape = 4,
+	RespawnDelay = 4,
+	EscapeScore = 100,
+	KeyScore = 25,
+	TauntScore = 15,
+	IntermissionTime = 8,
+}
+
+GameConfig.Map = {
+	WallHeight = 14,
+	WallThickness = 2,
+	VentHeight = 3.5,        -- высота лаза: стоя не пройти, подкатом - да
+	FloorY = 0,
+	HalfX = 70,
+	HalfZ = 55,
+}
+
+return GameConfig
+]]></ProtectedString>
+			</Properties>
+		</Item>
+		<Item class="ModuleScript" referent="RBX2">
+			<Properties>
+				<string name="Name">Remotes</string>
+				<ProtectedString name="Source"><![CDATA[--!nonstrict
+-- Один модуль на все Remote-события. Сервер их создаёт, клиент ждёт.
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+
+local EVENT_NAMES = {
+	"Taunt",        -- клиент -> сервер: подразнить монстра
+	"ThrowBait",    -- клиент -> сервер: бросить приманку
+	"Slide",        -- клиент -> сервер: сообщить про подкат (шум)
+	"StateSync",    -- сервер -> клиент: ярость, множитель, ключи, приманки
+	"Notify",       -- сервер -> клиент: текст на экран
+	"Jumpscare",    -- сервер -> клиент: поймали
+}
+
+local Remotes = {}
+
+local folder: Folder
+if RunService:IsServer() then
+	local existing = ReplicatedStorage:FindFirstChild("LocustRemotes")
+	if existing then
+		folder = existing :: Folder
+	else
+		folder = Instance.new("Folder")
+		folder.Name = "LocustRemotes"
+		folder.Parent = ReplicatedStorage
+	end
+	for _, name in EVENT_NAMES do
+		if not folder:FindFirstChild(name) then
+			local event = Instance.new("RemoteEvent")
+			event.Name = name
+			event.Parent = folder
+		end
+	end
+else
+	folder = ReplicatedStorage:WaitForChild("LocustRemotes") :: Folder
+end
+
+function Remotes.get(name: string): RemoteEvent
+	return folder:WaitForChild(name) :: RemoteEvent
+end
+
+return Remotes
+]]></ProtectedString>
+			</Properties>
+		</Item>
+		<Item class="ModuleScript" referent="RBX3">
+			<Properties>
+				<string name="Name">Util</string>
+				<ProtectedString name="Source"><![CDATA[--!nonstrict
+-- Маленькие помощники, которые нужны и серверу, и клиенту.
+
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+
+local Util = {}
+
+function Util.getRoot(character: Instance?): BasePart?
+	if not character then
+		return nil
+	end
+	return (character :: Instance):FindFirstChild("HumanoidRootPart") :: BasePart?
+end
+
+function Util.getHumanoid(character: Instance?): Humanoid?
+	if not character then
+		return nil
+	end
+	return (character :: Instance):FindFirstChildOfClass("Humanoid")
+end
+
+function Util.isAlive(player: Player): boolean
+	local humanoid = Util.getHumanoid(player.Character)
+	return humanoid ~= nil and humanoid.Health > 0
+end
+
+-- Есть ли прямая видимость между двумя точками (стены мешают, персонажи - нет).
+function Util.hasLineOfSight(fromPos: Vector3, toPos: Vector3, ignore: { Instance }): boolean
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = ignore
+	params.IgnoreWater = true
+
+	local direction = toPos - fromPos
+	local result = Workspace:Raycast(fromPos, direction, params)
+	if not result then
+		return true
+	end
+	-- Попали в персонажа - считаем, что видим.
+	local model = result.Instance:FindFirstAncestorOfClass("Model")
+	if model and Players:GetPlayerFromCharacter(model) then
+		return true
+	end
+	return false
+end
+
+-- Ближайший живой игрок к точке.
+function Util.closestPlayer(position: Vector3, maxDistance: number): (Player?, number)
+	local best: Player? = nil
+	local bestDist = maxDistance
+	for _, player in Players:GetPlayers() do
+		local root = Util.getRoot(player.Character)
+		if root and Util.isAlive(player) then
+			local dist = (root.Position - position).Magnitude
+			if dist < bestDist then
+				best = player
+				bestDist = dist
+			end
+		end
+	end
+	return best, bestDist
+end
+
+function Util.clamp(value: number, min: number, max: number): number
+	return math.max(min, math.min(max, value))
+end
+
+return Util
+]]></ProtectedString>
+			</Properties>
+		</Item>
+	</Item>
+</roblox>
