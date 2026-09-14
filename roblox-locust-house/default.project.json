@@ -1,0 +1,32 @@
+{
+  "name": "DomSaranchi",
+  "tree": {
+    "$className": "DataModel",
+
+    "ReplicatedStorage": {
+      "LocustShared": {
+        "$path": "src/shared"
+      }
+    },
+
+    "ServerScriptService": {
+      "LocustServer": {
+        "$path": "src/server"
+      }
+    },
+
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "LocustClient": {
+          "$path": "src/client"
+        }
+      }
+    },
+
+    "Workspace": {
+      "$properties": {
+        "FilteringEnabled": true
+      }
+    }
+  }
+}
