@@ -217,13 +217,14 @@ blender --background --python tools/blender/kitchen_royal.py -- --render --glb
 tools/blender/table_loft.py     # генератор
 assets/3d/table-loft.blend      # файл для Blender
 assets/3d/table-loft.glb        # для просмотра без Blender
-assets/3d/renders/table-*.png   # четыре ракурса: общий, сбоку, деталь, сверху
+assets/3d/renders/table-*.png   # четыре ракурса: общий, сбоку, деталь, сзади
 ```
 
-Столешница ЛДСП 32 мм «кашемир» с кромкой ABS, подстолье — две замкнутые рамы и царга
-из трубы 40×20 в чёрной порошковой краске. Скрипт печатает карту раскроя (длины всех
-отрезков трубы). Размеры — в начале файла: `LENGTH`, `DEPTH`, `HEIGHT`, `TOP_T`,
-`TUBE_W`, `TUBE_T`, `FRAME_INSET`, `FRAME_DEPTH`.
+Столешница ЛДСП 32 мм «кашемир» с кромкой ABS, подстолье — две замкнутые рамы из трубы
+40×20 и стальная перегородка сзади между ними (от 400 мм над полом до столешницы),
+всё в чёрной порошковой краске. Скрипт печатает карту раскроя (длины всех отрезков
+трубы и размер листа). Размеры — в начале файла: `LENGTH`, `DEPTH`, `HEIGHT`, `TOP_T`,
+`TUBE_W`, `TUBE_T`, `FRAME_INSET`, `FRAME_DEPTH`, `PANEL_Z0`.
 
 ```bash
 blender --background --python tools/blender/table_loft.py -- --render --glb

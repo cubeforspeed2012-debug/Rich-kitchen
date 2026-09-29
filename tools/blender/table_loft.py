@@ -4,8 +4,9 @@
          python tools/blender/table_loft.py [ключи]       (при установленном bpy)
 Ключи:   --render, --glb, --samples N, --res W H, --cameras a,b,c, --no-save
 
-Подстолье — две замкнутые боковые рамы («O») и царга между ними под столешницей.
-Скрипт печатает карту раскроя: размеры столешницы и длины всех отрезков трубы.
+Подстолье — две замкнутые боковые рамы («O») и стальная перегородка сзади между ними,
+от 400 мм над полом до столешницы. Скрипт печатает карту раскроя: размеры столешницы,
+длины всех отрезков трубы и размер листа.
 """
 import math
 import os
@@ -30,6 +31,8 @@ FRAME_INSET = 0.070           # отступ рамы от торца столе
 FRAME_DEPTH = 0.550           # рама по глубине (наружный размер)
 FRAME_H = HEIGHT - TOP_T      # рама упирается в столешницу
 PAD_H = 0.006                 # подпятники
+PANEL_Z0 = 0.400              # задняя перегородка: нижняя кромка от пола
+PANEL_T = 0.003               # стальной лист
 
 PALETTE = {
     "cashmere": "#CBC1B2",    # ЛДСП «кашемир серый»
@@ -146,11 +149,14 @@ def build_table(mats, colls):
             box("Подпятник", (x0 - 0.001, ya, 0.0), (x1 + 0.001, yb, PAD_H), mats["rubber"], frame,
                 bevel=0.0)
 
-    # царга: труба на ребро (20 в ширину, 40 в высоту) по оси стола под столешницей
+    # задняя перегородка: стальной лист между задними стойками, вварен в плоскости рамы,
+    # от PANEL_Z0 до столешницы — связывает рамы и не даёт столу «играть»
     sx0, sx1 = x_centers[0] + TUBE_T / 2, x_centers[1] - TUBE_T / 2
-    box("Царга", (sx0, -TUBE_T / 2, FRAME_H - TUBE_W), (sx1, TUBE_T / 2, FRAME_H), mats["powder"],
-        frame, bevel=0.0015)
-    cut["труба 40×20"].append(("царга", sx1 - sx0))
+    py = y_out - TUBE_W / 2
+    box("Перегородка", (sx0, py - PANEL_T / 2, PANEL_Z0), (sx1, py + PANEL_T / 2, FRAME_H),
+        mats["powder"], frame, bevel=0.0008)
+    cut["лист 3 мм"] = [("перегородка %d × %d мм" % ((sx1 - sx0) * 1000, (FRAME_H - PANEL_Z0) * 1000),
+                         sx1 - sx0)]
 
     # пластины крепления к столешнице — видны снизу, как в реальном изделии
     for xc in x_centers:
@@ -197,7 +203,7 @@ def build_cameras(colls):
         "hero": ((-1.75, -2.05, 1.20), (0.05, 0.05, 0.50), 45),
         "side": ((2.55, -0.25, 0.75), (0.0, 0.0, 0.46), 50),
         "detail": ((-1.35, -1.25, 1.05), (-0.50, -0.15, 0.70), 55),
-        "top": ((0.0, -0.9, 2.45), (0.0, 0.0, 0.78), 35),
+        "back": ((1.75, 2.05, 1.05), (-0.05, 0.0, 0.48), 45),
     }
     cams = {}
     for name, (loc, target, lens) in specs.items():
@@ -269,7 +275,7 @@ def print_cut_list(cut):
     print("\nКарта раскроя")
     print("  столешница ЛДСП %d мм: %d × %d мм, кромка ABS 2 мм по периметру"
           % (TOP_T * 1000, LENGTH * 1000, DEPTH * 1000))
-    for tube, items in cut.items():
+    for stock, items in cut.items():
         total = 0.0
         counts = {}
         for name, length in items:
@@ -277,8 +283,9 @@ def print_cut_list(cut):
             counts[key] = counts.get(key, 0) + 1
             total += length
         for (name, mm), n in sorted(counts.items(), key=lambda kv: -kv[0][1]):
-            print("  %s: %d шт × %d мм — %s" % (tube, n, mm, name))
-        print("  итого трубы: %.2f м (без учёта реза)" % total)
+            print("  %s: %d шт × %d мм — %s" % (stock, n, mm, name))
+        if stock.startswith("труба"):
+            print("  итого трубы: %.2f м (без учёта реза)" % total)
 
 
 def main():
@@ -288,7 +295,7 @@ def main():
     do_save = "--no-save" not in argv
     samples = 64
     res = (1280, 800)
-    names = ["hero", "side", "detail", "top"]
+    names = ["hero", "side", "detail", "back"]
     if "--samples" in argv:
         samples = int(argv[argv.index("--samples") + 1])
     if "--res" in argv:
