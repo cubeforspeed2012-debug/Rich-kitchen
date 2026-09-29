@@ -211,6 +211,24 @@ assets/3d/renders/royal-*.png       # четыре ракурса
 blender --background --python tools/blender/kitchen_royal.py -- --render --glb
 ```
 
+### Стол лофт 1500 × 650 × 780
+
+```
+tools/blender/table_loft.py     # генератор
+assets/3d/table-loft.blend      # файл для Blender
+assets/3d/table-loft.glb        # для просмотра без Blender
+assets/3d/renders/table-*.png   # четыре ракурса: общий, сбоку, деталь, сверху
+```
+
+Столешница ЛДСП 32 мм «кашемир» с кромкой ABS, подстолье — две замкнутые рамы и царга
+из трубы 40×20 в чёрной порошковой краске. Скрипт печатает карту раскроя (длины всех
+отрезков трубы). Размеры — в начале файла: `LENGTH`, `DEPTH`, `HEIGHT`, `TOP_T`,
+`TUBE_W`, `TUBE_T`, `FRAME_INSET`, `FRAME_DEPTH`.
+
+```bash
+blender --background --python tools/blender/table_loft.py -- --render --glb
+```
+
 **Походить по кухне в Blender** (для любой из трёх): навести мышь на окно просмотра,
 **View → Navigation → Walk Navigation** (или `Shift` + `` ` ``), дальше `W A S D` — движение,
 мышь — осмотр, `Q`/`E` — вниз/вверх, `Shift` — быстрее, `Esc` — выход из режима.
