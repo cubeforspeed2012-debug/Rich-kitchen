@@ -288,6 +288,8 @@ def main():
             scene.render.filepath = os.path.join(out, "renders", "wave-rk-%s.png" % f)
             bpy.ops.render.render(write_still=True)
     if "--render" in argv:
+        if hasattr(scene.render.image_settings, "media_type"):
+            scene.render.image_settings.media_type = "VIDEO"
         scene.render.image_settings.file_format = "FFMPEG"
         scene.render.ffmpeg.format = "MPEG4"
         scene.render.ffmpeg.codec = "H264"
